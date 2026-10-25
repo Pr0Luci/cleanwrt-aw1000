@@ -50,6 +50,14 @@ patch is published in this repository, which is the source for the modified file
 build fails rather than shipping a stale patch): it marks `3ginfo.sh` executable and shortens
 one menu title. The patches modify GPL-3.0 files and stay under **GPL-3.0**.
 
+### Passwall packages feed patch
+
+`patches/feeds/passwall_packages/0001-dns2socks-naiveproxy-sources.patch` brings two package
+definitions of the pinned Passwall packages feed (`dns2socks`, `naiveproxy`) to the state of
+Openwrt-Passwall/openwrt-passwall-packages main, because the files the pinned definitions
+download were deleted upstream. It is upstream's own change, unmodified, and stays under the
+licences of those files (see their headers).
+
 ## Source availability
 
 The complete corresponding source of a CleanWRT image is the combination of the following, all of
