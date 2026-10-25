@@ -1,0 +1,82 @@
+#!/bin/sh
+# Set the WiFi regulatory domain from the cellular network's MCC
+# (multi-market). One image works in any market: when the modem registers, read
+# the network MCC and set the WiFi country accordingly. Until then the regdom
+# stays at the OpenWrt default (00 = world, legal everywhere but conservative).
+
+[ "$ACTION" = "ifup" ] || exit 0
+# Match the cellular modem interface. qmodem names it by USB path (e.g. 4_1),
+# NOT 'wwan0', so match any interface that carries a modem_config option; fall
+# back to legacy modem-only names for other setups. ('wan' was dropped from
+# that fallback: it fired the AT queries on every plain ethernet-WAN ifup,
+# stalling netifd's hotplug chain for nothing.)
+if [ -z "$(uci -q get network."$INTERFACE".modem_config)" ]; then
+    case "$INTERFACE" in wwan0|broadband|modem) ;; *) exit 0 ;; esac
+fi
+
+# netifd runs iface hotplug scripts SERIALLY: the retry loop below can burn up
+# to ~2 min (3 x [30 s ubus timeout + 10 s sleep]) inside that chain - exactly
+# during the modem dial window. Run the whole lookup in the background so the
+# hotplug chain continues immediately.
+(
+    # The modem's AT ports each have exactly ONE consumer -
+    # QModem (and, if installed, a phone stack). This script opens neither: it asks
+    # QModem for the network MCC over ubus (QModem serialises its own AT traffic
+    # and caches cell info). No tom_modem, no kill of anything.
+    command -v ubus >/dev/null 2>&1 && command -v ucode >/dev/null 2>&1 || exit 0
+    ubus -t 5 list qmodem >/dev/null 2>&1 || exit 0
+    # one instance at a time (/var/run is tmpfs: a lock never survives a reboot)
+    mkdir /var/run/cw-regdom.lock 2>/dev/null || exit 0
+    trap 'rmdir /var/run/cw-regdom.lock 2>/dev/null' EXIT
+    SEC=$(uci -q get network."$INTERFACE".modem_config)
+    [ -n "$SEC" ] || SEC=$(uci -q show qmodem | sed -n 's/^qmodem\.\([^.=]*\)=modem-device$/\1/p' | head -1)
+    [ -n "$SEC" ] || exit 0
+
+    # Network MCC from QModem's cell info ({"key":"MCC","value":"413"}).
+    MCC=
+    attempts=0
+    while [ -z "$MCC" ] && [ "$attempts" -lt 3 ]; do
+        MCC=$(ubus -t 30 call qmodem cell_info "{\"config_section\":\"$SEC\"}" 2>/dev/null \
+                | ucode -e 'import { stdin } from "fs"; let j = json(stdin.read("all")); for (let m in (j?.modem_info ?? [])) if (m?.key == "MCC") { print(m.value); break; }' 2>/dev/null)
+        case "$MCC" in [0-9][0-9][0-9]) ;; *) MCC= ;; esac
+        attempts=$((attempts + 1))
+        [ -n "$MCC" ] || sleep 10
+    done
+    [ -n "$MCC" ] || exit 0
+
+    # MCC -> ISO-3166 country (extend as needed).
+    case "$MCC" in
+        424|430|431)     CC=AE ;;                 # UAE
+        505)             CC=AU ;;                 # Australia
+        470)             CC=BD ;;                 # Bangladesh
+        302)             CC=CA ;;                 # Canada
+        262)             CC=DE ;;                 # Germany
+        234|235)         CC=GB ;;                 # United Kingdom
+        510)             CC=ID ;;                 # Indonesia
+        404|405|406)     CC=IN ;;                 # India
+        413)             CC=LK ;;                 # Sri Lanka
+        502)             CC=MY ;;                 # Malaysia
+        530)             CC=NZ ;;                 # New Zealand
+        410)             CC=PK ;;                 # Pakistan
+        525)             CC=SG ;;                 # Singapore
+        520)             CC=TH ;;                 # Thailand
+        310|311|312|313|314|315|316) CC=US ;;     # United States
+        *)               exit 0 ;;                # unknown MCC: leave current regdom
+    esac
+
+    # Compare ALL radios, not just radio0 - a partially configured wireless block
+    # must not make us think the country is already applied.
+    all_radios=$(uci show wireless 2>/dev/null | sed -n 's/^wireless\.\([^.=]*\)=wifi-device.*/\1/p')
+    [ -n "$all_radios" ] || exit 0
+    for r in $all_radios; do
+        [ "$(uci -q get wireless."$r".country)" = "$CC" ] && exit 0
+    done
+
+    for r in $all_radios; do
+        uci set wireless."$r".country="$CC"
+    done
+    uci commit wireless
+    wifi reload >/dev/null 2>&1
+    logger -t cw-regdom "WiFi regdom set to $CC from network MCC $MCC"
+) &
+exit 0

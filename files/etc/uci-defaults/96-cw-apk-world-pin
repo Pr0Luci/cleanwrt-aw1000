@@ -1,0 +1,58 @@
+#!/bin/sh
+# Release freeze: pin the packages that must not move at their exact installed
+# version, so `apk upgrade` on the device cannot undo the build.
+#
+# The image is built from the feed snapshots current at build time. An on-device
+# `apk upgrade` once replaced luci-base / luci-mod-status / luci-app-p910nd with the
+# upstream builds and silently dropped the build-time feed patches (the overview
+# cards fell back to the stock tables, the p910nd menu title reverted). Patched
+# packages must never be overwritten by a stock feed build between releases, so
+# updates of that set are an explicit release event: the next CleanWRT release ships
+# fresh versions of everything.
+#
+# This runs on every boot's uci-defaults pass. A keep-settings sysupgrade to a newer
+# release re-runs it against the new package database, so the pins always match the
+# running image and an old pin can never demand a downgrade.
+#
+# qbittorrent and adguardhome are part of the image but come from the cwfeed, not the
+# luci feed, so they are written as bare names and stay upgradable (apk upgrade from
+# the cw-opt feed). Packages installed after first boot (e.g. openclash) are added to
+# world without a pin by `apk add` and stay upgradable by design: none carries
+# build-time patches, and luci-app-adguardhome's service patch is re-applied by its
+# package postinst (see 97-cw-adguard-enable-bridge).
+
+[ -f /lib/apk/db/installed ] || exit 0
+[ -d /etc/apk ] || exit 0
+
+# Pin rule:
+#   - every package that originates from the luci feed (feeds/luci/...): the patched
+#     LuCI pages must never be replaced by a stock build, and luci-base is the
+#     common dependency of all of them, so the whole set is frozen as one unit;
+#   - base-files (its /rom files are read-only);
+#   - kmod-* and kernel (tied to the running kernel).
+# Everything else is written as a bare name, so `apk upgrade` delivers upstream
+# security fixes (openssl, mbedtls, ca-bundle, uhttpd, wpad ...).
+awk '
+	/^P:/ {p = substr($0, 3); v = ""; o = ""}
+	/^V:/ {v = substr($0, 3)}
+	/^o:/ {o = substr($0, 3)}
+	/^$/ {
+		if (p != "") {
+			if (o ~ /^feeds\/luci\// || p == "base-files" || p == "kernel" || p ~ /^kmod-/)
+				print p "=" v
+			else
+				print p
+		}
+		p = ""
+	}
+	END {
+		if (p != "") {
+			if (o ~ /^feeds\/luci\// || p == "base-files" || p == "kernel" || p ~ /^kmod-/)
+				print p "=" v
+			else
+				print p
+		}
+	}
+' /lib/apk/db/installed > /etc/apk/world.cw-pin
+[ -s /etc/apk/world.cw-pin ] && mv /etc/apk/world.cw-pin /etc/apk/world
+exit 0

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Network tuning.
+# Enable packet steering (RPS/XPS) so NIC rx/tx processing spreads across the
+# four IPQ8074 cores instead of piling on cpu0 - better multi-flow throughput
+# under load. Safe, standard OpenWrt optimisation (S25packet_steering applies it).
+uci set network.globals.packet_steering='1'
+uci commit network
+exit 0

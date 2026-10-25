@@ -1,0 +1,23 @@
+#!/bin/sh
+# Make the Apex theme the default LuCI theme - ONCE.
+# luci-theme-apex registers luci.themes.Apex (its own uci-defaults, 70-*) and
+# bootstrap stays installed. The switch is applied a single time: a marker in
+# /etc/config/luci (preserved across keep-settings upgrades) stops this script
+# from overriding a theme the user picks later. Only a still-default (unset or
+# bootstrap) mediaurlbase is changed, and only if the theme is really installed.
+[ -f /etc/config/luci ] || exit 0
+[ -d /www/luci-static/apex ] || exit 0
+[ "$(uci -q get luci.cw_state.theme_default_applied)" = "1" ] && exit 0
+
+cur=$(uci -q get luci.main.mediaurlbase)
+case "$cur" in
+	''|/luci-static/bootstrap)
+		uci set luci.themes.Apex='/luci-static/apex'
+		uci set luci.main.mediaurlbase='/luci-static/apex'
+		logger -t cw-firstboot "luci: default theme set to Apex"
+		;;
+esac
+uci set luci.cw_state=cw
+uci set luci.cw_state.theme_default_applied='1'
+uci commit luci
+exit 0

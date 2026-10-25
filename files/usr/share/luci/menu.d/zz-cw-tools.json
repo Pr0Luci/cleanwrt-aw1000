@@ -1,0 +1,203 @@
+{
+	"admin/tools": {
+		"title": "Tools",
+		"order": 60,
+		"action": {
+			"type": "firstchild"
+		}
+	},
+	"admin/tools/ttyd": {
+		"title": "Terminal",
+		"action": {
+			"type": "firstchild"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-ttyd"
+			],
+			"uci": {
+				"ttyd": true
+			}
+		},
+		"order": 10
+	},
+	"admin/tools/ttyd/ttyd": {
+		"title": "Terminal",
+		"order": 1,
+		"action": {
+			"type": "view",
+			"path": "ttyd/term"
+		}
+	},
+	"admin/tools/ttyd/config": {
+		"title": "Config",
+		"order": 2,
+		"action": {
+			"type": "view",
+			"path": "ttyd/config"
+		}
+	},
+	"admin/services/ttyd": {
+		"depends": {
+			"acl": [
+				"cw-moved"
+			]
+		}
+	},
+	"admin/tools/nlbw": {
+		"title": "Bandwidth Monitor",
+		"order": 20,
+		"action": {
+			"type": "alias",
+			"path": "admin/tools/nlbw/display"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-nlbwmon"
+			],
+			"uci": {
+				"nlbwmon": true
+			}
+		}
+	},
+	"admin/tools/nlbw/display": {
+		"title": "Display",
+		"order": 10,
+		"action": {
+			"type": "view",
+			"path": "nlbw/display"
+		}
+	},
+	"admin/tools/nlbw/config": {
+		"title": "Configuration",
+		"order": 20,
+		"action": {
+			"type": "view",
+			"path": "nlbw/config"
+		}
+	},
+	"admin/tools/nlbw/backup": {
+		"title": "Backup",
+		"order": 30,
+		"action": {
+			"type": "view",
+			"path": "nlbw/backup"
+		}
+	},
+	"admin/services/nlbw": {
+		"depends": {
+			"acl": [
+				"cw-moved"
+			]
+		}
+	},
+	"admin/tools/hd_idle": {
+		"title": "HDD Idle",
+		"order": 30,
+		"action": {
+			"type": "view",
+			"path": "hd_idle"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-hd-idle"
+			],
+			"uci": {
+				"hd-idle": true
+			}
+		}
+	},
+	"admin/services/hd_idle": {
+		"depends": {
+			"acl": [
+				"cw-moved"
+			]
+		}
+	},
+	"admin/tools/filemanager": {
+		"title": "File Manager",
+		"order": 40,
+		"action": {
+			"type": "view",
+			"path": "system/filemanager"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-filemanager"
+			]
+		}
+	},
+	"admin/system/filemanager": {
+		"depends": {
+			"acl": [
+				"cw-moved"
+			]
+		}
+	},
+	"admin/tools/watchcat": {
+		"title": "Watchcat",
+		"order": 50,
+		"action": {
+			"type": "view",
+			"path": "watchcat"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-watchcat"
+			]
+		}
+	},
+	"admin/services/watchcat": {
+		"depends": {
+			"acl": [
+				"cw-moved"
+			]
+		}
+	},
+	"admin/services/cloudflared": {
+		"title": "Cloudflare Zero Trust Tunnel",
+		"order": 80,
+		"action": {
+			"type": "firstchild"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-cloudflared"
+			],
+			"uci": {
+				"cloudflared": true
+			}
+		}
+	},
+	"admin/services/cloudflared/config": {
+		"title": "Configuration",
+		"order": 10,
+		"action": {
+			"type": "view",
+			"path": "cloudflared/config"
+		}
+	},
+	"admin/services/cloudflared/tunnels": {
+		"title": "Tunnels",
+		"order": 20,
+		"action": {
+			"type": "view",
+			"path": "cloudflared/tunnels"
+		}
+	},
+	"admin/services/cloudflared/log": {
+		"title": "Log",
+		"order": 30,
+		"action": {
+			"type": "view",
+			"path": "cloudflared/log"
+		}
+	},
+	"admin/vpn/cloudflared": {
+		"depends": {
+			"acl": [
+				"cw-moved"
+			]
+		}
+	}
+}

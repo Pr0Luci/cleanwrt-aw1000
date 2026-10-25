@@ -1,0 +1,59 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scripts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shell syntax
+        run: |
+          set -eu
+          for f in $(grep -rlE '^#!.*(sh|bash)' tools files); do
+            case "$(head -1 "$f")" in *bash*) bash -n "$f" ;; *) sh -n "$f" ;; esac
+          done
+      - name: Version label agrees between seed and build script
+        run: |
+          seed=$(sed -n 's/^CONFIG_VERSION_NUMBER="\(.*\)"$/\1/p' configs/arcadyan_aw1000.seed)
+          script=$(sed -n 's/^CW_VERSION="\(.*\)"$/\1/p' tools/cw-release-build.sh)
+          echo "seed=$seed script=$script"
+          [ -n "$seed" ] && [ "$seed" = "$script" ]
+      - name: Pins resolve anonymously
+        run: |
+          set -eu
+          grep -vE '^[[:space:]]*(#|$)' configs/local-packages.pin | while read -r name url sha _; do
+            git init -q "pin-$name"
+            git -C "pin-$name" fetch -q --depth 1 "$url" "$sha"
+            [ "$(git -C "pin-$name" rev-parse FETCH_HEAD)" = "$sha" ]
+            echo "pin ok: $name @ $sha"
+          done
+
+  config:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Builder image
+        run: docker build -t cleanwrt-builder docker/
+      - name: OpenWrt v25.12.5
+        run: |
+          sudo mkdir -p /mnt/cw && sudo chown "$USER" /mnt/cw
+          git clone --depth 1 --branch v25.12.5 https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
+      - name: Feeds, patches, pins, defconfig and seed checks (no compile)
+        run: |
+          docker run --rm -e CW_CHECK_ONLY=1 \
+            -v /mnt/cw/openwrt:/build -v "$PWD":/cleanwrt \
+            cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build

@@ -1,0 +1,115 @@
+quectel-CM: IPv6 is optional while IPv4 is up
+
+3GPP TS 23.401 / RFC 6459: a UE requests a dual-stack (IPv4v6) bearer and
+accepts what the network assigns; ModemManager treats the connection as up when
+either family succeeded. quectel-CM treated a missing IPv6 bearer as a failed
+call and retried it on a 5..60 s ladder forever, contending for the QMI channel
+and delaying IPv4 recovery. This gives IPv6 its own back-off (60 s doubling to
+32 min, reset on a new bearer cycle or a fresh attach); the IPv4 ladder and the
+global SetupCallAllowTime are untouched, and IPv6-only configurations behave as
+before.
+
+diff --git a/application/quectel_CM_5G_M/src/main.c b/application/quectel_CM_5G_M/src/main.c
+index 4cc9345..3146746 100644
+--- a/application/quectel_CM_5G_M/src/main.c
++++ b/application/quectel_CM_5G_M/src/main.c
+@@ -261,6 +261,19 @@ static int usage(const char *progname) {
+     return 0;
+ }
+ 
++/* IPv6 is optional while IPv4 is up (3GPP TS 23.401 / RFC 6459: a UE asks for a
++ * dual-stack bearer and accepts what the network assigns). A failed IPv6 setup
++ * must neither hammer the QMI channel nor disturb the working IPv4 session, so
++ * the IPv6-only retry back-off is separate from the IPv4 ladder:
++ * 60 s, 120 s ... capped at 32 min. It restarts on a new bearer cycle. */
++static unsigned long ipv6_retry_delay_ms(unsigned fail)
++{
++    unsigned shift = (fail > 0) ? (fail - 1) : 0;
++    if (shift > 5)
++        shift = 5;
++    return (60UL << shift) * 1000UL;
++}
++
+ static int qmi_main(PROFILE_T *profile)
+ {
+     int triger_event = 0;
+@@ -273,6 +286,8 @@ static int qmi_main(PROFILE_T *profile)
+     UCHAR  IPv6ConnectionStatus = QWDS_PKT_DATA_UNKNOW; 
+     unsigned SetupCallFail = 0;
+     unsigned long SetupCallAllowTime = clock_msec();
++    unsigned IPv6SetupFail = 0;
++    unsigned long IPv6SetupAllowTime = clock_msec();
+ #ifdef REBOOT_SIM_CARD_WHEN_LONG_TIME_NO_PS
+     unsigned PsAttachFail = 0;
+     unsigned long PsAttachTime = clock_msec();
+@@ -468,6 +483,9 @@ static int qmi_main(PROFILE_T *profile)
+                             }
+ 
+                             if (profile->enable_ipv4 && IPv4ConnectionStatus !=  QWDS_PKT_DATA_CONNECTED) {
++                                /* a new bearer cycle: IPv6 gets a fresh chance with IPv4 */
++                                IPv6SetupFail = 0;
++                                IPv6SetupAllowTime = clock_msec();
+                                 qmierr = request_ops->requestSetupDataCall(profile, IpFamilyV4);
+ 
+                                 if ((qmierr > 0) && profile->user && profile->user[0] && profile->password && profile->password[0]) {
+@@ -493,7 +511,7 @@ static int qmi_main(PROFILE_T *profile)
+                                 if (profile->enable_ipv4 && profile->request_ops != &qmi_request_ops) {
+                                     IPv6ConnectionStatus = IPv4ConnectionStatus;
+                                 }
+-                                else {
++                                else if (IPv6SetupAllowTime <= clock_msec()) {
+                                     qmierr = request_ops->requestSetupDataCall(profile, IpFamilyV6);
+ 
+                                     if (!qmierr) {
+@@ -501,11 +519,22 @@ static int qmi_main(PROFILE_T *profile)
+                                         if (!qmierr)
+                                             IPv6ConnectionStatus = QWDS_PKT_DATA_CONNECTED;
+                                     }
++
++                                    if (IPv6ConnectionStatus == QWDS_PKT_DATA_CONNECTED) {
++                                        IPv6SetupFail = 0;
++                                    }
++                                    else {
++                                        IPv6SetupFail++;
++                                        IPv6SetupAllowTime = clock_msec() + ipv6_retry_delay_ms(IPv6SetupFail);
++                                        if (profile->enable_ipv4)
++                                            dbg_time("IPv6 data call not available, next attempt in %lu s (IPv4 is not affected)",
++                                                ipv6_retry_delay_ms(IPv6SetupFail) / 1000);
++                                    }
+                                 }
+                             }
+                                 
+                             if ((profile->enable_ipv4 && IPv4ConnectionStatus ==  QWDS_PKT_DATA_DISCONNECTED)
+-                                    || (profile->enable_ipv6 && IPv6ConnectionStatus ==  QWDS_PKT_DATA_DISCONNECTED)) {
++                                    || (!profile->enable_ipv4 && profile->enable_ipv6 && IPv6ConnectionStatus ==  QWDS_PKT_DATA_DISCONNECTED)) {
+                                 const unsigned allow_time[] = {5, 10, 20, 40, 60};
+ 
+                                 if (SetupCallFail < (sizeof(allow_time)/sizeof(unsigned)))
+@@ -520,6 +549,11 @@ static int qmi_main(PROFILE_T *profile)
+                             else if (IPv4ConnectionStatus ==  QWDS_PKT_DATA_CONNECTED || IPv6ConnectionStatus ==  QWDS_PKT_DATA_CONNECTED) {
+                                 SetupCallFail = 0;
+                                 SetupCallAllowTime = clock_msec();
++                                if (profile->enable_ipv6 && IPv6ConnectionStatus != QWDS_PKT_DATA_CONNECTED) {
++                                    /* IPv4 is up, IPv6 is missing: look again on the IPv6 timer only */
++                                    unsigned long now = clock_msec();
++                                    alarm((IPv6SetupAllowTime > now) ? (IPv6SetupAllowTime - now + 999) / 1000 : 1);
++                                }
+                             }
+                         break;
+ 
+@@ -642,7 +676,15 @@ static int qmi_main(PROFILE_T *profile)
+                         break;
+ 
+                         case RIL_UNSOL_RESPONSE_VOICE_NETWORK_STATE_CHANGED:
++                        {
++                            UCHAR WasAttached = PSAttachedState;
+                             request_ops->requestRegistrationState(&PSAttachedState);
++                            if (PSAttachedState == 1 && WasAttached != 1) {
++                                /* new attach: the network may now offer IPv6 */
++                                IPv6SetupFail = 0;
++                                IPv6SetupAllowTime = clock_msec();
++                            }
++                        }
+                             if (PSAttachedState == 1) {
+                                 if ((profile->enable_ipv4 && IPv4ConnectionStatus ==  QWDS_PKT_DATA_DISCONNECTED)
+                                     || (profile->enable_ipv6 && IPv6ConnectionStatus ==  QWDS_PKT_DATA_DISCONNECTED)) {

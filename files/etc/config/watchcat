@@ -1,0 +1,4 @@
+# Watchcat ships with NO rule. The package default is an active rule
+# (ping 8.8.8.8 every 6h, reboot on failure), which would reboot a router whose 5G
+# link is down for a while and probes a third-party host. Add your own rule in LuCI
+# (Services > Watchcat); an empty config makes the init script do nothing.

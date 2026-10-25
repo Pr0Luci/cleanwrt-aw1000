@@ -1,0 +1,12 @@
+# Syncthing P2P folder sync - ships DISABLED: the web GUI must not listen until
+# you opt in and set GUI credentials. The only switch is the Enabled box
+# in LuCI (Services > Syncthing); Save & Apply starts it (the init reloads on a
+# change of this file). The section MUST be named 'syncthing' (the init's
+# config_load reads that section name; a 'main' section is silently ignored ->
+# service never starts). Runs as root so it can write its home and serve any
+# USB drive. Enable, open the dashboard, set a GUI user/password, then pair a device.
+config syncthing 'syncthing'
+	option enabled '0'
+	option home '/etc/syncthing'
+	option gui_address 'http://0.0.0.0:8384'
+	option user 'root'

@@ -1,0 +1,75 @@
+#!/bin/sh /etc/rc.common
+# CleanWRT modem first-run setup.
+#
+# History: the carrier of the time offered no IPv6 bearer and quectel-CM kept
+# retrying it forever, which starved the QMI channel and dropped the working
+# IPv4 session. The workaround forced pdp_type=ip on EVERY boot, which also
+# removed IPv6 from carriers that provide it and overrode the user's choice.
+# The real fix is now in the dialer (patches/feeds/qmodem/0002: IPv6 is optional
+# while IPv4 is up, retried on its own long back-off), as 3GPP / RFC 6459 and
+# ModemManager do. So this script:
+#   * sets pdp_type=ipv4v6 ONLY while the option is unset (first provisioning);
+#     a value you chose in LuCI is never rewritten;
+#   * disables the redundant network.wan5g qmi manager (compounds QMI contention);
+#   * points 3ginfo-lite and vnstat at the modem interface.
+# Every setting is provisioned only while it is UNSET: a value you
+# chose in LuCI is never rewritten, on any boot. The shipped defaults leave all of them
+# unset (3ginfo has no `network`, vnstat has no `interface`), so a clean flash gets the
+# same result as before. Idempotent; runs each boot; re-dials only if it changed something.
+START=81
+
+start() {
+    (
+        # Wait (bounded) for qmodem to register the modem-device section.
+        i=0
+        while [ "$i" -lt 40 ] && [ "$(uci show qmodem 2>/dev/null | grep -c '=modem-device')" = "0" ]; do
+            sleep 3
+            i=$((i + 1))
+        done
+
+        changed=
+        # Drop the redundant wan5g qmi manager (compounds QMI contention) unless the
+        # user already decided (disabled is set to either value).
+        if [ -n "$(uci -q get network.wan5g)" ] && [ -z "$(uci -q get network.wan5g.disabled)" ]; then
+            uci set network.wan5g.disabled='1'
+            uci commit network
+            # uci commit alone does not reach netifd - reload so the disabled
+            # wan5g interface actually stops this boot.
+            ubus call network reload 2>/dev/null
+            changed=1
+        fi
+
+        # Default PDP type (dual-stack) for a modem-device that has none yet.
+        qchg=
+        for s in $(uci show qmodem 2>/dev/null | sed -n 's/^qmodem\.\([^.=]*\)=modem-device.*/\1/p'); do
+            [ -n "$(uci -q get qmodem.$s.pdp_type)" ] && continue
+            uci set qmodem.$s.pdp_type='ipv4v6'
+            qchg=1
+        done
+        [ -n "$qchg" ] && { uci commit qmodem; changed=1; }
+
+        # Point 3ginfo-lite's "Connection statistics" at the modem interface.
+        # 3ginfo defaults the monitored interface to 'wan' (the ethernet WAN)
+        # when 3ginfo.network is unset, so the stats row spins forever. Detect
+        # the qmodem-created interface (the one with a modem_config option).
+        modem_iface=$(uci show network 2>/dev/null | sed -n 's/^network\.\([^.=]*\)\.modem_config=.*/\1/p' | head -1)
+        if [ -n "$modem_iface" ] && [ -z "$(uci -q get 3ginfo.@3ginfo[0].network)" ]; then
+            uci set 3ginfo.@3ginfo[0].network="$modem_iface"
+            uci commit 3ginfo
+        fi
+
+        # Point vnstat at the modem's data device so cellular usage is actually
+        # counted for the data-cap view (it otherwise tracks nothing useful).
+        modem_l3=$(ifstatus "$modem_iface" 2>/dev/null | sed -n 's/.*"l3_device": *"\([^"]*\)".*/\1/p' | head -1)
+        if [ -n "$modem_l3" ] && [ -z "$(uci -q get vnstat.@vnstat[0].interface)" ]; then
+            uci add_list vnstat.@vnstat[0].interface="$modem_l3"
+            uci commit vnstat
+            /etc/init.d/vnstat restart 2>/dev/null
+        fi
+
+        if [ -n "$changed" ]; then
+            logger -t cw-modem-fix "applied default PDP type (ipv4v6) / wan5g disabled"
+            /etc/init.d/qmodem_network restart 2>/dev/null
+        fi
+    ) &
+}

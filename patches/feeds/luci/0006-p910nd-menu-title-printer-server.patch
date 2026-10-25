@@ -1,0 +1,12 @@
+diff --git a/applications/luci-app-p910nd/root/usr/share/luci/menu.d/luci-app-p910nd.json b/applications/luci-app-p910nd/root/usr/share/luci/menu.d/luci-app-p910nd.json
+index b67523168b..09381d282f 100644
+--- a/applications/luci-app-p910nd/root/usr/share/luci/menu.d/luci-app-p910nd.json
++++ b/applications/luci-app-p910nd/root/usr/share/luci/menu.d/luci-app-p910nd.json
+@@ -1,6 +1,6 @@
+ {
+ 	"admin/services/p910nd": {
+-		"title": "p910nd - Printer server",
++		"title": "Printer server",
+ 		"order": 60,
+ 		"action": {
+ 			"type": "view",

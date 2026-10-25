@@ -1,0 +1,10 @@
+#!/bin/sh
+# LuCI over HTTPS: luci-ssl generates a first-boot certificate (px5g) and adds
+# the listen_https addresses; this turns on the HTTP->HTTPS redirect so admin
+# credentials never cross the LAN in cleartext. Plain HTTP stays up only to
+# serve the redirect. Runs once, then removes itself.
+[ -f /etc/config/uhttpd ] || exit 0
+uci set uhttpd.main.redirect_https='1'
+uci commit uhttpd
+logger -t cw-firstboot "uhttpd: HTTP->HTTPS redirect enabled"
+exit 0

@@ -1,0 +1,10 @@
+
+▄▀▀▀▄ █     █▀▀▀▀ ▄▀▀▀▄ █▄  █ █   █ █▀▀▀▄ ▀▀█▀▀
+█     █     █▀▀▀  █▄▄▄█ █ ▀▄█ █ █ █ █▀█▀    █
+▀▄▄▄▀ █▄▄▄▄ █▄▄▄▄ █   █ █   █ █▀ ▀█ █  ▀▄   █
+
+ 5G Router  ·  Powered by OpenWrt
+ --------------------------------------------
+
+ Default WiFi key: CleanWRT#40   (change it: LuCI -> Network -> Wireless)
+ First login is over Ethernet with no root password - set one in LuCI.

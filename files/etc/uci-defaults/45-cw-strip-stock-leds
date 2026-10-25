@@ -1,0 +1,47 @@
+#!/bin/sh
+# Remove the redundant stock LuCI "System -> LED Configuration" page.
+#
+# luci-app-cw-led supersedes it for the front-panel indicators (Power / 5G /
+# Signal / Wi-Fi / Internet), so the stock editor is redundant and a
+# footgun (a stock `led` section on a daemon-owned node would fight the daemon).
+# We strip ONLY the `admin/system/leds` menu node + its view, leaving the rest
+# of luci-mod-system - and the /etc/config/system `led` blocks - intact.
+#
+# NB: the ethernet WAN PORT LED (`90000.mdio-1:1c:green:wan`) is NOT a front-
+# panel indicator (it lights an ethernet-port LED, not the panel). It is left
+# to the stock kernel netdev trigger, so its `led_wan_port_link` block keeps
+# driving it with no UI (intended).
+# This removes the editor page only, never that block - nothing is stranded.
+#
+# Runs once per clean boot; re-applies after a factory reset (it lives in /rom).
+# Both edits are copy-up/whiteout in the overlay, shadowing the read-only rootfs.
+
+MENU=/usr/share/luci/menu.d/luci-mod-system.json
+VIEW=/www/luci-static/resources/view/system/leds.js
+
+# 1. Drop the menu node (jq is in the base image). Guard: only write back if the
+#    result still has the other System pages and no longer has the leds node, so
+#    a jq hiccup can never blank the whole System menu.
+if [ -f "$MENU" ] && command -v jq >/dev/null 2>&1; then
+	tmp="$MENU.cwtmp.$$"
+	if jq 'del(."admin/system/leds")' "$MENU" > "$tmp" 2>/dev/null && [ -s "$tmp" ] &&
+	   jq -e '(has("admin/system/system")) and (has("admin/system/leds")|not)' "$tmp" >/dev/null 2>&1; then
+		cat "$tmp" > "$MENU"
+	fi
+	rm -f "$tmp"
+fi
+
+# 2. Remove the view ONLY if the menu node was actually stripped above. If the
+#    jq edit failed and the menu node survives, keep the view - deleting it
+#    anyway would strand a dead "LED Configuration" menu link.
+if grep -q '"admin/system/leds"' "$MENU" 2>/dev/null; then
+    : # menu node still present -> keep the view so the page keeps working
+else
+    rm -f "$VIEW"
+fi
+
+# 3. Invalidate LuCI's cached menu/index so the change shows on the next request.
+rm -f /tmp/luci-indexcache /tmp/luci-indexcache.* 2>/dev/null
+rm -rf /tmp/luci-modulecache 2>/dev/null
+
+exit 0

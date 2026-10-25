@@ -1,0 +1,4 @@
+#!/bin/sh
+# Enable the modem data-stability fix service on first boot.
+/etc/init.d/cw-modem-fix enable 2>/dev/null
+exit 0

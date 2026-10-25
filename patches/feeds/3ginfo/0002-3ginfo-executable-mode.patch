@@ -1,0 +1,16 @@
+Mark 3ginfo.sh executable - LOCAL ONLY, not for upstream.
+
+LuCI runs /usr/share/3ginfo-lite/3ginfo.sh directly via fs.exec, but upstream
+ships the script non-executable (0644) and only chmods it in a first-boot
+uci-defaults - so a fresh boot can fail before that uci-defaults runs. Upstream
+declined-risk: they intentionally defer the chmod to first boot, so this stays
+a local patch (split from 0001 so the logic change can be upstreamed alone).
+
+Applies to: https://github.com/4IceG/luci-app-3ginfo-lite
+            @ cbc144e527b067750f8986a033e2e00677d85fdf (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh after 0001 (sorted order).
+Upstream status: not submitted (intentional local patch).
+
+diff --git a/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/3ginfo.sh b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/3ginfo.sh
+old mode 100644
+new mode 100755

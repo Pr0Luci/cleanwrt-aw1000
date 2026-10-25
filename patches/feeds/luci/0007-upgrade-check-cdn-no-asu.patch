@@ -1,0 +1,36 @@
+--- a/applications/luci-app-attendedsysupgrade/htdocs/luci-static/resources/view/status/include/11_upgrades.js
++++ b/applications/luci-app-attendedsysupgrade/htdocs/luci-static/resources/view/status/include/11_upgrades.js
+@@ -52,13 +52,11 @@
+ 
+ 	const branch = version.split('.').slice(0, 2).join('.');
+ 	ui.addTimeLimitedNotification(_('New Firmware Available'), [
+-		E('p', _('A new %s version of OpenWrt is available:').format(type)),
++		E('p', _('A new %s version of CleanWRT is available:').format(type)),
+ 		table,
+ 		E('p', [
+ 			_('Check') + ' ',
+-			E('a', {href: '/cgi-bin/luci/admin/system/attendedsysupgrade'}, _('Attended Sysupgrade')),
+-			' ' + _('and') + ' ',
+-			E('a', {href: `https://openwrt.org/releases/${branch}/notes-${version}`}, _('release notes')),
++			E('a', {href: `https://pr0luci.github.io/cleanwrt-aw1000/releases/${version}/`}, _('the new firmware')),
+ 		]),
+ 		E('div', { class: 'btn', click: () => setSetUpgradeCheck(false) }, _('Stop showing upgrade alerts')),
+ 	], 60000, 'notice');
+@@ -96,7 +94,7 @@
+ 
+ async function checkDeviceAvailable(boardinfo, new_version)
+ {
+-	const profile_url = `https://downloads.openwrt.org/releases/${new_version}/targets/${boardinfo?.release?.target}/profiles.json`;
++	const profile_url = `https://pr0luci.github.io/cleanwrt-aw1000/releases/${new_version}/targets/${boardinfo?.release?.target}/profiles.json`;
+ 	return fetch(profile_url)
+ 		.then(response => response.json())
+ 		.then(data => {
+@@ -139,7 +137,7 @@
+ 		const check_upgrades = uci.get_bool(...check_setting);
+ 
+ 		if (check_upgrades) {
+-			fetch('https://downloads.openwrt.org/.versions.json')
++			fetch('https://pr0luci.github.io/cleanwrt-aw1000/.versions.json')
+ 			.then(response => response.json())
+ 			.then(async (versions) => {
+ 				var label = null;

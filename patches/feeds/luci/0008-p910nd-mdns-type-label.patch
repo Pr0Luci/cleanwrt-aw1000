@@ -1,0 +1,13 @@
+diff --git a/applications/luci-app-p910nd/htdocs/luci-static/resources/view/p910nd.js b/applications/luci-app-p910nd/htdocs/luci-static/resources/view/p910nd.js
+index a0edc5c..c82dad6 100644
+--- a/applications/luci-app-p910nd/htdocs/luci-static/resources/view/p910nd.js
++++ b/applications/luci-app-p910nd/htdocs/luci-static/resources/view/p910nd.js
+@@ -156,7 +156,7 @@ return view.extend({
+ 		/* See https://developer.apple.com/bonjour/printing-specification/ ( -> bonjourprinting-1.2.1.pdf ) for
+ 		 * a description of the Bonjour fields a la Apple.
+ 		 */
+-		o = s.option(form.Value, 'mdns_ty', 'mdns_ty',
++		o = s.option(form.Value, 'mdns_ty', _('mDNS type'),
+ 			_('The %s type element.').format('mDNS') + '<br />' +
+ 			_('User readable description of maker and model.'));
+ 		o.placeholder = 'HP Color LaserJet CP2025dn';

@@ -1,0 +1,19 @@
+# Out-of-feed packages, cloned into <openwrt-tree>/package/<name> at a pinned commit.
+# Used for packages whose repository is not a feed. Applied by tools/cw-release-build.sh;
+# the commit is verified after checkout, so the build fails rather than silently using
+# a different one.
+#
+# Format (whitespace-separated, one package per line):  <name> <git-url> <commit-sha>
+#
+# Repositories that keep the package in a <name>/ subdirectory (feed layout) are
+# installed from that subdirectory; ones with the Makefile at the repo root as a whole.
+
+# luci-app-cw-led: front-panel LED daemon and LuCI page, GPL-2.0-only
+luci-app-cw-led https://github.com/Pr0Luci/luci-app-cw-led.git f4bca47cc9c4b64bc6624787db9f42f1e4cfc4e3
+# luci-theme-apex: default LuCI theme, GPL-2.0-only with bundled OFL fonts
+luci-theme-apex https://github.com/Pr0Luci/luci-theme-apex.git 2d4b716c34bd82816e28d744fde5d4c12d56bf87
+
+# luci-app-homeproxy: HomeProxy LuCI app (ImmortalWrt), another proxy app on the same
+# cores the image already ships (sing-box). Single-package repo with the Makefile at
+# the root, so a local pin and not a feed. Ships DISABLED.
+luci-app-homeproxy https://github.com/immortalwrt/homeproxy.git 98a6ad9e71484528008ff435694fd107591f3a1d

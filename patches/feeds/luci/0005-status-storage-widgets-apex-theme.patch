@@ -1,0 +1,147 @@
+Status - Overview: render the Storage card as widgets when the Apex theme is
+active
+
+luci-theme-apex shows this Status card as widgets: one widget per mount (Disk
+space, Temp space and every extra mount the stock card lists). A theme cannot
+supply that markup hack-free: the card is rendered client-side by this include
+(owned by luci-mod-status; a second copy in the theme package would be an apk
+file conflict) from live ubus data (system.info and luci.getMountPoints), so
+the markup has to come from here.
+
+The theme in use is read on every render from L.env.media (set by the luci-base
+header template), so switching themes needs no reboot and no reload logic:
+  - Apex (/luci-static/apex): widgets (ax-sys-* / ax-mem-* classes, styled by the
+    theme's cascade.css; one section per metric with an h4 title, a percentage,
+    value / total and a role="meter"; all strings via _()).
+  - any other theme, or when the data is missing: the stock table below,
+    byte-identical to before (verified against the minified build; no extra request
+    on that path - the ubus calls are the same).
+Each widget shows used / free / total and the mount point with its device (the
+data carries no filesystem type). The skip list of the stock card (/rom, /tmp,
+/dev, /overlay, /) is kept for the extra mounts.
+
+Applies to: https://git.openwrt.org/project/luci.git
+            @ 350fc919675bb62e415927afff65697fcb8f775d (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh (patch -p1, zero fuzz - the build
+            fails if upstream changes these lines; re-port it then).
+Upstream status: not submitted (CleanWRT-specific).
+
+diff --git a/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/25_storage.js b/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/25_storage.js
+--- a/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/25_storage.js
++++ b/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/25_storage.js
+@@ -34,6 +34,101 @@ function progressbar(value, max, byte) {
+ 	}, E('div', { 'style': 'width:%.2f%%'.format(pc) }));
+ }
+ 
++/* CleanWRT: the Apex theme (luci-theme-apex) shows this card as widgets; every
++   other theme keeps the stock table below, unchanged. The theme is read on every
++   render from L.env.media (set by the luci-base header template). The ax-sys-* /
++   ax-mem-* classes are styled by the theme's cascade.css. */
++function isApexTheme() {
++	var media = String(L.env.media || '').replace(/\/+$/, '');
++
++	return media.slice(media.lastIndexOf('/') + 1) === 'apex';
++}
++
++function apexIcon(paths) {
++	return E('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
++		'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ' +
++		'focusable="false">' + paths + '</svg>');
++}
++
++/* header (icon, title, percentage), value / total, meter */
++function apexHead(id, icon, title, value, total) {
++	var pct = Math.floor(100 / total * value),
++	    frac = Math.max(0, Math.min(100, 100 / total * value)),
++	    fv = '%1024.2mB'.format(value),
++	    ft = '%1024.2mB'.format(total);
++
++	return [
++		E('header', { 'class': 'ax-sys-top' }, [
++			E('span', { 'class': 'ax-sys-ic' }, [ apexIcon(icon) ]),
++			E('h4', { 'class': 'ax-sys-t', 'id': id }, [ title ]),
++			E('span', { 'class': 'ax-mem-pct' }, [ '%d%%'.format(pct) ])
++		]),
++		E('p', { 'class': 'ax-mem-big' }, [
++			E('strong', {}, [ fv ]),
++			E('span', {}, [ '/ ' + ft ])
++		]),
++		E('span', {
++			'class': 'ax-sys-bar',
++			'role': 'meter',
++			'aria-labelledby': id,
++			'aria-valuemin': 0,
++			'aria-valuemax': total,
++			'aria-valuenow': value,
++			'aria-valuetext': '%s / %s (%d%%)'.format(fv, ft, pct)
++		}, [ E('i', { 'style': 'width:%.2f%%'.format(frac) }) ])
++	];
++}
++
++function apexStorageWidget(id, icon, title, used, size, mount) {
++	var free = Math.max(0, size - used);
++
++	return E('section', { 'class': 'ax-sys-w ax-mem-w', 'aria-labelledby': id },
++		apexHead(id, icon, title, used, size).concat([
++			E('dl', { 'class': 'ax-mem-stats' }, [
++				[ _('Used'), used ], [ _('Free'), free ], [ _('Total'), size ]
++			].map(function(p) {
++				return E('div', {}, [ E('dt', {}, [ p[0] ]), E('dd', {}, [ '%1024.2mB'.format(p[1]) ]) ]);
++			})),
++			mount ? E('p', { 'class': 'ax-mem-mnt' }, [ E('i', { 'aria-hidden': 'true' }), mount ]) : ''
++		]));
++}
++
++/* "mount point · device", e.g. "/tmp · tmpfs" */
++function apexMountLabel(mounts, wanted) {
++	for (var i = 0; i < wanted.length; i++)
++		for (var j = 0; j < mounts.length; j++)
++			if (mounts[j].mount == wanted[i])
++				return '%s · %s'.format(mounts[j].mount, mounts[j].device);
++
++	return null;
++}
++
++function renderApexStorage(root, tmp, mounts, skip) {
++	var list = Array.isArray(mounts) ? mounts : [],
++	    items = [];
++
++	if (root.total > 0)
++		items.push([ 'ax-st-root', '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 14h18M7 17h.01M11 17h.01"/>',
++			_('Disk space'), root.used * 1024, root.total * 1024, apexMountLabel(list, [ '/overlay', '/' ]) ]);
++
++	if (tmp.total > 0)
++		items.push([ 'ax-st-tmp', '<path d="M5 4h14v6H5zM5 10v10h14V10"/><path d="M9 14h6"/>',
++			_('Temp space'), tmp.used * 1024, tmp.total * 1024, apexMountLabel(list, [ '/tmp' ]) ]);
++
++	list.forEach(function(entry, i) {
++		if (skip.includes(entry.mount) || !(entry.size > 0))
++			return;
++
++		items.push([ 'ax-st-m' + i, '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 14h18M7 17h.01M11 17h.01"/>',
++			entry.device + ' (' + entry.mount + ')', entry.size - entry.free, entry.size,
++			'%s · %s'.format(entry.mount, entry.device) ]);
++	});
++
++	return items.length ? E('div', { 'class': 'ax-mem' }, items.map(function(i) {
++		return apexStorageWidget(i[0], i[1], i[2], i[3], i[4], i[5]);
++	})) : null;
++}
++
+ return baseclass.extend({
+ 	title: _('Storage'),
+ 
+@@ -50,6 +145,13 @@ return baseclass.extend({
+ 		    root = L.isObject(systeminfo.root) ? systeminfo.root : {},
+ 		    tmp = L.isObject(systeminfo.tmp) ? systeminfo.tmp : {};
+ 
++		if (isApexTheme()) {
++			var zy = renderApexStorage(root, tmp, mounts, MountSkipList);
++
++			if (zy)
++				return zy;
++		}
++
+ 		const existenceChk = function(fields, name, values) {
+ 			if (!fields.hasOwnProperty(name))
+ 				fields[name] = values;

@@ -1,0 +1,11 @@
+# Licence overrides for packages whose own Makefile declares no PKG_LICENSE.
+# Used ONLY when package metadata has no licence (it never replaces a declared one).
+# Every entry must cite verifiable evidence. Columns (TAB-separated): package, licence, evidence.
+# Evidence pins match feeds.conf.default / the OpenWrt v25.12.5 tree; re-check when a pin moves.
+luci-app-passwall2	GPL-3.0	package Makefile comment "licensed under the GNU General Public License v3" + repo LICENSE (GPLv3 text) @ passwall2 426571850958
+luci-app-3ginfo-lite	GPL-3.0	package Makefile comment "Licensed to the GNU General Public License v3.0" @ 3ginfo cbc144e527b0 (upstream repo has no LICENSE file)
+qmodem	MPL-2.0 + non-commercial clause (see NOTICE.md)	FUjr/QModem repo LICENSE @ f15cc8fe6414 (MPL-2.0 text plus an added commercial-use prohibition); its luci-app-* Makefiles declare GPLv3
+kmod-qmi_wwan_q	GPL-2.0	MODULE_LICENSE("GPL") in driver/quectel_QMI_WWAN/src/qmi_wwan_q.c @ qmodem f15cc8fe6414
+kmod-qmi_wwan_f	GPL-2.0	MODULE_LICENSE("GPL") in driver/fibocom_QMI_WWAN/src/qmi_wwan_f.c @ qmodem f15cc8fe6414
+kmod-qmi_wwan_s	GPL-2.0	MODULE_LICENSE("GPL") in driver/simcom_QMI_WWAN/src/qmi_wwan_s.c @ qmodem f15cc8fe6414
+ath11k-firmware-ipq8074	Qualcomm Atheros firmware licence (LICENSE.qca_firmware)	package/firmware/ath11k-firmware/Makefile: PKG_LICENSE_FILES:=LICENSE.qca_firmware (OpenWrt v25.12.5); the package declares the licence file, not an SPDX id

@@ -1,0 +1,11 @@
+{
+	"luci-app-syncthing": {
+		"description": "Grant access to the Syncthing on/off switch",
+		"read": {
+			"uci": [ "syncthing" ]
+		},
+		"write": {
+			"uci": [ "syncthing" ]
+		}
+	}
+}

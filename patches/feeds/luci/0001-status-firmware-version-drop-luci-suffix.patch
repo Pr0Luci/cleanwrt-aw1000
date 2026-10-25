@@ -1,0 +1,28 @@
+Drop the LuCI suffix from the Status - Overview "Firmware Version" line
+
+The pinned luci feed checkout is in detached-HEAD state, so the LuCI build
+stamps the git describe ("LuCI (HEAD detached at 128a7812) branch ...")
+into the version modules and the status page renders it after the release
+description. CleanWRT renders the release description alone:
+"CleanWRT <version> <date>". The luci JS is MINIFIED at package build
+time, so patching this readable source line is what removes the suffix
+from the shipped minified file (validated against the built form on the
+device). The luci identity stays visible in the page footer, the login
+footer and `ubus call luci getVersion` via the version.lua / version.uc
+overlays (files/usr/...), labelled "LuCI 25.12.5".
+
+Applies to: https://git.openwrt.org/project/luci.git
+            @ 350fc919675bb62e415927afff65697fcb8f775d (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh (patch -p1, zero fuzz - the build
+            fails if upstream changes this line; re-port it then).
+Upstream status: not submitted (CleanWRT-specific branding).
+
+--- a/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
++++ b/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
+@@ -68,5 +68,5 @@
+ 			_('Architecture'),     boardinfo.system,
+ 			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
+-			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
++			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description : ''),
+ 			_('Kernel Version'),   boardinfo.kernel,
+ 			_('Local Time'),       datestr,

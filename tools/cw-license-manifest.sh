@@ -1,0 +1,113 @@
+#!/bin/sh
+# cw-license-manifest.sh - per-package licence manifest for a built CleanWRT image.
+#
+# Default mode reads the licence recorded inside each package that is really in
+# the image: the image manifest lists the packages, and every built .apk carries
+# a `license:` field (derived from the package's PKG_LICENSE). This is what ships,
+# including ABI-suffixed library packages (libcurl4, ...).
+#
+# Usage (run on the build host, after a build):
+#   tools/cw-license-manifest.sh <openwrt-tree> [--manifest <file>] [--from-config] [--strict]
+#
+#   --manifest <file>  image package list (default: the single
+#                      <tree>/bin/targets/*/*/*.manifest). One package per line,
+#                      "<name> - <version>".
+#   --from-config      no image yet: use the packages selected as =y in <tree>/.config and
+#                      the licence from <tree>/tmp/.packageinfo (approximate - a selection,
+#                      not the final image content; library ABI names will not match).
+#   --strict           exit 1 if any package still has no licence after overrides.
+#
+# Packages that carry no licence can be resolved through
+# configs/license-overrides.tsv (package<TAB>licence<TAB>evidence). An override is
+# only used when the package declares nothing, and is marked with a dagger.
+# Anything still unresolved is listed as UNKNOWN - never guessed.
+set -eu
+
+usage() { sed -n '2,24p' "$0" >&2; exit 2; }
+
+TAB="$(printf '\t')"
+TREE="${1:-}"; [ -n "$TREE" ] || usage
+shift
+MANIFEST=""; FROM_CONFIG=0; STRICT=0
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --manifest)    MANIFEST="${2:?--manifest needs a file}"; shift 2 ;;
+        --from-config) FROM_CONFIG=1; shift ;;
+        --strict)      STRICT=1; shift ;;
+        *) usage ;;
+    esac
+done
+
+WORK=$(mktemp -d); trap 'rm -rf "$WORK"' EXIT
+
+if [ "$FROM_CONFIG" -eq 1 ]; then
+    INFO="$TREE/tmp/.packageinfo"
+    [ -f "$INFO" ] || { echo "ERROR: $INFO not found (run 'make defconfig' in the tree first)" >&2; exit 1; }
+    [ -f "$TREE/.config" ] || { echo "ERROR: $TREE/.config not found" >&2; exit 1; }
+    # Skip Kconfig option symbols (ATH_DFS, TAR_GZIP, ...): upper-case, not packages.
+    sed -n 's/^CONFIG_PACKAGE_\(.*\)=y$/\1\t-/p' "$TREE/.config" \
+        | grep -v -E '^[A-Z0-9_]+\t' | sort -u > "$WORK/pkgs.tsv"
+    # .packageinfo -> name, licence, feed
+    awk '
+        /^Package: /    { name=substr($0,10); lic=""; repo="" }
+        /^Repository: / { repo=substr($0,13) }
+        /^License: /    { lic=substr($0,10) }
+        /^@@$/          { if (name!="") print name "\t" (lic==""?"UNKNOWN":lic) "\t" (repo==""?"base":repo); name="" }
+    ' "$INFO" | sort -u -t "$TAB" -k1,1 > "$WORK/lic.tsv"
+    join -t "$TAB" -a1 -e '?' -o '0,1.2,2.2,2.3' "$WORK/pkgs.tsv" "$WORK/lic.tsv" > "$WORK/joined.tsv"
+    SOURCE_NOTE="selected in .config (approximate; not the final image content)"
+else
+    if [ -z "$MANIFEST" ]; then
+        set -- "$TREE"/bin/targets/*/*/*.manifest
+        [ $# -eq 1 ] && [ -f "$1" ] || { echo "ERROR: expected exactly one *.manifest under $TREE/bin/targets; pass --manifest" >&2; exit 1; }
+        MANIFEST="$1"
+    fi
+    [ -f "$MANIFEST" ] || { echo "ERROR: $MANIFEST not found" >&2; exit 1; }
+    APK="$TREE/staging_dir/host/bin/apk"
+    [ -x "$APK" ] || { echo "ERROR: $APK not found (host apk tool is built with the tree)" >&2; exit 1; }
+
+    awk 'NF { n=$1; v=$NF; if (NF==1) v="-"; print n "\t" v }' "$MANIFEST" | sort -u > "$WORK/pkgs.tsv"
+    find "$TREE/bin" -name '*.apk' > "$WORK/apks.txt"
+    : > "$WORK/joined.tsv"
+    while IFS="$TAB" read -r name ver; do
+        f=$(awk -F/ -v t="${name}-${ver}.apk" '$NF==t { print; exit }' "$WORK/apks.txt")
+        if [ -z "$f" ]; then
+            printf '%s\t%s\t?\t(apk not found)\n' "$name" "$ver" >> "$WORK/joined.tsv"
+            continue
+        fi
+        # adbdump "info:" block: "  license: <spdx or text>", "  origin: <source dir>"
+        meta=$("$APK" adbdump --allow-untrusted "$f" 2>/dev/null | awk '
+            /^  license: / { sub(/^  license: /, ""); lic=$0 }
+            /^  origin: /  { sub(/^  origin: /, "");  org=$0 }
+            END { printf "%s\t%s", (lic==""?"UNKNOWN":lic), org }')
+        printf '%s\t%s\t%s\n' "$name" "$ver" "$meta" >> "$WORK/joined.tsv"
+    done < "$WORK/pkgs.tsv"
+    SOURCE_NOTE="image manifest $(basename "$MANIFEST"), licence read from each package's .apk"
+fi
+
+# Apply evidence-backed overrides, only where the package declares no licence.
+OVR="$(dirname "$0")/../configs/license-overrides.tsv"
+[ -f "$OVR" ] || OVR=/dev/null
+awk -F'\t' '
+    FNR==NR { if ($0 !~ /^#/ && NF>=3) ovr[$1]=$2; next }
+    { if (($3=="UNKNOWN" || $3=="?") && ($1 in ovr)) { $3=ovr[$1] " \342\200\240" } print }
+' OFS='\t' "$OVR" "$WORK/joined.tsv" > "$WORK/final.tsv"
+
+total=$(wc -l < "$WORK/final.tsv" | tr -d ' ')
+unknown=$(awk -F'\t' '$3=="UNKNOWN" || $3=="?"' "$WORK/final.tsv" | wc -l | tr -d ' ')
+
+{
+    echo "# CleanWRT - package licence manifest"
+    echo
+    echo "Generated by \`tools/cw-license-manifest.sh\`. Package list: ${SOURCE_NOTE}."
+    echo
+    echo "| Package | Version | Licence | Source |"
+    echo "|---|---|---|---|"
+    awk -F'\t' '{ l=$3; s=$4; if (l=="?") { l="UNKNOWN" } print "| " $1 " | " $2 " | " l " | " s " |" }' "$WORK/final.tsv"
+    echo
+    echo "† licence taken from \`configs/license-overrides.tsv\` (the package declares none); evidence is recorded there."
+}
+
+echo "cw-license-manifest: ${total} packages, ${unknown} with no declared licence (UNKNOWN)" >&2
+if [ "$STRICT" -eq 1 ] && [ "$unknown" -gt 0 ]; then exit 1; fi
+exit 0

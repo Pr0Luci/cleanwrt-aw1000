@@ -1,0 +1,7 @@
+# signing material: never commit
+keys-release/
+private-key.pem
+key-build
+key-build.ucert
+*.key
+.DS_Store

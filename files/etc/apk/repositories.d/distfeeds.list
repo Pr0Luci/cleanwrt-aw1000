@@ -1,0 +1,24 @@
+# CleanWRT distfeeds override: official OpenWrt 25.12.5 repositories only.
+#
+# The build adds one entry per configured feed, including the community feeds
+# (qmodem, passwall_packages, passwall2, 3ginfo) which have no published package
+# index. Those entries point at downloads.openwrt.org and make `apk update` fail
+# out of the box on every device. This overlay replaces the generated distfeeds.list
+# with the official entries only, so package management works from first boot.
+#
+# The community packages (Passwall2, QModem, 3ginfo-lite) are bundled in the image at
+# the pinned commits. The CleanWRT package index is the separate, disabled
+# cw-opt.list.disabled in this directory.
+#
+# These URLs are valid for OpenWrt v25.12.5 exactly (the release script hard-gates the
+# tree at this tag). When bumping OPENWRT_TAG, regenerate:
+#   - the <version> path segments
+#   - the kmods vermagic directory (kernel <ver>-<rel>-<vermagic>): copy it from
+#     bin/targets/qualcommax/ipq807x/ after a build.
+https://downloads.openwrt.org/releases/25.12.5/targets/qualcommax/ipq807x/packages/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_cortex-a53/base/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/targets/qualcommax/ipq807x/kmods/6.12.94-1-dbd7ac5945a1d38dbc7f22bedd674e40/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_cortex-a53/packages/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_cortex-a53/luci/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_cortex-a53/routing/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_cortex-a53/telephony/packages.adb

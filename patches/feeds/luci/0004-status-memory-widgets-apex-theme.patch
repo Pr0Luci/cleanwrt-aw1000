@@ -1,0 +1,141 @@
+Status - Overview: render the Memory card as widgets when the Apex theme is
+active
+
+luci-theme-apex shows this Status card as widgets: one widget per metric
+(Total Available, Used, Cached, Buffered, Swap free). A theme cannot supply
+that markup hack-free: the card is rendered client-side by this include (owned
+by luci-mod-status; a second copy in the theme package would be an apk file
+conflict) from live ubus data (system.info), so the markup has to come from
+here.
+
+The theme in use is read on every render from L.env.media (set by the luci-base
+header template), so switching themes needs no reboot and no reload logic:
+  - Apex (/luci-static/apex): widgets (ax-sys-* / ax-mem-* classes, styled by the
+    theme's cascade.css; one section per metric with an h4 title, a percentage,
+    value / total and a role="meter"; all strings via _()).
+  - any other theme, or when the data is missing: the stock table below,
+    byte-identical to before (verified against the minified build; no extra request
+    on that path - the ubus calls are the same).
+Percentages use the stock floor(); the optional metrics (cached, buffered,
+swap) appear only when the stock card shows them too. Captions are static per
+metric.
+
+Applies to: https://git.openwrt.org/project/luci.git
+            @ 350fc919675bb62e415927afff65697fcb8f775d (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh (patch -p1, zero fuzz - the build
+            fails if upstream changes these lines; re-port it then).
+Upstream status: not submitted (CleanWRT-specific).
+
+diff --git a/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/20_memory.js b/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/20_memory.js
+--- a/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/20_memory.js
++++ b/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/20_memory.js
+@@ -20,6 +20,95 @@ function progressbar(value, max, byte) {
+ 	}, E('div', { 'style': 'width:%.2f%%'.format(pc) }));
+ }
+ 
++/* CleanWRT: the Apex theme (luci-theme-apex) shows this card as widgets; every
++   other theme keeps the stock table below, unchanged. The theme is read on every
++   render from L.env.media (set by the luci-base header template). The ax-sys-* /
++   ax-mem-* classes are styled by the theme's cascade.css. */
++function isApexTheme() {
++	var media = String(L.env.media || '').replace(/\/+$/, '');
++
++	return media.slice(media.lastIndexOf('/') + 1) === 'apex';
++}
++
++function apexIcon(paths) {
++	return E('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
++		'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ' +
++		'focusable="false">' + paths + '</svg>');
++}
++
++/* header (icon, title, percentage), value / total, meter */
++function apexHead(id, icon, title, value, total) {
++	var pct = Math.floor(100 / total * value),
++	    frac = Math.max(0, Math.min(100, 100 / total * value)),
++	    fv = '%1024.2mB'.format(value),
++	    ft = '%1024.2mB'.format(total);
++
++	return [
++		E('header', { 'class': 'ax-sys-top' }, [
++			E('span', { 'class': 'ax-sys-ic' }, [ apexIcon(icon) ]),
++			E('h4', { 'class': 'ax-sys-t', 'id': id }, [ title ]),
++			E('span', { 'class': 'ax-mem-pct' }, [ '%d%%'.format(pct) ])
++		]),
++		E('p', { 'class': 'ax-mem-big' }, [
++			E('strong', {}, [ fv ]),
++			E('span', {}, [ '/ ' + ft ])
++		]),
++		E('span', {
++			'class': 'ax-sys-bar',
++			'role': 'meter',
++			'aria-labelledby': id,
++			'aria-valuemin': 0,
++			'aria-valuemax': total,
++			'aria-valuenow': value,
++			'aria-valuetext': '%s / %s (%d%%)'.format(fv, ft, pct)
++		}, [ E('i', { 'style': 'width:%.2f%%'.format(frac) }) ])
++	];
++}
++
++function apexMemWidget(id, icon, title, value, total, caption) {
++	return E('section', { 'class': 'ax-sys-w ax-mem-w', 'aria-labelledby': id },
++		apexHead(id, icon, title, value, total).concat([
++			E('p', { 'class': 'ax-mem-of' }, [
++				E('span', {}, [ caption ]),
++				E('b', {}, [ _('of %s').format('%1024.2mB'.format(total)) ])
++			])
++		]));
++}
++
++function renderApexMemory(mem, swap) {
++	var items = [];
++
++	if (!(mem.total > 0))
++		return null;
++
++	var available = (mem.available) ? mem.available : (mem.total && mem.free && mem.buffered) ? mem.free + mem.buffered : null,
++	    used = (mem.total && mem.free) ? (mem.total - mem.free) : null;
++
++	if (available != null)
++		items.push([ 'ax-mem-av', '<rect x="4" y="7" width="16" height="10" rx="1"/><path d="M8 7v10M12 7v10M16 7v10M7 20h2M15 20h2"/>',
++			_('Total Available'), available, mem.total, _('free + reclaimable') ]);
++
++	if (used != null)
++		items.push([ 'ax-mem-us', '<path d="M4 20V9M10 20V4M16 20v-8M22 20H2"/>',
++			_('Used'), used, mem.total, _('in use') ]);
++
++	if (mem.cached)
++		items.push([ 'ax-mem-ca', '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
++			_('Cached'), mem.cached, mem.total, _('page cache') ]);
++
++	if (mem.buffered)
++		items.push([ 'ax-mem-bf', '<path d="M4 7h16M4 12h16M4 17h10"/>',
++			_('Buffered'), mem.buffered, mem.total, _('block buffers') ]);
++
++	if (swap.total > 0)
++		items.push([ 'ax-mem-sw', '<path d="M4 12a8 8 0 0 1 14-5l2-2v6h-6l2-2a5 5 0 1 0 1 5"/>',
++			_('Swap free'), swap.free, swap.total, (swap.free == swap.total) ? _('fully available') : _('free swap') ]);
++
++	return items.length ? E('div', { 'class': 'ax-mem' }, items.map(function(i) {
++		return apexMemWidget(i[0], i[1], i[2], i[3], i[4], i[5]);
++	})) : null;
++}
++
+ return baseclass.extend({
+ 	title: _('Memory'),
+ 
+@@ -31,6 +120,13 @@ return baseclass.extend({
+ 		var mem = L.isObject(systeminfo.memory) ? systeminfo.memory : {},
+ 		    swap = L.isObject(systeminfo.swap) ? systeminfo.swap : {};
+ 
++		if (isApexTheme()) {
++			var zy = renderApexMemory(mem, swap);
++
++			if (zy)
++				return zy;
++		}
++
+ 		var fields = [
+ 			_('Total Available'), (mem.available) ? mem.available : (mem.total && mem.free && mem.buffered) ? mem.free + mem.buffered : null, mem.total,
+ 			_('Used'),            (mem.total && mem.free) ? (mem.total - mem.free) : null, mem.total,

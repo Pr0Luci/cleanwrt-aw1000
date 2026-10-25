@@ -1,0 +1,224 @@
+Status - Overview: render the System card as widgets when the Apex theme is active
+
+luci-theme-apex shows the System card as four grouped widgets (Hardware,
+Software, Time, Load Average) instead of the stock nine-row table. A theme cannot
+supply that markup hack-free: the card is rendered client-side by this include
+(owned by luci-mod-status; a second copy in the theme package would be an apk
+file conflict) from live ubus data, so the markup has to come from here.
+
+The theme in use is read on every render from L.env.media (set by the luci-base
+header template), so switching themes needs no reboot and no reload logic:
+  - Apex (/luci-static/apex): widgets (ax-sys-* classes, styled by the theme's
+    cascade.css; semantic dl/dt/dd + h4 + role="meter"; all strings via _()).
+  - any other theme: the stock table below, byte-identical to before (verified
+    against the minified build; no extra request on that path).
+Load bars are the load per CPU (1.00 = every core busy, clamped); the exact load
+is always printed. The CPU count is read once per page load from
+/sys/devices/system/cpu/online (ACL: patch 0003) and cached; if unreadable it
+falls back to 1 CPU. "Firmware Version" stays the 0001 behaviour (release
+description only); the LuCI revision is its own row. Local Time is shown as
+YYYY-MM-DD HH:MM:SS in the router's configured time zone (24 h unless the system
+hour-cycle setting says otherwise; "UTC" is appended when no zone is configured);
+the stock path keeps its own formatter.
+
+Applies to: https://git.openwrt.org/project/luci.git
+            @ 350fc919675bb62e415927afff65697fcb8f775d (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh (patch -p1, zero fuzz - the build
+            fails if upstream changes these lines; re-port it then). Applies
+            on top of 0001 (filename order).
+Upstream status: not submitted (CleanWRT-specific).
+
+diff --git a/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js b/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
+--- a/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
++++ b/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
+@@ -25,6 +25,150 @@ var callSystemInfo = rpc.declare({
+ 	method: 'info'
+ });
+ 
++/* CleanWRT: the Apex theme (luci-theme-apex) shows this card as grouped
++   widgets. Every other theme keeps the stock table below, unchanged. The
++   theme is read on every render from L.env.media (set by the core header
++   template), so switching themes needs no reload logic here. The ax-sys-*
++   classes are styled by the theme's cascade.css. */
++var apexCpuCount = null;
++
++function isApexTheme() {
++	var media = String(L.env.media || '').replace(/\/+$/, '');
++
++	return media.slice(media.lastIndexOf('/') + 1) === 'apex';
++}
++
++/* CPU count from the kernel's "online" list ("0-3", "0,2-3", ...) */
++function parseCpuList(list) {
++	var n = 0;
++
++	String(list || '').trim().split(',').forEach(function(part) {
++		var m = part.match(/^(\d+)(?:-(\d+))?$/);
++
++		if (m)
++			n += m[2] ? (+m[2] - +m[1] + 1) : 1;
++	});
++
++	return n;
++}
++
++/* "YYYY-MM-DD HH:MM:SS" in the router's configured time zone (the stock card
++   uses a locale-dependent long format); the system "hour cycle" setting is
++   honoured (AM/PM kept in 12 h modes), the default is 24 h. Latin digits
++   regardless of the browser locale. */
++function apexDateTime(unixtime, zone, hourcycle) {
++	var p = {};
++
++	new Intl.DateTimeFormat('en-US', {
++		year: 'numeric', month: '2-digit', day: '2-digit',
++		hour: '2-digit', minute: '2-digit', second: '2-digit',
++		hourCycle: hourcycle || 'h23',
++		timeZone: zone
++	}).formatToParts(new Date(unixtime * 1000)).forEach(function(part) {
++		p[part.type] = part.value;
++	});
++
++	return '%s-%s-%s %s:%s:%s'.format(p.year, p.month, p.day, p.hour, p.minute, p.second) +
++		(p.dayPeriod ? ' ' + p.dayPeriod : '');
++}
++
++function apexIcon(paths) {
++	return E('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
++		'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ' +
++		'focusable="false">' + paths + '</svg>');
++}
++
++function apexWidget(id, icon, title, body) {
++	return E('section', { 'class': 'ax-sys-w', 'aria-labelledby': id }, [
++		E('header', { 'class': 'ax-sys-top' }, [
++			E('span', { 'class': 'ax-sys-ic' }, [ apexIcon(icon) ]),
++			E('h4', { 'class': 'ax-sys-t', 'id': id }, [ title ])
++		]),
++		body
++	]);
++}
++
++function apexRows(pairs) {
++	return E('dl', { 'class': 'ax-sys-dl' }, pairs.map(function(p) {
++		return E('div', { 'class': 'ax-sys-r' }, [
++			E('dt', {}, [ p[0] ]),
++			E('dd', {}, [ (p[1] != null && p[1] !== '') ? p[1] : '?' ])
++		]);
++	}));
++}
++
++function apexUptime(seconds) {
++	return _('%dd %02dh %02dm').format(
++		Math.floor(seconds / 86400),
++		Math.floor(seconds % 86400 / 3600),
++		Math.floor(seconds % 3600 / 60));
++}
++
++/* the bar is the load per CPU (1.00 = every core busy), clamped to the track;
++   the exact load is always shown as text */
++function apexLoadRow(label, load, cpus) {
++	var pct = Math.round(Math.min(1, load / cpus) * 100);
++
++	return E('li', { 'class': 'ax-sys-lr' }, [
++		E('span', { 'class': 'ax-sys-lk' }, [ label ]),
++		E('span', {
++			'class': 'ax-sys-bar',
++			'role': 'meter',
++			'aria-label': _('Load average, %s').format(label),
++			'aria-valuemin': 0,
++			'aria-valuemax': 100,
++			'aria-valuenow': pct,
++			'aria-valuetext': _('%.2f (%d percent of CPU capacity)').format(load, pct)
++		}, [ E('i', { 'style': 'width:%d%%'.format(pct) }) ]),
++		E('b', { 'class': 'ax-sys-lv' }, [ '%.2f'.format(load) ])
++	]);
++}
++
++function renderApexWidgets(v) {
++	var load = Array.isArray(v.systeminfo.load) ? v.systeminfo.load.map(function(l) {
++		return l / 65535.0;
++	}) : null;
++
++	return E('div', { 'class': 'ax-sys' }, [
++		E('div', { 'class': 'ax-sys-row' }, [
++			apexWidget('ax-sys-hw',
++				'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M9 9h6v6H9zM9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>',
++				_('Hardware'), apexRows([
++					[ _('Hostname'),        v.boardinfo.hostname ],
++					[ _('Model'),           v.boardinfo.model ],
++					[ _('Architecture'),    v.boardinfo.system ],
++					[ _('Target Platform'), L.isObject(v.boardinfo.release) ? v.boardinfo.release.target : '' ]
++				])),
++			apexWidget('ax-sys-sw',
++				'<path d="M8 6l-5 6 5 6M16 6l5 6-5 6"/>',
++				_('Software'), apexRows([
++					[ _('Firmware Version'), L.isObject(v.boardinfo.release) ? v.boardinfo.release.description : '' ],
++					[ _('LuCI'),             v.lucirevision ],
++					[ _('Kernel Version'),   v.boardinfo.kernel ]
++				]))
++		]),
++		E('div', { 'class': 'ax-sys-row' }, [
++			apexWidget('ax-sys-tm',
++				'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
++				_('Time'), E([
++					E('p', { 'class': 'ax-sys-up' }, [
++						E('strong', {}, [ v.systeminfo.uptime ? apexUptime(v.systeminfo.uptime) : '?' ]),
++						' ',
++						E('span', {}, [ _('uptime') ])
++					]),
++					apexRows([ [ _('Local Time'), v.datestr ] ])
++				])),
++			apexWidget('ax-sys-ld',
++				'<path d="M4 20V9M10 20V4M16 20v-8M22 20H2"/>',
++				_('Load Average'), load ? E('ul', { 'class': 'ax-sys-ld' }, [
++					apexLoadRow(_('1 min'),  load[0], v.cpus),
++					apexLoadRow(_('5 min'),  load[1], v.cpus),
++					apexLoadRow(_('15 min'), load[2], v.cpus)
++				]) : E('p', { 'class': 'ax-sys-na' }, [ '?' ]))
++		])
++	]);
++}
++
+ return baseclass.extend({
+ 	title: _('System'),
+ 
+@@ -34,7 +178,8 @@ return baseclass.extend({
+ 			L.resolveDefault(callSystemInfo(), {}),
+ 			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' }),
+ 			L.resolveDefault(callGetUnixtime(), 0),
+-			uci.load('system')
++			uci.load('system'),
++			(isApexTheme() && apexCpuCount == null) ? L.resolveDefault(fs.read('/sys/devices/system/cpu/online'), '') : null
+ 		]);
+ 	},
+ 
+@@ -44,6 +189,8 @@ return baseclass.extend({
+ 		    luciversion = data[2],
+ 		    unixtime    = data[3];
+ 
++		var lucirevision = luciversion.revision;
++
+ 		luciversion = luciversion.branch + ' ' + luciversion.revision;
+ 
+ 		var datestr = null;
+@@ -62,6 +209,20 @@ return baseclass.extend({
+ 			}).format(date);
+ 		}
+ 
++		if (isApexTheme()) {
++			if (apexCpuCount == null)
++				apexCpuCount = parseCpuList(data[5]) || 1;
++
++			return renderApexWidgets({
++				boardinfo: boardinfo,
++				systeminfo: systeminfo,
++				lucirevision: lucirevision,
++				datestr: unixtime ? apexDateTime(unixtime, zn, (hc == 0) ? undefined : hc) +
++					(uci.get('system', '@system[0]', 'zonename') ? '' : ' UTC') : null,
++				cpus: apexCpuCount
++			});
++		}
++
+ 		var fields = [
+ 			_('Hostname'),         boardinfo.hostname,
+ 			_('Model'),            boardinfo.model,

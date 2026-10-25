@@ -1,0 +1,69 @@
+#!/bin/sh
+# cw-adguard-enable-bridge - make the adguardhome init honour the LuCI app's
+# Enable checkbox (adguardhome.config.enabled, default 0 = opt-in).
+#
+# luci-app-adguardhome's form.Map writes `enabled`, but the init shipped by the
+# adguardhome package never reads it, so the checkbox starts/stops nothing.
+# This inserts an `enabled` check right after `config_load 'adguardhome'` in
+# start_service(). Used by the package postinst and by the first-boot
+# 97-cw-adguard-enable-bridge (one copy of the logic, kept in a real
+# shell file so no Makefile escaping can corrupt it).
+#
+# Safety: the live init is never edited in place. The patched copy is written
+# to a temp file, checked, then moved over the init (same filesystem, atomic).
+# Exit: 0 = patched, already patched, or nothing to patch; 1 = patch failed,
+# init left unchanged (the caller reports it; uci-defaults retries next boot).
+#
+# Usage: cw-adguard-enable-bridge [<init-path>]   (default /etc/init.d/adguardhome)
+
+INIT="${1:-/etc/init.d/adguardhome}"
+TAG=cw-adguard
+
+log() { logger -t "$TAG" "$*" 2>/dev/null; echo "$TAG: $*" >&2; }
+
+[ -f "$INIT" ] || exit 0                              # adguardhome not installed
+grep -q 'config_get_bool enabled' "$INIT" && exit 0   # already patched
+
+if ! grep -q "^	config_load 'adguardhome'\$" "$INIT"; then
+	log "enable bridge: anchor \"config_load 'adguardhome'\" not found in $INIT - upstream layout changed, init left unchanged"
+	exit 0
+fi
+
+tmp="$INIT.cw-new.$$"
+trap 'rm -f "$tmp"' EXIT
+
+if ! awk '
+	{ print }
+	/^	config_load \x27adguardhome\x27$/ {
+		print "\t# Honor the LuCI app (form.Map) Enable checkbox;"
+		print "\t# without this the box starts/stops nothing even after Apply."
+		print "\tlocal enabled"
+		print "\tconfig_get_bool enabled \x27config\x27 enabled 0"
+		print "\t[ \"$enabled\" = 1 ] || {"
+		print "\t\techo \"AdGuard Home: Enable unchecked in LuCI - not starting\" >&2"
+		print "\t\treturn 1"
+		print "\t}"
+	}
+' "$INIT" > "$tmp"; then
+	log "enable bridge: awk failed on $INIT - init left unchanged"
+	exit 1
+fi
+
+# The result must be the original plus the inserted block, and valid shell.
+if ! grep -q 'config_get_bool enabled' "$tmp" ||
+   [ "$(wc -l < "$tmp")" -le "$(wc -l < "$INIT")" ] ||
+   ! sh -n "$tmp" 2>/dev/null; then
+	log "enable bridge: patched copy failed verification - init left unchanged"
+	exit 1
+fi
+
+if ! cp -p "$INIT" "$INIT.cw-orig"; then
+	log "enable bridge: cannot back up $INIT - init left unchanged"
+	exit 1
+fi
+if ! chmod 0755 "$tmp" || ! mv -f "$tmp" "$INIT"; then
+	log "enable bridge: cannot install patched init - init left unchanged"
+	exit 1
+fi
+log "enable bridge: applied to $INIT (backup $INIT.cw-orig)"
+exit 0

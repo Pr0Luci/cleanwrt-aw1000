@@ -1,0 +1,63 @@
+#!/bin/sh
+# First-boot defaults for CleanWRT (Arcadyan AW1000).
+#
+# PUBLIC-RELEASE posture - stock-OpenWrt style (replacing the earlier
+# random-password design, whose out-of-band delivery was impossible):
+#   - root password UNSET, exactly like stock OpenWrt: the first login happens
+#     over ETHERNET (LuCI or SSH, no password) and LuCI prompts to set one.
+#     Do not expose the admin interface to an untrusted network before that.
+#   - WiFi ships ON (5G-router hotspot UX) with the branded DEFAULT key
+#     "CleanWRT#40" (documented in the README; a random key was
+#     undiscoverable for normal users). Change
+#     it on first login; keep-settings upgrades never overwrite your own key.
+#   - All NAS/download/VPN services ship disabled through their shipped config
+#     (enabled '0'); the LuCI Enable box is the only switch.
+# On keep-settings upgrades the existing wireless config is preserved as-is -
+# your own WiFi key is never regenerated.
+
+# ── System ───────────────────────────────────────────────────────────────────
+uci set system.@system[0].hostname='CleanWRT'
+uci set system.@system[0].timezone='UTC'
+uci set system.@system[0].log_size='64'
+uci commit system
+
+# ── Access: stock posture - password auth ON with an UNSET password ──────────
+# (LuCI + SSH log in with no password over the LAN until you set one;
+#  LuCI shows the "no password set" prompt on first login.)
+uci set dropbear.@dropbear[0].PasswordAuth='on'
+uci set dropbear.@dropbear[0].RootPasswordAuth='on'
+uci commit dropbear
+
+# ── WiFi - branded SSIDs, WPA2-PSK with the branded default key ──────────────
+# Regulatory domain is NOT hardcoded - it is set at runtime from the cellular
+# network's MCC (see /etc/hotplug.d/iface/99-cw-regdom), so one image is legal
+# in any market. Until the modem registers, the regdom stays at the OpenWrt
+# default (00 = world, conservative).
+CW_WIFI_KEY='CleanWRT#40'
+key_already_set=0
+if [ -n "$(uci -q get wireless.@wifi-iface[0].key)" ]; then
+    key_already_set=1
+fi
+
+for radio in $(uci show wireless | sed -n "s/^wireless\.\([^.=]*\)=wifi-device.*/\1/p"); do
+    band=$(uci get wireless."$radio".band 2>/dev/null)
+    iface=$(uci show wireless | grep "device='$radio'" | head -1 | cut -d. -f1-2)
+    uci set wireless."$radio".disabled='0'
+    [ -z "$iface" ] && continue
+    uci set "$iface.disabled"='0'
+    case "$band" in
+        2g) uci set "$iface.ssid"='CleanWRT-2.4G' ;;
+        5g) uci set "$iface.ssid"='CleanWRT-5G' ;;
+        6g) uci set "$iface.ssid"='CleanWRT-6G' ;;
+        *)  uci set "$iface.ssid"='CleanWRT' ;;
+    esac
+    # psk2 = WPA2-PSK: the WPA2/WPA3 sae-mixed transition mode failed to
+    # associate on some client devices. Revisit WPA3 after a
+    # client-compatibility pass.
+    uci set "$iface.encryption"='psk2'
+    [ "$key_already_set" = "1" ] || uci set "$iface.key"="$CW_WIFI_KEY"
+done
+uci commit wireless
+
+logger -t cw-firstboot "first-boot defaults applied (stock-style access; default WiFi key CleanWRT#40$([ "$key_already_set" = 1 ] && echo ' - existing config preserved'))"
+exit 0

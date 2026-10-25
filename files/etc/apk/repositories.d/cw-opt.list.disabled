@@ -1,0 +1,13 @@
+# cw-opt: CleanWRT binary feed for what the official OpenWrt repositories do not
+# carry (the qBittorrent stack and AdGuard Home, both also baked into the image, and
+# on-demand apps such as OpenClash). Hosted at
+# https://pr0luci.github.io/cleanwrt-aw1000/feed/
+#
+# This file is NOT active: apk only reads repositories.d/*.list. To enable the feed:
+#   1. build once so the tree creates its apk signing key (<tree>/private-key.pem)
+#   2. copy the public half to files/etc/apk/keys/public-key.pem
+#      (tools/cw-check-release-keys.sh compares the two)
+#   3. publish the index first (tools/cw-publish-feed.sh): an image that carries a
+#      dead feed entry breaks `apk update` on every device
+#   4. rename this file to cw-opt.list and rebuild the image
+https://pr0luci.github.io/cleanwrt-aw1000/feed/packages.adb

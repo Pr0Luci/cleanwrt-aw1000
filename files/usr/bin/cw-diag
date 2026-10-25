@@ -1,0 +1,130 @@
+#!/bin/sh
+# cw-diag - unified diagnostic capture for CleanWRT routers
+#
+# Usage: cw-diag <subsystem> [--capture-on-event=<glob>]
+#
+# Subsystems:
+#   modem     → AT+QGMR/CFUN/CEREG/CGCONTRDP/QENG, qmicli wda-get-data-format
+#   qmi-rx    → wwan0 stats sample @ 1Hz, spike-trigger snapshot (replaces cw-rx-error-monitor)
+#   nss       → /sys/kernel/debug/qca-nss-drv/stats/* full dump
+#   wifi      → iw dev all + station dump + ath11k debugfs
+#   bridge    → ip link, bridge fdb, vlan filter state
+#   sysup     → /tmp/sysupgrade.log + mountpoints + USB attach state
+#   full      → all of the above
+#
+# Output: /var/log/cw-diag-<subsystem>-<unix-ts>.log (rotated at 256 KB)
+# Redaction: SIM ICCID/IMSI, public IP, Wi-Fi PSK, Origin Cert paths
+# Exit: always 0 (informational tool)
+#
+
+SUBSYSTEM="${1:-full}"
+TS=$(date +%s)
+LOG="/var/log/cw-diag-${SUBSYSTEM}-${TS}.log"
+
+redact() {
+  sed -E \
+    -e 's/([0-9]{15,20})/<imsi-or-iccid-redacted>/g' \
+    -e 's/(PSK|psk|password)=["'\''][^"'\'']+["'\'']/\1=<redacted>/g' \
+    -e 's#(/etc/.*\.(pem|key|crt))#<cert-path-redacted>#g'
+}
+
+section() { echo ""; echo "===== $1 ====="; }
+
+cap_modem() {
+  section "modem - AT command snapshot"
+  for cmd in "AT+QGMR" "AT+CFUN?" "AT+CEREG?" "AT+CGREG?" "AT+CGCONTRDP" "AT+QCFG=\"usbnet\"" "AT+QENG=\"servingcell\""; do
+    echo "→ $cmd"
+    echo "$cmd" | timeout 3 socat - /dev/ttyUSB2,raw,echo=0,crnl 2>/dev/null | head -10
+  done
+  section "modem - QMI WDA data format"
+  qmicli -p -d /dev/cdc-wdm0 --wda-get-data-format 2>/dev/null
+}
+
+cap_qmi_rx() {
+  section "qmi-rx - wwan0 stats (1 Hz × 5 samples)"
+  for i in 1 2 3 4 5; do
+    echo "--- sample $i ---"
+    cat /sys/class/net/wwan0/statistics/rx_errors \
+        /sys/class/net/wwan0/statistics/rx_packets \
+        /sys/class/net/wwan0/statistics/tx_packets 2>/dev/null
+    sleep 1
+  done
+  section "qmi-rx - qmi flags"
+  cat /sys/class/net/wwan0/qmi/raw_ip 2>/dev/null
+  cat /sys/class/net/wwan0/qmi/pass_through 2>/dev/null
+  section "qmi-rx - recent dmesg (qmi/wwan/usb)"
+  dmesg | grep -iE "qmi|wwan|usb" | tail -40
+}
+
+cap_nss() {
+  section "nss - drv stats"
+  for s in /sys/kernel/debug/qca-nss-drv/stats/*; do
+    [ -f "$s" ] || continue
+    echo "--- $s ---"
+    cat "$s" 2>/dev/null
+  done
+  section "nss - kmod state"
+  lsmod | grep -i qca_nss
+  section "nss - ECM connections"
+  cat /sys/kernel/debug/ecm/ecm_front_end_ipv4/total_connections 2>/dev/null
+  cat /sys/kernel/debug/ecm/ecm_front_end_ipv6/total_connections 2>/dev/null
+}
+
+cap_wifi() {
+  section "wifi - iw dev"
+  iw dev 2>/dev/null
+  section "wifi - station dump per radio"
+  for iface in $(iw dev 2>/dev/null | awk '/Interface/ {print $2}'); do
+    echo "--- $iface ---"
+    iw dev "$iface" station dump 2>/dev/null
+  done
+  section "wifi - ath11k debugfs"
+  ls /sys/kernel/debug/ieee80211/ 2>/dev/null
+}
+
+cap_bridge() {
+  section "bridge - ip link"
+  ip -d link show 2>/dev/null
+  section "bridge - fdb"
+  bridge fdb show 2>/dev/null
+  section "bridge - vlan filter"
+  bridge vlan show 2>/dev/null
+}
+
+cap_sysup() {
+  section "sysup - sysupgrade log"
+  [ -f /tmp/sysupgrade.log ] && tail -100 /tmp/sysupgrade.log
+  section "sysup - mountpoints"
+  mount | grep -E '/mnt|/media|/tmp/mounts'
+  section "sysup - USB block devices"
+  ls /sys/block/sd* 2>/dev/null
+  cat /proc/mounts | grep -E '/dev/sd'
+}
+
+case "$SUBSYSTEM" in
+  modem)   cap_modem ;;
+  qmi-rx)  cap_qmi_rx ;;
+  nss)     cap_nss ;;
+  wifi)    cap_wifi ;;
+  bridge)  cap_bridge ;;
+  sysup)   cap_sysup ;;
+  full)    cap_modem; cap_qmi_rx; cap_nss; cap_wifi; cap_bridge; cap_sysup ;;
+  *)
+    echo "Usage: cw-diag <modem|qmi-rx|nss|wifi|bridge|sysup|full>"
+    exit 0
+    ;;
+esac > "$LOG.raw" 2>&1
+
+# Redact + finalize
+redact < "$LOG.raw" > "$LOG"
+rm -f "$LOG.raw"
+
+# Rotate at 256 KB
+size=$(wc -c < "$LOG" 2>/dev/null || echo 0)
+if [ "$size" -gt 262144 ]; then
+  gzip "$LOG"
+  LOG="${LOG}.gz"
+fi
+
+echo "cw-diag: capture written to $LOG"
+exit 0

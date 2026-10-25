@@ -1,0 +1,291 @@
+diff --git a/applications/luci-app-diskman/luasrc/controller/diskman.lua b/applications/luci-app-diskman/luasrc/controller/diskman.lua
+index 5374c45..e153e0b 100644
+--- a/applications/luci-app-diskman/luasrc/controller/diskman.lua
++++ b/applications/luci-app-diskman/luasrc/controller/diskman.lua
+@@ -21,15 +21,15 @@ function index()
+   if not executables_all_existed then return end
+   -- entry(path, target, title, order)
+   -- set leaf attr to true to pass argument throughe url (e.g. admin/system/disk/partition/sda)
+-  entry({"admin", "system", "diskman"}, alias("admin", "system", "diskman", "disks"), _("Disk Man"), 55)
+-  entry({"admin", "system", "diskman", "disks"}, form("diskman/disks"), nil).leaf = true
+-  entry({"admin", "system", "diskman", "partition"}, form("diskman/partition"), nil).leaf = true
+-  entry({"admin", "system", "diskman", "btrfs"}, form("diskman/btrfs"), nil).leaf = true
+-  entry({"admin", "system", "diskman", "format_partition"}, call("format_partition"), nil).leaf = true
+-  entry({"admin", "system", "diskman", "get_disk_info"}, call("get_disk_info"), nil).leaf = true
+-  entry({"admin", "system", "diskman", "mk_p_table"}, call("mk_p_table"), nil).leaf = true
+-  entry({"admin", "system", "diskman", "smartdetail"}, call("smart_detail"), nil).leaf = true
+-  entry({"admin", "system", "diskman", "smartattr"}, call("smart_attr"), nil).leaf = true
++  entry({"admin", "services", "diskman"}, alias("admin", "services", "diskman", "disks"), _("Disk Manager"), 55)
++  entry({"admin", "services", "diskman", "disks"}, form("diskman/disks"), nil).leaf = true
++  entry({"admin", "services", "diskman", "partition"}, form("diskman/partition"), nil).leaf = true
++  entry({"admin", "services", "diskman", "btrfs"}, form("diskman/btrfs"), nil).leaf = true
++  entry({"admin", "services", "diskman", "format_partition"}, call("format_partition"), nil).leaf = true
++  entry({"admin", "services", "diskman", "get_disk_info"}, call("get_disk_info"), nil).leaf = true
++  entry({"admin", "services", "diskman", "mk_p_table"}, call("mk_p_table"), nil).leaf = true
++  entry({"admin", "services", "diskman", "smartdetail"}, call("smart_detail"), nil).leaf = true
++  entry({"admin", "services", "diskman", "smartattr"}, call("smart_attr"), nil).leaf = true
+ end
+ 
+ function format_partition()
+diff --git a/applications/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua b/applications/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua
+index 0060078..84da4c0 100644
+--- a/applications/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua
++++ b/applications/luci-app-diskman/luasrc/model/cbi/diskman/btrfs.lua
+@@ -8,7 +8,7 @@ require("luci.tools.webadmin")
+ local dm = require "luci.model.diskman"
+ local uuid = arg[1]
+ 
+-if not uuid then luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman")) end
++if not uuid then luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman")) end
+ 
+ -- mount subv=/ to tempfs
+ mount_point = "/tmp/.btrfs_tmp"
+@@ -18,7 +18,7 @@ luci.util.exec(dm.command.mount .. " -t btrfs -o subvol=/ UUID="..uuid.." "..mou
+ 
+ m = SimpleForm("btrfs", translate("Btrfs"), translate("Manage Btrfs"))
+ m.template = "diskman/cbi/xsimpleform"
+-m.redirect = luci.dispatcher.build_url("admin/system/diskman")
++m.redirect = luci.dispatcher.build_url("admin/services/diskman")
+ m.submit = false
+ m.reset = false
+ 
+@@ -44,7 +44,7 @@ btn_update_label.inputstyle = "edit"
+ btn_update_label.write = function(self, section, value)
+   local cmd = dm.command.btrfs .. " filesystem label " .. mount_point .. " " .. value_btrfs_label
+   local res = luci.util.exec(cmd)
+-  luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
++  luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/btrfs/" .. uuid))
+ end
+ -- subvolume
+ local subvolume_list = dm.get_btrfs_subv(mount_point)
+@@ -99,7 +99,7 @@ btn_set_default.write = function(self, section, value)
+   if res and (res:match("ERR") or res:match("not enough arguments")) then
+     m.errmessage = res
+   else
+-    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
++    luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/btrfs/" .. uuid))
+   end
+ end
+ local btn_remove = table_subvolume:option(Button, "_subv_remove")
+@@ -138,7 +138,7 @@ btn_remove.write = function(self, section, value)
+   if res and (res:match("ERR") or res:match("not enough arguments")) then
+     m.errmessage = luci.util.pcdata(res)
+   else
+-    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
++    luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/btrfs/" .. uuid))
+   end
+ end
+ -- snapshot
+@@ -158,7 +158,7 @@ end
+ --   if res and (res:match("ERR") or res:match("not enough arguments")) then
+ --     m.errmessage = luci.util.pcdata(res)
+ --   else
+---     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
++--     luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/btrfs/" .. uuid))
+ --   end
+ -- end
+ 
+@@ -200,7 +200,7 @@ btn_snp_create.write = function(self, section, value)
+     if res and (res:match("ERR") or res:match("not enough arguments")) then
+       m.errmessage = luci.util.pcdata(res)
+     else
+-      luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/btrfs/" .. uuid))
++      luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/btrfs/" .. uuid))
+     end
+   else
+     m.errmessage = translate("Please input Source Path of snapshot, Source Path must start with '/'")
+diff --git a/applications/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua b/applications/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua
+index 9a14a02..1113fb6 100644
+--- a/applications/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua
++++ b/applications/luci-app-diskman/luasrc/model/cbi/diskman/disks.lua
+@@ -26,7 +26,7 @@ rescan_button.write = function(self, section, value)
+   if dm.command.mdadm then
+     luci.util.exec(dm.command.mdadm .. " --assemble --scan")
+   end
+-  luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++  luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+ end
+ 
+ -- disks
+@@ -153,10 +153,10 @@ d:option(DummyValue, "health_status", translate("Health") .. "<br/>" .. translat
+ --   else
+ --     luci.util.exec("echo 1 > /sys/block/" .. dev .. "/device/delete")
+ --   end
+---   luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++--   luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+ -- end
+ 
+-d.extedit = luci.dispatcher.build_url("admin/system/diskman/partition/%s")
++d.extedit = luci.dispatcher.build_url("admin/services/diskman/partition/%s")
+ 
+ -- raid devices
+ if dm.command.mdadm then
+@@ -172,7 +172,7 @@ if dm.command.mdadm then
+     r:option(DummyValue, "status", translate("Status"))
+     r:option(DummyValue, "members_str", translate("Members"))
+     r:option(DummyValue, "active", translate("Active"))
+-    r.extedit  = luci.dispatcher.build_url("admin/system/diskman/partition/%s")
++    r.extedit  = luci.dispatcher.build_url("admin/services/diskman/partition/%s")
+   end
+ end
+ 
+@@ -187,7 +187,7 @@ if dm.command.btrfs then
+     -- sieze is error, since there is RAID
+     -- table_btrfs:option(DummyValue, "size_formated", translate("Size"))
+     table_btrfs:option(DummyValue, "used_formated", translate("Usage"))
+-    table_btrfs.extedit  = luci.dispatcher.build_url("admin/system/diskman/btrfs/%s")
++    table_btrfs.extedit  = luci.dispatcher.build_url("admin/services/diskman/btrfs/%s")
+   end
+ end
+ 
+@@ -310,7 +310,7 @@ btn_umount.write = function(self, section, value)
+   if res:match("^mount:") or res:match("^umount:") then
+     m.errmessage = luci.util.pcdata(res)
+   else
+-    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++    luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+   end
+ end
+ 
+@@ -383,7 +383,7 @@ if dm.command.mdadm then
+       return
+     end
+     dm.gen_mdadm_config()
+-    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++    luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+   end
+ end
+ 
+@@ -431,7 +431,7 @@ if dm.command.btrfs then
+       m.errmessage = luci.util.pcdata(res)
+       return
+     end
+-    luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++    luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+   end
+ end
+ end
+diff --git a/applications/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua b/applications/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua
+index 348a617..21a9195 100644
+--- a/applications/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua
++++ b/applications/luci-app-diskman/luasrc/model/cbi/diskman/partition.lua
+@@ -9,14 +9,14 @@ local dm = require "luci.model.diskman"
+ local dev = arg[1]
+ 
+ if not dev then
+-  luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++  luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+ elseif not nixio.fs.access("/dev/"..dev) then
+-  luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++  luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+ end
+ 
+ m = SimpleForm("partition", translate("Partition Management"), translate("Partition Disk over LuCI."))
+ m.template = "diskman/cbi/xsimpleform"
+-m.redirect = luci.dispatcher.build_url("admin/system/diskman")
++m.redirect = luci.dispatcher.build_url("admin/services/diskman")
+ m:append(Template("diskman/partition_info"))
+ -- disable submit and reset button
+ m.submit = false
+@@ -110,7 +110,7 @@ btn_eject.write = function(self, section, value)
+   else
+     luci.util.exec("echo 1 > /sys/block/" .. dev .. "/device/delete")
+   end
+-  luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman"))
++  luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman"))
+ end
+ -- eject: echo 1 > /sys/block/(device)/device/delete
+ -- rescan: echo '- - -' | tee /sys/class/scsi_host/host*/scan > /dev/null
+@@ -253,7 +253,7 @@ if not disk_info.p_table:match("Raid") then
+   --   if res and res:lower():match("error+") then
+   --     m.errmessage = luci.util.pcdata(res)
+   --   else
+-  --     luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
++  --     luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/partition/" .. dev))
+   --   end
+   -- end
+ 
+@@ -343,7 +343,7 @@ if not disk_info.p_table:match("Raid") then
+       if res and res:lower():match("error+") then
+         m.errmessage = luci.util.pcdata(res)
+       else
+-        luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
++        luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/partition/" .. dev))
+       end
+     elseif value == translate("Remove") then
+       -- remove partition
+@@ -357,7 +357,7 @@ if not disk_info.p_table:match("Raid") then
+       if res and res:lower():match("error+") then
+         m.errmessage = luci.util.pcdata(res)
+       else
+-        luci.http.redirect(luci.dispatcher.build_url("admin/system/diskman/partition/" .. dev))
++        luci.http.redirect(luci.dispatcher.build_url("admin/services/diskman/partition/" .. dev))
+       end
+     end
+   end
+diff --git a/applications/luci-app-diskman/luasrc/view/diskman/disk_info.htm b/applications/luci-app-diskman/luasrc/view/diskman/disk_info.htm
+index 10ba3e7..a9a9072 100644
+--- a/applications/luci-app-diskman/luasrc/view/diskman/disk_info.htm
++++ b/applications/luci-app-diskman/luasrc/view/diskman/disk_info.htm
+@@ -6,7 +6,7 @@
+     lines.forEach((item) => {
+       let dev = item.id.match(/cbi-disk-(.*)/)[1]
+       if (dev == "table") { return }
+-      XHR.get('<%=luci.dispatcher.build_url("admin/system/diskman/get_disk_info")%>/' + dev, null, (x, disk_info) => {
++      XHR.get('<%=luci.dispatcher.build_url("admin/services/diskman/get_disk_info")%>/' + dev, null, (x, disk_info) => {
+         // handle disk info
+         item.childNodes.forEach((cell) => {
+           if (cell && cell.attributes) {
+@@ -73,7 +73,7 @@
+       let dev = item.id.match(/cbi-_raid-(.*)/)[1]
+       if (dev == "table") { return }
+       console.log(dev)
+-      XHR.get('<%=luci.dispatcher.build_url("admin/system/diskman/get_disk_info")%>/' + dev, null, (x, disk_info) => {
++      XHR.get('<%=luci.dispatcher.build_url("admin/services/diskman/get_disk_info")%>/' + dev, null, (x, disk_info) => {
+         // handle raid info
+         item.childNodes.forEach((cell) => {
+           if (cell && cell.attributes) {
+diff --git a/applications/luci-app-diskman/luasrc/view/diskman/partition_info.htm b/applications/luci-app-diskman/luasrc/view/diskman/partition_info.htm
+index 100541f..0a0a263 100644
+--- a/applications/luci-app-diskman/luasrc/view/diskman/partition_info.htm
++++ b/applications/luci-app-diskman/luasrc/view/diskman/partition_info.htm
+@@ -53,7 +53,7 @@
+ <script type="text/javascript">//<![CDATA[
+   function show_detail(dev, e) {
+     e.preventDefault()
+-    window.open('<%=luci.dispatcher.build_url("admin/system/diskman/smartdetail")%>/' + dev,
++    window.open('<%=luci.dispatcher.build_url("admin/services/diskman/smartdetail")%>/' + dev,
+       'newwindow', 'height=560,width=720,top=160,left=350,toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no, status=no')
+   }
+   window.onload = function () {
+@@ -73,7 +73,7 @@
+         if (btn_p_table_index != btn_p_table_raw_index) {
+           if (confirm("<%:Warnning !! \nTHIS WILL OVERWRITE EXISTING PARTITIONS!! \nModify the partition table?%>")) {
+             let p_table = btn_p_table.options[btn_p_table_index].value
+-            XHR.get('<%=luci.dispatcher.build_url("admin/system/diskman/mk_p_table")%>', { dev: val_name, p_table: p_table }, (x, res) => {
++            XHR.get('<%=luci.dispatcher.build_url("admin/services/diskman/mk_p_table")%>', { dev: val_name, p_table: p_table }, (x, res) => {
+               if (res.code == 0) {
+                 location.reload();
+               }
+@@ -107,7 +107,7 @@
+     let b = document.getElementById('btn_format')
+     b.disabled = true
+     let xhr = new XHR()
+-    xhr.post('<%=luci.dispatcher.build_url("admin/system/diskman/format_partition")%>', { partation_name: partation_name, file_system: fs }, (x, res) => {
++    xhr.post('<%=luci.dispatcher.build_url("admin/services/diskman/format_partition")%>', { partation_name: partation_name, file_system: fs }, (x, res) => {
+       if (x.status == 200) {
+         status.innerHTML = x.statusText
+         location.reload();
+diff --git a/applications/luci-app-diskman/luasrc/view/diskman/smart_detail.htm b/applications/luci-app-diskman/luasrc/view/diskman/smart_detail.htm
+index ffb4f7d..a80b56d 100644
+--- a/applications/luci-app-diskman/luasrc/view/diskman/smart_detail.htm
++++ b/applications/luci-app-diskman/luasrc/view/diskman/smart_detail.htm
+@@ -4,7 +4,7 @@
+   <script type="text/javascript">//<![CDATA[
+     let formData = new FormData()
+     let xhr = new XMLHttpRequest()
+-    xhr.open("GET", '<%=luci.dispatcher.build_url("admin", "system", "diskman", "smartattr", dev)%>', true)
++    xhr.open("GET", '<%=luci.dispatcher.build_url("admin", "services", "diskman", "smartattr", dev)%>', true)
+     xhr.onload = function () {
+       let st = JSON.parse(xhr.responseText)
+       let tb = document.getElementById('smart_attr_table');

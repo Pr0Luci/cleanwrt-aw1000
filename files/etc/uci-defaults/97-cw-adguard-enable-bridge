@@ -1,0 +1,8 @@
+#!/bin/sh
+# Bridge the LuCI app's Enable checkbox to the adguardhome service on first
+# boot. The logic is the shared script shipped by
+# luci-app-adguardhome; this twin only covers images where
+# adguardhome is already present at first boot. A non-zero exit keeps this
+# script, so uci-defaults retries on the next boot.
+[ -x /usr/libexec/cw-adguard-enable-bridge ] || exit 0
+/usr/libexec/cw-adguard-enable-bridge

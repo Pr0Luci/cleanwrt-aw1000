@@ -1,0 +1,29 @@
+#!/bin/sh
+# Remove the Attended Sysupgrade build-on-request UI (menu entry + its views).
+#
+# The CleanWRT release flow = the project site (https://pr0luci.github.io/cleanwrt-aw1000/):
+# a build-on-request service cannot build CleanWRT images, so its LuCI pages
+# are a dead end for users. The upstream STATUS upgrade-check
+# (11_upgrades.js, also shipped by this package) is KEPT - patch
+# patches/feeds/luci/0007 points it at the site's .versions.json +
+# /releases/<ver>/ profiles, so it reports only real CleanWRT releases.
+# The attendedsysupgrade-common package and its uci config stay untouched:
+# the "Stop showing upgrade alerts" preference lives there.
+
+MENU=/usr/share/luci/menu.d/luci-app-attendedsysupgrade.json
+if [ -f "$MENU" ] && command -v jq >/dev/null 2>&1; then
+	tmp="$MENU.cwtmp.$$"
+	if jq 'del(."admin/system/attendedsysupgrade")' "$MENU" > "$tmp" 2>/dev/null && [ -s "$tmp" ] &&
+	   jq -e '(has("admin/system/attendedsysupgrade")|not)' "$tmp" >/dev/null 2>&1; then
+		mv "$tmp" "$MENU"
+	fi
+	rm -f "$tmp"
+fi
+# The request/config views (the build-on-request pages themselves):
+rm -rf /www/luci-static/resources/view/attendedsysupgrade
+
+# 3. Invalidate LuCI's cached menus so the strip shows immediately.
+rm -f /tmp/luci-indexcache /tmp/luci-indexcache.* 2>/dev/null
+rm -rf /tmp/luci-modulecache 2>/dev/null
+
+exit 0

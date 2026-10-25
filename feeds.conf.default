@@ -1,0 +1,89 @@
+# OpenWrt 25.12.5 feed list for the Arcadyan AW1000 build.
+
+# Copy into the OpenWrt v25.12.5 buildroot checkout before:
+#   ./scripts/feeds update -a && ./scripts/feeds install -a
+
+# Every feed is pinned to an exact commit (`^<sha>`) so the build is
+# reproducible. To bump a pin, change the sha after the ^ and check the patches in patches/feeds still apply.
+##
+# NOTE: the official OpenWrt 25.12.5 feed set also includes a fifth feed,
+# `video` (github.com/openwrt/video). It is deliberately omitted: nothing in
+# the seed needs it (minidlna/ffmpeg come from the packages feed), and it
+# stays out of the pins to keep the dependency surface minimal. If a future
+# package ever needs it, re-add its feeds.buildinfo pin here.
+
+# ── passwall_packages (Openwrt-Passwall org) - MUST stay the FIRST feed ──────
+# Passwall's own build of its cores: xray-core, sing-box, hysteria, naiveproxy,
+# v2ray-geodata, ... `feeds install -a` takes the FIRST feed that has a package,
+# so listing this feed first makes these win over the older copies in the
+# official `packages` feed below (upstream's documented method: "insert at the
+# TOP of feeds.conf.default"). luci-app-passwall needs Xray >= 26.7.11 while the
+# official 25.12.5 feed carries 26.3.27. Pin = the newest commit
+# whose xray-core builds with the Go 1.26 of the official feed (xray >= 26.9.9
+# needs Go 1.27): xray-core 26.7.28.
+src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git^c42adf7b056813d5b56bbd120ad03180e57448e6
+
+# ── Official OpenWrt 25.12 feeds ─────────────────────────────────────────────
+# Pinned to the exact commits the OpenWrt project built the 25.12.5 release
+# from - taken verbatim from the release's feeds.buildinfo:
+#   https://downloads.openwrt.org/releases/25.12.5/targets/qualcommax/ipq807x/feeds.buildinfo
+src-git packages https://git.openwrt.org/feed/packages.git^5caa62e0bc9f7fb9b0c12a23267bceb7724214dd
+src-git luci https://git.openwrt.org/project/luci.git^350fc919675bb62e415927afff65697fcb8f775d
+src-git routing https://git.openwrt.org/feed/routing.git^3d7d0dc7fa43d3eb09498417407e95a6552e5312
+src-git telephony https://git.openwrt.org/feed/telephony.git^2618106d5846a4a542fdf5809f0d3ed228ce439b
+
+# ── QModem - luci-app-qmodem + qmodem/tom_modem/ubus_at_daemon/etc ───────────
+src-git qmodem https://github.com/FUjr/QModem.git^f15cc8fe64148f0a6f9daacc5f84ee79df58fea0
+
+# ── Passwall2 (Openwrt-Passwall org) ─────────────────────────────────────────
+# passwall2 carries the LuCI app; its dependency set (passwall_packages) is the
+# FIRST feed of this file, see the top.
+src-git passwall2 https://github.com/Openwrt-Passwall/openwrt-passwall2.git^426571850958db2bded801c4f23090438026a9ec
+
+# ── Passwall 1 (same org) ────────────────────────────────────────────────────
+# The first-generation LuCI app: ships in the image
+# DISABLED, on top of the cores the image already carries via passwall2
+# (xray-core + sing-box). Dependency set
+# (chinadns-ng/dns2socks/microsocks/tcping/lyaml/luci-compat…) is covered by the
+# passwall_packages feed pinned above and the official luci feed.
+src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git^701d982a26ee0b960d248754b8f8868f6f18fb59
+
+# ── OpenClash (vernesong) - opt-artifact feed, NOT in the image ──────────────
+# Compiled as an opt artifact into the cw-opt binary feed: users
+# install it later on demand (`apk add luci-app-openclash`); its runtime deps
+# ruby/ruby-yaml come from the official 25.12.5 packages repo. Never seed it.
+src-git openclash https://github.com/vernesong/OpenClash.git^c3a33c1d3407956fdf8f0e0b7c1a4c52e6ad9593
+
+# ── 3ginfo-lite (4IceG) ──────────────────────────────────────────────────────
+# Commit-pinned; patches/feeds/3ginfo/ is applied on top at build time with zero
+# fuzz (the build fails if upstream drifted under the patch). Bump the pin and
+# check/re-port the patch together.
+src-git 3ginfo https://github.com/4IceG/luci-app-3ginfo-lite.git^b976ecb9d1b6a1683ccf672ef698a9526bdea390
+
+# ── luci-app-diskman (lisaac) ────────────────────────────────────────────────
+# Disk/partition manager UI: GPT/MBR tables, format ext4/FAT32/exFAT/NTFS/btrfs,
+# SMART health (incl. USB-NVMe). Removed from the official luci feed before the
+# 25.12.5 snapshot, so it ships from its own upstream repo instead.
+# Licence: AGPL-3.0 (third-party UI, attribution retained upstream). The repo
+# carries a single indexable package; its root Parted.Makefile is not
+# feed-indexable and parted comes from the packages feed. Its exfat-mkfs /
+# exfat-fsck dep names resolve directly: the pinned packages feed's exfatprogs
+# source defines both subpackages (mkfs.exfat / fsck.exfat).
+src-git diskman https://github.com/lisaac/luci-app-diskman.git^c20df1d4f40d86e32fd919f33122b2a48f8a99b4
+
+# ── cwfeed (CleanWRT vendor feed) ────────────────────────────────────────────
+# Packages the official OpenWrt feeds do not carry, vendored in this repo at
+# feeds-src/cwfeed/ and wired in as a `src-link` by tools/cw-release-build.sh (no git
+# pin needed, the repo itself is the pin). It holds the qBittorrent stack
+# (net/qbittorrent, libs/qt6base, libs/libdouble-conversion and utils/qt6tools from
+# ImmortalWrt @ e731ba76; applications/luci-app-qbittorrent and the feed-root luci.mk
+# from ImmortalWrt/luci @ 5fc1fac5, unmodified, see feeds-src/cwfeed/README.md) plus
+# a few small LuCI apps. qBittorrent is part of the image (the expanded MTD layout has
+# the room); the build also publishes it to the cw-opt binary feed for later
+# `apk upgrade`. libtorrent-rasterbar comes from the official packages feed.
+# qBittorrent is GPL-2.0-or-later.
+# The compiled output is served from https://pr0luci.github.io/cleanwrt-aw1000/feed/.
+
+# luci-app-cw-led is NOT a feed: it is a single-package repo (Makefile at the repo
+# root), which OpenWrt cannot index as a feed. It is cloned into package/ at a
+# pinned commit from configs/local-packages.pin by tools/cw-release-build.sh.

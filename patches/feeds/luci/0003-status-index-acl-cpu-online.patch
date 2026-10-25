@@ -1,0 +1,24 @@
+Status - Overview ACL: allow reading the online CPU list (for the load meters)
+
+The Apex System widgets (patch 0002) scale each load-average meter by the number
+of CPUs, which the status ACL could not read. Grant exactly one more read-only
+file, /sys/devices/system/cpu/online (a short range list such as "0-3"), to the
+existing luci-mod-status-index group - no new group, no write access, no wider
+path.
+
+Applies to: https://git.openwrt.org/project/luci.git
+            @ 350fc919675bb62e415927afff65697fcb8f775d (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh (patch -p1, zero fuzz).
+Upstream status: not submitted (CleanWRT-specific).
+
+diff --git a/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json b/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
+--- a/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
++++ b/modules/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
+@@ -6,6 +6,7 @@
+ 				"/etc/board.json": [ "read" ],
+ 				"/proc/sys/net/netfilter/nf_conntrack_count": [ "read" ],
+ 				"/proc/sys/net/netfilter/nf_conntrack_max": [ "read" ],
++				"/sys/devices/system/cpu/online": [ "read" ],
+ 				"/www/luci-static/resources/view/status/include": [ "list" ]
+ 			},
+ 			"ubus": {

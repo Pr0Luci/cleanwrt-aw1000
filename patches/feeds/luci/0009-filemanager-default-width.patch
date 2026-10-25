@@ -1,0 +1,13 @@
+diff --git a/applications/luci-app-filemanager/htdocs/luci-static/resources/view/system/filemanager.js b/applications/luci-app-filemanager/htdocs/luci-static/resources/view/system/filemanager.js
+index d49a759..b895c7f 100644
+--- a/applications/luci-app-filemanager/htdocs/luci-static/resources/view/system/filemanager.js
++++ b/applications/luci-app-filemanager/htdocs/luci-static/resources/view/system/filemanager.js
+@@ -81,7 +81,7 @@ let config = {
+ 	currentDirectory: '/', // Current directory
+ 
+ 	windowHeight: 800,
+-	windowWidth: 400,
++	windowWidth: 800,
+ 
+ 	texteditorHeight: 550,
+ 	texteditorWidth: 850,

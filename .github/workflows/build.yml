@@ -1,0 +1,230 @@
+name: build
+
+on:
+  workflow_dispatch:
+    inputs:
+      clean:
+        description: "Rebuild all packages (make clean) instead of an incremental build"
+        type: boolean
+        default: false
+      opt_artifacts:
+        description: "Also compile and verify the optional cw-opt apk feed (needs the signing key secret)"
+        type: boolean
+        default: false
+      artifacts:
+        description: "Upload the images as a workflow artifact (public repository: anyone signed in to GitHub can download it)"
+        type: boolean
+        default: false
+      publish:
+        description: "Publish a GitHub release and update the site (the tag v<version> is created)"
+        type: boolean
+        default: false
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+env:
+  CW_MAX_IMAGE_MB: "130"
+
+jobs:
+  image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Version
+        id: ver
+        run: |
+          ver=$(sed -n 's/^CW_VERSION="\(.*\)"$/\1/p' tools/cw-release-build.sh)
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          case "$GITHUB_REF" in
+            refs/tags/v*) [ "${GITHUB_REF#refs/tags/v}" = "$ver" ] || { echo "tag does not match CW_VERSION $ver"; exit 1; } ;;
+          esac
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo apt-get clean
+          sudo mkdir -p /mnt/cw && sudo chown "$USER" /mnt/cw
+          df -h / /mnt
+
+      - name: Builder image
+        run: docker build -t cleanwrt-builder docker/
+
+      - name: OpenWrt v25.12.5
+        run: git clone --depth 1 --branch v25.12.5 https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
+
+      - name: Restore caches
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /mnt/cw/openwrt/dl
+            /mnt/cw/openwrt/.ccache
+          key: cw-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
+          restore-keys: |
+            cw-${{ hashFiles('feeds.conf.default', 'configs/**') }}-
+            cw-
+
+      - name: Signing keys (optional repository secrets)
+        env:
+          APK_PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
+          USIGN_KEY_BUILD: ${{ secrets.USIGN_KEY_BUILD }}
+          USIGN_KEY_BUILD_PUB: ${{ secrets.USIGN_KEY_BUILD_PUB }}
+        run: |
+          set -eu
+          if [ -n "$APK_PRIVATE_KEY" ]; then
+            umask 077
+            printf '%s\n' "$APK_PRIVATE_KEY" > /mnt/cw/openwrt/private-key.pem
+            echo "apk feed signing key: restored from secret"
+          else
+            echo "apk feed signing key: none (the tree creates a throw-away key; the cw-opt feed stays disabled)"
+          fi
+          if [ -n "$USIGN_KEY_BUILD" ] && [ -n "$USIGN_KEY_BUILD_PUB" ]; then
+            umask 077
+            mkdir -p keys-release
+            printf '%s\n' "$USIGN_KEY_BUILD" > keys-release/key-build
+            printf '%s\n' "$USIGN_KEY_BUILD_PUB" > keys-release/key-build.pub
+            echo "image signing key: restored from secret"
+          else
+            echo "image signing key: none (images are not signed)"
+          fi
+
+      - name: Build
+        id: build
+        timeout-minutes: 335
+        env:
+          CW_CCACHE: "1"
+          CW_BUILD_OPT_ARTIFACTS: ${{ inputs.opt_artifacts && '1' || '0' }}
+          CW_REQUIRE_RELEASE_KEYS: ${{ (inputs.opt_artifacts && secrets.APK_PRIVATE_KEY != '') && '1' || '0' }}
+        run: |
+          set -o pipefail
+          flag=""
+          [ "${{ inputs.clean }}" = "true" ] && flag="--clean"
+          docker run --rm \
+            -e CW_CCACHE -e CW_BUILD_OPT_ARTIFACTS -e CW_REQUIRE_RELEASE_KEYS -e CW_MAX_IMAGE_MB \
+            -v /mnt/cw/openwrt:/build -v "$PWD":/cleanwrt \
+            cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build $flag 2>&1 | tee /mnt/cw/build.log
+
+      - name: Compiler cache statistics
+        if: always()
+        run: |
+          [ -x /mnt/cw/openwrt/staging_dir/host/bin/ccache ] && CCACHE_DIR=/mnt/cw/openwrt/.ccache /mnt/cw/openwrt/staging_dir/host/bin/ccache -s || true
+          du -sh /mnt/cw/openwrt/dl /mnt/cw/openwrt/.ccache 2>/dev/null || true
+          df -h /mnt
+
+      - name: Save caches
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /mnt/cw/openwrt/dl
+            /mnt/cw/openwrt/.ccache
+          key: cw-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
+
+      - name: Collect release files
+        if: success()
+        run: |
+          set -eu
+          OUT=/mnt/cw/openwrt/bin/targets/qualcommax/ipq807x
+          mkdir -p dist
+          find "$OUT" -maxdepth 1 -type f \
+            \( -name '*arcadyan_aw1000*' -o -name '*.manifest' -o -name 'profiles.json' \
+               -o -name 'sha256sums*' -o -name '*.buildinfo' \) -exec cp {} dist/ \;
+          cp -r "$OUT/cw-release-provenance" dist/provenance
+          tar -C dist -czf dist/provenance.tar.gz provenance && rm -rf dist/provenance
+          ls -l dist
+          ls dist | grep -q 'sysupgrade.bin$'
+
+      - name: Optional cw-opt feed
+        if: success() && inputs.opt_artifacts
+        run: |
+          docker run --rm -v /mnt/cw/openwrt:/build -v "$PWD":/cleanwrt cleanwrt-builder \
+            /cleanwrt/tools/cw-publish-feed.sh /build --out /cleanwrt/feed-out
+          tar -C feed-out -czf dist/cw-opt-feed.tar.gz .
+
+      - name: Upload build files
+        if: success() && (inputs.artifacts || inputs.publish || startsWith(github.ref, 'refs/tags/v'))
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanwrt-${{ steps.ver.outputs.version }}
+          path: dist/
+          retention-days: 30
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: /mnt/cw/build.log
+          retention-days: 14
+          if-no-files-found: ignore
+
+
+  release:
+    needs: image
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || inputs.publish }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.image.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: cleanwrt-${{ needs.image.outputs.version }}
+          path: dist
+
+      - name: GitHub release
+        run: |
+          set -eu
+          tag="v$VERSION"
+          pre=""
+          case "$VERSION" in *-rc*) pre="--prerelease" ;; esac
+          cat > notes.md <<NOTES
+          CleanWRT $VERSION for the Arcadyan AW1000 (OpenWrt 25.12.5, qualcommax/ipq807x).
+
+          Flash the \`*-squashfs-sysupgrade.bin\` with sysupgrade, see the README for the
+          required expanded MTD layout. \`sha256sums.cw\` lists the checksums of the images and
+          the provenance bundle; \`provenance.tar.gz\` holds the full config, the pinned feeds and
+          the package manifest of this build. Built from commit $GITHUB_SHA.
+          NOTES
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+          else
+            gh release create "$tag" dist/* --target "$GITHUB_SHA" --title "CleanWRT $VERSION" --notes-file notes.md $pre
+          fi
+
+      - name: Update the site (gh-pages)
+        run: |
+          set -eu
+          git config user.name "Pr0Luci"
+          git config user.email "Pr0Luci@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git fetch -q origin gh-pages
+            git worktree add -q ../site FETCH_HEAD
+            git -C ../site checkout -q -B gh-pages
+          else
+            git worktree add -q --detach ../site
+            git -C ../site checkout -q --orphan gh-pages
+            git -C ../site rm -rqf . || true
+          fi
+          sh tools/cw-site-update.sh ../site "$VERSION" \
+            "https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION" dist/profiles.json
+          git -C ../site add -A
+          git -C ../site commit -q -m "Site: CleanWRT $VERSION" || { echo "nothing to commit"; exit 0; }
+          git -C ../site push -q origin gh-pages

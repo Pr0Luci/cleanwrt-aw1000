@@ -1,0 +1,204 @@
+Status - Overview: render the Modem Info card as widgets when the Apex theme is active
+
+luci-theme-apex shows the Modem Info card as a Device widget, a Status widget
+(connection chip) and one signal widget per progress-bar entry (RSSI / RSRP /
+RSRQ / SINR; LTE and NR) instead of the stock table. A theme cannot supply that
+markup hack-free: the card is rendered client-side by this include (owned by
+luci-app-qmodem; a second copy in the theme package would be an apk file
+conflict) from the modem_ctrl.info ubus method, so the markup has to come from
+here.
+
+The theme in use is read on every render from L.env.media (set by the luci-base
+header template), so switching themes needs no reboot and no reload logic:
+  - Apex (/luci-static/apex): widgets (ax-sys-* / ax-mdm-* classes, styled by
+    the theme's cascade.css; semantic dl/dt/dd + h4 + role="meter" with the real
+    min/max; all strings via _()).
+  - any other theme, or when there is nothing to show / the data is malformed:
+    the stock table below, byte-identical to before (verified against the
+    minified build; no extra request on that path).
+Quality labels (Excellent / Good / Fair / Poor) use generic LTE/NR bands per
+metric (RSRP -80/-90/-100, RSRQ -10/-15/-20, SINR 20/13/0, RSSI -65/-75/-85);
+the data carries no quality. SIM identity entries are not shown (the stock card
+does not show them either).
+
+Applies to: https://github.com/FUjr/QModem.git
+            @ f15cc8fe64148f0a6f9daacc5f84ee79df58fea0 (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh (patch -p1, zero fuzz - the build
+            fails if upstream changes these lines; re-port it then).
+Upstream status: not submitted (CleanWRT-specific).
+
+diff --git a/luci/luci-app-qmodem/htdocs/luci-static/resources/view/status/include/11_modem.js b/luci/luci-app-qmodem/htdocs/luci-static/resources/view/status/include/11_modem.js
+--- a/luci/luci-app-qmodem/htdocs/luci-static/resources/view/status/include/11_modem.js
++++ b/luci/luci-app-qmodem/htdocs/luci-static/resources/view/status/include/11_modem.js
+@@ -20,6 +20,156 @@ function progressbar(value, max, min, unit) {
+ 	}, E('div', { 'style': 'width:%.2f%%'.format(pc) }));
+ }
+ 
++/* CleanWRT: the Apex theme (luci-theme-apex) shows this card as widgets -
++   Device + Status and one signal widget per progress-bar entry. Every other
++   theme keeps the stock table below, unchanged. The theme is read on every
++   render from L.env.media (set by the luci-base header template). The
++   ax-sys-* / ax-mdm-* classes are styled by the theme's cascade.css. */
++function isApexTheme() {
++	var media = String(L.env.media || '').replace(/\/+$/, '');
++
++	return media.slice(media.lastIndexOf('/') + 1) === 'apex';
++}
++
++/* Generic LTE/NR quality bands (common vendor practice): a value at or above
++   the first limit is Excellent, then Good, then Fair, otherwise Poor. */
++var apexBands = {
++	RSRP: [ -80, -90, -100 ],
++	RSRQ: [ -10, -15, -20 ],
++	SINR: [ 20, 13, 0 ],
++	RSSI: [ -65, -75, -85 ]
++};
++
++function apexQuality(key, value) {
++	var b = apexBands[key];
++
++	if (!b || isNaN(value))
++		return null;
++
++	if (value >= b[0])
++		return _('Excellent');
++
++	if (value >= b[1])
++		return _('Good');
++
++	return (value >= b[2]) ? _('Fair') : _('Poor');
++}
++
++/* typographic minus for negative numbers */
++function apexNum(v) {
++	return String(v).replace(/^-/, '−');
++}
++
++function apexRows(entries) {
++	return E('dl', { 'class': 'ax-sys-dl' }, entries.map(function(entry) {
++		return E('div', { 'class': 'ax-sys-r' }, [
++			E('dt', {}, [ entry.extra_info ? '%s (%s)'.format(_(entry.full_name), entry.extra_info) : _(entry.full_name) ]),
++			E('dd', {}, [ String(entry.value) ])
++		]);
++	}));
++}
++
++function apexWidget(id, title, aside, body) {
++	return E('section', { 'class': 'ax-sys-w', 'aria-labelledby': id }, [
++		E('header', { 'class': 'ax-sys-top' }, [
++			E('h4', { 'class': 'ax-sys-t', 'id': id }, [ title ]),
++			aside || ''
++		]),
++		body
++	]);
++}
++
++function apexSignal(entry, id) {
++	var key = entry.key || entry.full_name,
++	    val = parseFloat(entry.value),
++	    min = parseFloat(entry.min_value),
++	    max = parseFloat(entry.max_value),
++	    quality = apexQuality(key, val),
++	    ok = !isNaN(val),
++	    pct = (ok && max > min) ? Math.round(Math.max(0, Math.min(1, (val - min) / (max - min))) * 100) : 0,
++	    unit = entry.unit || '';
++
++	return E('section', { 'class': 'ax-sys-w ax-mdm-s', 'aria-labelledby': id }, [
++		E('header', { 'class': 'ax-sys-top' }, [
++			E('h4', { 'class': 'ax-sys-t', 'id': id }, [
++				E('abbr', { 'title': _(entry.full_name) }, [ key ]),
++				entry.extra_info ? ' ' : '',
++				entry.extra_info ? E('span', { 'class': 'ax-mdm-net' }, [ entry.extra_info ]) : ''
++			]),
++			quality ? E('span', { 'class': 'ax-mdm-q' }, [ quality ]) : ''
++		]),
++		E('p', { 'class': 'ax-mdm-big' }, [
++			E('strong', {}, [ ok ? apexNum(entry.value) : '?' ]),
++			E('span', {}, [ unit ])
++		]),
++		ok ? E('span', {
++			'class': 'ax-sys-bar',
++			'role': 'meter',
++			'aria-labelledby': id,
++			'aria-valuemin': min,
++			'aria-valuemax': max,
++			'aria-valuenow': val,
++			'aria-valuetext': '%s %s'.format(entry.value, unit) + (quality ? ', ' + quality : '')
++		}, [ E('i', { 'style': 'width:%d%%'.format(pct) }) ]) : '',
++		ok ? E('div', { 'class': 'ax-mdm-scale' }, [
++			E('span', {}, [ apexNum(entry.min_value) ]),
++			E('span', {}, [ '%d%%'.format(pct) ]),
++			E('span', {}, [ apexNum(entry.max_value) ])
++		]) : ''
++	]);
++}
++
++/* returns null when there is nothing to show, so the stock code reports it */
++function renderApexModems(infos) {
++	var out = [], n = 0;
++
++	try {
++		if (!Array.isArray(infos))
++			return null;
++
++		infos.forEach(function(modem) {
++			var list = Array.isArray(modem.modem_info) ? modem.modem_info.filter(function(e) {
++				return e && e.value != null;
++			}) : [],
++			    base = list.filter(function(e) { return e.class == 'Base Information'; }),
++			    sigs = list.filter(function(e) { return e.class == 'Cell Information' && e.type == 'progress_bar'; }),
++			    status = [ 'connect_status', 'temperature', 'voltage' ].map(function(k) {
++				return base.filter(function(e) { return e.key == k; })[0];
++			}).filter(function(e) { return e; }),
++			    device = base.filter(function(e) { return status.indexOf(e) < 0; }),
++			    conn = base.filter(function(e) { return e.key == 'connect_status'; })[0],
++			    parts = [];
++
++			if (device.length || status.length) {
++				parts.push(E('div', { 'class': 'ax-sys-row' }, [
++					device.length ? apexWidget('ax-mdm-d' + n, _('Device'), null, apexRows(device)) : '',
++					status.length ? apexWidget('ax-mdm-t' + n, _('Status'), conn ? E('span', {
++						'class': 'ax-mdm-chip' + (String(conn.value).toLowerCase() == 'yes' ? '' : ' ax-mdm-chip-off')
++					}, [
++						E('i', { 'aria-hidden': 'true' }),
++						(String(conn.value).toLowerCase() == 'yes') ? _('Connected') : _('Disconnected')
++					]) : null, apexRows(status)) : ''
++				]));
++			}
++
++			if (sigs.length)
++				parts.push(E('div', { 'class': 'ax-mdm-sig' }, sigs.map(function(e, i) {
++					return apexSignal(e, 'ax-mdm-s%d-%d'.format(n, i));
++				})));
++
++			if (parts.length)
++				out.push(E('div', { 'class': 'ax-mdm' }, parts));
++
++			n++;
++		});
++	}
++	catch (e) {
++		return null;
++	}
++
++	return out.length ? E('div', {}, out) : null;
++}
++
+ 
+ return baseclass.extend({
+ 	title: _('Modem Info'),
+@@ -31,7 +181,13 @@ return baseclass.extend({
+ 	},
+ 
+ 	render: function(data) {
+-		
++		if (isApexTheme()) {
++			var zy = renderApexModems(data[0] && data[0].info);
++
++			if (zy)
++				return zy;
++		}
++
+ 		var table = E('table', { 'class': 'table' });
+ 		try {
+ 			var infos   = data[0].info
