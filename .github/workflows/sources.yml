@@ -1,0 +1,55 @@
+name: sources
+
+# Downloads every source file the image needs and fails if one is gone. Upstream projects
+# delete release files now and then; this finds it in minutes instead of after a long build.
+
+on:
+  pull_request:
+    paths:
+      - feeds.conf.default
+      - configs/**
+      - patches/**
+      - feeds-src/**
+      - tools/cw-release-build.sh
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sources-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  download:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo mkdir -p /mnt/cw && sudo chown "$USER" /mnt/cw
+          df -h / /mnt
+      - name: Builder image
+        run: docker build -t cleanwrt-builder docker/
+      - name: OpenWrt v25.12.5
+        run: git clone --depth 1 --branch v25.12.5 https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
+      - name: Feeds, patches, pins, defconfig (no compile)
+        run: |
+          docker run --rm -e CW_CHECK_ONLY=1 \
+            -v /mnt/cw/openwrt:/build -v "$PWD":/cleanwrt \
+            cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build
+      - name: Download all sources
+        run: |
+          docker run --rm -v /mnt/cw/openwrt:/build cleanwrt-builder bash -c '
+            cd /build
+            make download -j4 2>&1 | tee download.log
+            if grep -E "failed to build|Download failed|No more mirrors|Hash mismatch" download.log; then
+              echo "A source file could not be downloaded."; exit 1
+            fi
+            find dl -type f -size 0 -print | grep . && { echo "Empty download found."; exit 1; }
+            echo "all sources present: $(ls dl | wc -l) files, $(du -sh dl | cut -f1)"
+          '
