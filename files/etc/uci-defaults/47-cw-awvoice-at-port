@@ -1,0 +1,7 @@
+#!/bin/sh
+# AWvoice owns /dev/ttyUSB2 exclusively for call control (its AT interface):
+# the general AT-over-ubus service must stay off that interface. QModem and the
+# modem-info page keep ttyUSB3. (Revert: re-add the port section in
+# /etc/config/ubus-at-daemon with at_port /dev/ttyUSB2.)
+[ -f /etc/config/ubus-at-daemon ] && uci -q delete ubus-at-daemon.@port[0]
+exit 0

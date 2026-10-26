@@ -17,3 +17,9 @@ luci-theme-apex https://github.com/Pr0Luci/luci-theme-apex.git 740d9b316af88c593
 # cores the image already ships (sing-box). Single-package repo with the Makefile at
 # the root, so a local pin and not a feed. Ships DISABLED.
 luci-app-homeproxy https://github.com/immortalwrt/homeproxy.git 98a6ad9e71484528008ff435694fd107591f3a1d
+
+# AWvoice: the RJ11 phone port (feed-layout repo; the three packages live at the
+# repository root). GPL-2.0-only, the board configuration data file included.
+kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 8e1f70f37a86c018cc5edf6eb77603f3f36514c6
+awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 8e1f70f37a86c018cc5edf6eb77603f3f36514c6
+luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 8e1f70f37a86c018cc5edf6eb77603f3f36514c6
