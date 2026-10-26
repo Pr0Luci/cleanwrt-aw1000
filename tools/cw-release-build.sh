@@ -530,6 +530,12 @@ make download -j"$(nproc)"
 rc=0
 make -j"$(nproc)" || rc=$?
 echo "-- world rc=$rc --"
+if [ "$rc" -ne 0 ]; then
+    # The parallel run hides the real error ("re-run with -j1 V=s"). Everything already built is
+    # reused, so a verbose single-job pass is quick and prints the cause into the build log.
+    echo "== world failed: verbose single-job pass for the cause =="
+    make -j1 V=s 2>&1 | tail -n 120 || true
+fi
 
 # 6b. Opt-in artifacts for the cw-opt binary feed: qBittorrent is
 #     NOT in the image (Qt6 stack), but the RC build compiles it anyway so
