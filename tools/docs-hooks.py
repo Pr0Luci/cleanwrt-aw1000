@@ -3,6 +3,7 @@ so the package list on the site cannot drift from what the image is built with.
 
 Nothing is written into docs/: a file written there would make `mkdocs serve` rebuild
 forever."""
+import html
 import os
 import re
 
@@ -50,3 +51,33 @@ def on_files(files, config, **kwargs):
     content = _page(os.path.join(root, "configs", "arcadyan_aw1000.seed"))
     files.append(File.generated(config, "generated/packages.md", content=content))
     return files
+
+
+def on_post_page(output, page, config, **kwargs):
+    """Link-preview tags (Open Graph and Twitter card), so a shared link shows a picture and text."""
+    base = config["site_url"]
+    if page.is_homepage:
+        title = f"{config['site_name']}: OpenWrt for the Arcadyan AW1000"
+    else:
+        title = f"{page.title} - {config['site_name']}"
+    desc = page.meta.get("description") or config["site_description"]
+    url = base + (page.url or "")
+    image = base + "assets/img/social.png"
+    tags = [
+        ("property", "og:type", "website"),
+        ("property", "og:site_name", config["site_name"]),
+        ("property", "og:title", title),
+        ("property", "og:description", desc),
+        ("property", "og:url", url),
+        ("property", "og:image", image),
+        ("property", "og:image:width", "1200"),
+        ("property", "og:image:height", "630"),
+        ("name", "twitter:card", "summary_large_image"),
+        ("name", "twitter:title", title),
+        ("name", "twitter:description", desc),
+        ("name", "twitter:image", image),
+    ]
+    meta = "".join(
+        f'<meta {k}="{v}" content="{html.escape(c, quote=True)}">\n' for k, v, c in tags
+    )
+    return output.replace("</head>", meta + "</head>", 1)
