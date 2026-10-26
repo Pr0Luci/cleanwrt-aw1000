@@ -56,3 +56,17 @@ press a key when the countdown appears. You are now at the U-Boot prompt, and th
 - Keep the serial session open while you flash; it shows exactly what failed if something does.
 - Close the terminal when you are done. A stuck terminal on the modem's AT port (not the board
   UART) is a different matter, see [The 5G modem](modem.md).
+
+## Common questions
+
+??? question "What UART settings does the Arcadyan AW1000 use?"
+    115200 baud, 8N1, no flow control, at 3.3 V logic. Connect router TX to adapter RX, router RX to adapter TX and ground to ground, and leave the adapter's power pin unconnected.
+
+??? question "Can I use a 5 V serial adapter on the AW1000?"
+    No. Use 3.3 V logic only. A 5 V adapter can damage the board.
+
+??? question "I see nothing on the AW1000 serial console. What should I check?"
+    Swap the TX and RX wires first, since the data lines must cross. Then check that the grounds are joined, that the speed is 115200, and that you open the terminal before you power the router on.
+
+??? question "How do I stop U-Boot on the AW1000?"
+    Power the router on with the serial terminal open and press a key when the countdown appears. You are then at the U-Boot prompt, ready for the installation or recovery steps.

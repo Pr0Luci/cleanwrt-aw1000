@@ -62,3 +62,14 @@ file on the project site, so it needs internet access. You can switch it off any
 
 The release tag, `configs/arcadyan_aw1000.seed`, `feeds.conf.default`, `configs/local-packages.pin`
 and `patches/` are the complete input. See [Build from source](building.md).
+
+## Common questions
+
+??? question "Where can I download CleanWRT for the Arcadyan AW1000?"
+    From the project's GitHub Releases page. Each release has the sysupgrade image, the initramfs image for a first install, a package manifest, checksums and a provenance bundle.
+
+??? question "How do I check the checksum of the image before flashing?"
+    On Linux or macOS run `sha256sum -c sha256sums.cw --ignore-missing` in the folder with the files. On Windows use `Get-FileHash` in PowerShell and compare the value with the matching line. A corrupted image is the most common cause of a bad flash.
+
+??? question "What does rc1 mean in a CleanWRT version?"
+    It is a release candidate: the testing series before a stable release. In `25.12.5-rc1`, 25.12.5 is the OpenWrt base and rc1 is the first candidate. A suffix such as rc1.1 is a fix published after the candidate.

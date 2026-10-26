@@ -111,3 +111,23 @@ of the version you receive, because the flags differ between versions. In outlin
 - The router itself is unaffected, so SSH and LuCI stay reachable over LAN and Wi-Fi.
 - If the modem does not come back, the vendor's tool and package are the recovery path. Contact
   Quectel with the revision string you saved.
+
+## Common questions
+
+??? question "Why does the 5G modem of my AW1000 not register?"
+    Open *Modem → QModem* and *Modem → 3gInfo-lite* and check the SIM, the APN and the signal first. A modem firmware upgrade is only a last resort, and only when the carrier or Quectel confirms that a newer firmware fixes your problem.
+
+??? question "How do I read and send SMS on the Arcadyan AW1000?"
+    Use *Modem → SMS* in LuCI. You can read and send messages there, and received SMS can be forwarded.
+
+??? question "What does the TTL setting do on the AW1000?"
+    It gives forwarded packets a fixed TTL of 64 so tethered traffic looks like traffic from the router itself. It is on by default. Whether that is allowed depends on your carrier's terms, and you can change or switch it off in *Modem → TTL*.
+
+??? question "How do I use IPv4 only on the AW1000 5G connection?"
+    Set the modem's PDP type to IPv4 in *Modem → QModem*. If you send traffic through Passwall 2, also enable IPv6 TProxy in its forwarding settings so devices cannot reach IPv6 sites outside the proxy.
+
+??? question "Which AT port do I use on the AW1000 modem?"
+    The modem exposes two AT ports. The LED daemon uses `/dev/ttyUSB2` and QModem uses `/dev/ttyUSB3`. Do not leave a terminal open on either one, because two programs reading one port interleave their replies.
+
+??? question "Do I need to upgrade the modem firmware on my AW1000?"
+    Only if the modem misbehaves on your carrier. If it works, leave it alone. The firmware is separate from CleanWRT, comes only from Quectel, and an interrupted or wrong flash can leave the modem unusable.

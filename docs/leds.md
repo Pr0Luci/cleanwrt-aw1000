@@ -128,3 +128,17 @@ daemon-owned LEDs are turned off.
 The daemon reads the modem directly over the AT port with plain shell, so no other app is
 needed. It writes the LED state through sysfs, only when something changes. The source is in the
 [`luci-app-cw-led`](https://github.com/Pr0Luci/luci-app-cw-led) repository.
+
+## Common questions
+
+??? question "What do the front-panel LEDs of the Arcadyan AW1000 mean?"
+    Power is always on. Wi-Fi is on while a radio is up. The 5G LED shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes.
+
+??? question "How do I turn off the AW1000 LEDs at night?"
+    Enable night mode in *System → LED Management*. The default window is 22:30 to 06:00, and a window past midnight works. Remove an LED from the keep-on list to switch it off inside the window.
+
+??? question "Why is the 5G LED on my AW1000 off?"
+    The 5G LED lights only for 5G. It is off on 4G, 3G, with no service, or when the type is unknown. If the signal LED is off too, the daemon probably cannot read the modem on its AT port.
+
+??? question "Why is the internet LED off when my internet works?"
+    The LED mirrors a connectivity probe. If the probe address is blocked, it stays off. Change the probe URL in *LED Management*, or switch the check to the default-route mode.

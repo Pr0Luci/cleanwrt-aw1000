@@ -54,3 +54,14 @@ it does not re-scan on every reboot.
 
 !!! info "PlayStation 5"
     The PS5 has no built-in DLNA player. Use an app such as Plex on it.
+
+## Common questions
+
+??? question "Can I use a USB drive as a NAS on the Arcadyan AW1000?"
+    Yes. A drive auto-mounts under `/mnt` (ext4, FAT, exFAT and NTFS), and you can share it with SMB, DLNA, Syncthing and qBittorrent. All of these ship installed but disabled, so set credentials before you enable them.
+
+??? question "Can the AW1000 stream media to a smart TV?"
+    Yes. Enable miniDLNA with a drive of media attached. Smart TVs, VLC, Kodi and phone apps on the LAN will see the server. A PlayStation 5 has no built-in DLNA player, so use an app such as Plex there.
+
+??? question "Why should I plug a drive in before downloading?"
+    Downloads default to the first USB drive. With no drive attached they would fill the router's small internal flash.
