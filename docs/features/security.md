@@ -57,3 +57,14 @@ No re-flash is needed.
 For a security problem, please open a private report from the repository's *Security* tab
 (*Report a vulnerability*) if it is enabled, or open an issue that does not include exploit
 details and ask for a private channel.
+
+## Common questions
+
+??? question "Why does my browser say the OpenWrt router connection is not secure?"
+    LuCI uses a self-signed certificate that your router creates at first boot. The connection is still encrypted, but no public authority signed the certificate. Click *Advanced → Proceed*, or install a trusted certificate with ACME if you own a domain.
+
+??? question "What are the default passwords on CleanWRT?"
+    There is no root password at first. The first login happens over Ethernet and LuCI asks you to set one. Wi-Fi is WPA2-PSK with the default key `CleanWRT#40`. Change both on the first login.
+
+??? question "How do I get a trusted HTTPS certificate on the router?"
+    Install `acme-common` and `luci-app-acme`, then issue a Let's Encrypt certificate with a DNS challenge. That works behind CGNAT because it needs no inbound connection.

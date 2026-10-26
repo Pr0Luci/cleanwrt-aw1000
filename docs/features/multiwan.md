@@ -32,3 +32,11 @@ Add it under *Network → Interfaces* (DHCP).
 
 Configure members and policies in *Network → Load Balancing*. Point the primary at the modem
 interface (`4_1`) and the backup at your second connection.
+
+## Common questions
+
+??? question "Can the Arcadyan AW1000 fail over to another connection when 5G drops?"
+    Yes, with mwan3. Add a phone USB tether, a USB modem or a USB Ethernet adapter as a second interface, then set the 5G modem as the primary member and the other as the backup.
+
+??? question "Is mwan3 included in CleanWRT?"
+    No. The 5G modem already reconnects by itself, so mwan3 is only needed to switch to a different connection. Install it with `apk add mwan3 luci-app-mwan3`.

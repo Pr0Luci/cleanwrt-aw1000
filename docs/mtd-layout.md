@@ -63,3 +63,14 @@ community for this device first, and only then install CleanWRT. Make sure you c
 [serial console](uart.md) before you start; you will need it if anything goes wrong.
 
 Next: [Recovery](recovery.md). Read it before you flash.
+
+## Common questions
+
+??? question "How do I check the flash layout of my Arcadyan AW1000?"
+    Run `cat /proc/mtd` on a router that runs OpenWrt. The `rootfs` partition must be at least `0x08000000` (128 MiB). If it shows up as `rootfs_bak` instead, you have the stock layout, so do not flash this image.
+
+??? question "Why does OpenWrt not fit on the stock AW1000 flash layout?"
+    The stock `rootfs` partition leaves 316 erase blocks for UBI volumes, and the CleanWRT image needs 498. The build checks this and fails if the image does not fit the layout it targets.
+
+??? question "Can I flash CleanWRT if my AW1000 has the stock layout?"
+    No. CleanWRT does not convert the layout. Use a layout-conversion procedure from the OpenWrt community first, make sure you can reach the serial console, and only then install.

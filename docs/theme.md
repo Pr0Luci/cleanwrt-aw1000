@@ -68,3 +68,14 @@ The theme is an ordinary LuCI ucode theme: `header.ut`, `footer.ut` and the logi
 (`--ax-*` custom properties) and a small script for the sidebar. The status widgets are produced
 by patches to the pinned LuCI and QModem feeds (`patches/feeds/`), and only render while Apex is
 the active theme.
+
+## Common questions
+
+??? question "Does CleanWRT have a dark mode?"
+    Yes. The Apex theme is dark by default, switches to a light mode that follows your system, and has a toggle in the top bar to force either one. Your choice is remembered in the browser.
+
+??? question "Does the Apex theme work on a phone?"
+    Yes. A sidebar becomes a drawer on small screens, and a 390 px wide phone is a first-class target.
+
+??? question "How do I switch back to the default OpenWrt theme?"
+    Go to *System → System → Language and Style → Design*. The stock Bootstrap theme stays installed as a fallback, and pages with card widgets fall back to normal tables when another theme is active.

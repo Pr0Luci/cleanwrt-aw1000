@@ -97,3 +97,17 @@ The `rootfs` partition must be at least `0x08000000` (128 MiB). Otherwise stop. 
 - Open `http://192.168.1.1` over Ethernet and follow [First boot](first-boot.md).
 - Check the version in the login banner or *Status → Overview*.
 - If something is wrong, go to [Recovery](recovery.md).
+
+## Common questions
+
+??? question "How do I install OpenWrt on the Arcadyan AW1000 for the first time?"
+    From the stock firmware you need a 3.3 V USB-UART adapter and a TFTP server. Stop U-Boot on the serial console, boot the initramfs image from RAM over TFTP, then run `sysupgrade` from that live system to write the permanent image.
+
+??? question "Can I install OpenWrt on the AW1000 without opening the case?"
+    If the router already runs OpenWrt, yes: copy the sysupgrade image over and flash it, or use *System → Backup / Flash Firmware* in LuCI. From the stock firmware you need the serial console. A community no-UART method existed for very old stock firmware, but it is not maintained here and is reported to be patched on newer revisions.
+
+??? question "Which file do I flash on the AW1000, initramfs or sysupgrade?"
+    Both, in order, on a first install. The initramfs image only boots a live system from RAM and writes nothing. The sysupgrade image is the permanent one. Later updates need only the sysupgrade image.
+
+??? question "Should I keep settings or use sysupgrade -n on the AW1000?"
+    Keep settings between CleanWRT releases. Use `sysupgrade -n` (a clean install) when you change major versions, when you come from another firmware, or when the interface misbehaves. It also puts the default credentials back.

@@ -81,6 +81,18 @@ description: "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port,
     Restoring the stock firmware needs the stock image and a serial console. Keep a backup of the
     stock firmware before you flash.
 
+??? question "What is the default IP address and login of CleanWRT on the AW1000?"
+    The router answers at `http://192.168.1.1` over Ethernet, with no root password at first. LuCI asks you to set one. Wi-Fi starts as `CleanWRT-5G` and `CleanWRT-2.4G` with the default key `CleanWRT#40`, so change it on the first login.
+
+??? question "Do I need a serial cable to install OpenWrt on the AW1000?"
+    For the first install from the stock firmware, yes: a 3.3 V USB-UART adapter and a TFTP server. If the router already runs OpenWrt, you can update with `sysupgrade` or from LuCI with no cable. See [Installation](installation.md).
+
+??? question "Where do I download the AW1000 firmware, and how do I verify it?"
+    On the GitHub Releases page of the project. Check the file with `sha256sum -c sha256sums.cw --ignore-missing` before you flash, and make sure the file name contains `arcadyan_aw1000`. See [Releases](releases.md).
+
+??? question "How do I recover an AW1000 that will not boot?"
+    If the router boots but you cannot reach it, use failsafe mode over Ethernet. If it is stuck at the bootloader, use the serial console to boot an initramfs image over TFTP and flash again. See [Recovery](recovery.md).
+
 ## Still stuck?
 
 1. Collect a diagnostic capture: `cw-diag full` (SIM identifiers, public IPs and Wi-Fi keys are

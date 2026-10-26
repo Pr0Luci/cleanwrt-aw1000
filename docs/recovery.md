@@ -69,3 +69,17 @@ removing it. That is the real brick wall. It is why you should **double-check th
 
 A factory reset does **not** restore packages that `apk upgrade` replaced. To get back to the
 state of a release, flash that release again. See [Updating and pinning](updating.md).
+
+## Common questions
+
+??? question "How do I unbrick an Arcadyan AW1000?"
+    If U-Boot still answers on the serial console, interrupt it, boot an initramfs image over TFTP (nothing is written to flash), then run `sysupgrade` with a full image from that live system. If U-Boot itself is dead, the NAND has to be reprogrammed with an external programmer.
+
+??? question "How do I enter failsafe mode on the AW1000?"
+    Connect a computer over Ethernet and set it to 192.168.1.x, power-cycle the router, and press the reset button a few times once the boot LED starts blinking. The router then comes up at 192.168.1.1 over SSH with no root password. Failsafe does not work over Wi-Fi or the 5G modem.
+
+??? question "What happens if a sysupgrade is interrupted on the AW1000?"
+    You may end up in a boot loop or at the bootloader. The AW1000 has a single NAND layout with no A/B fallback partition, so recovery goes through the serial console and an initramfs image.
+
+??? question "Does a factory reset undo an apk upgrade?"
+    No. A factory reset does not restore packages that `apk upgrade` replaced. Flash the release image again to get back to the state of that release.

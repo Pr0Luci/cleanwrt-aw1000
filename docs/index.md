@@ -11,6 +11,10 @@ description: "CleanWRT is OpenWrt 25.12 firmware for the Arcadyan AW1000 (Telstr
 interface and a curated set of opt-in apps to stock OpenWrt. It is built in the open on GitHub from
 pinned sources.
 
+If you own an AW1000 and want OpenWrt on it, with a desk phone on the RJ11 socket and a 5G link
+that reconnects on its own, this is the place to start. The pages below take you from "is my
+router supported?" to a flashed, working router, and tell you how to get out if something goes wrong.
+
 !!! note "Not affiliated with OpenWrt"
     CleanWRT is *Powered by OpenWrt* and is not affiliated with or endorsed by the OpenWrt
     project. OpenWrt® is a registered trademark of Software Freedom Conservancy (SFC).
@@ -118,3 +122,18 @@ before relying on it for anything important.
 | build it myself | [Build from source](building.md) |
 | fix something | [FAQ and troubleshooting](faq.md) |
 | see the source code | [Repositories](repositories.md) |
+
+## Common questions
+
+??? question "What is CleanWRT?"
+    CleanWRT is an independent build of OpenWrt 25.12.5 for the Arcadyan AW1000 5G router. On top of stock OpenWrt it adds a working RJ11 phone port (AWvoice), a 5G modem stack that dials and recovers by itself, the Apex theme, front-panel LED management and a set of apps that stay off until you enable them.
+
+??? question "Which routers does CleanWRT support?"
+    Only the Arcadyan AW1000 (the Telstra variant) with the expanded flash layout. Never flash it on another router, because an image built for a different partition table can brick the device. See [Hardware](hardware.md) and [MTD layout](mtd-layout.md).
+
+??? question "How is CleanWRT different from stock OpenWrt on the AW1000?"
+    It is OpenWrt 25.12.5 with the AW1000 pieces already working: the phone port with VoLTE calls, QModem for the 5G modem, a modern dark and light interface, LEDs that show 5G type and signal quality, and VPN and proxy tools that are installed but off by default.
+
+??? question "Is CleanWRT free to use?"
+    Yes. The build configuration, patches and scripts are GPL-2.0-only. The bundled packages keep their own licences, and QModem adds a non-commercial clause, so read [Licence and notices](licence.md) before any business use.
+

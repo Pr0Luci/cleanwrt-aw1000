@@ -46,3 +46,14 @@ Add a node (server), pick the matching core, set the routing mode and enable. `d
 
 **IPv6:** if you send traffic through Passwall 2, enable **IPv6 TProxy** in its forwarding
 settings. Passwall 1 hides IPv6 answers for proxied names by default.
+
+## Common questions
+
+??? question "Does CleanWRT include WireGuard and OpenVPN?"
+    Yes. WireGuard is fully installed with no interfaces configured, and OpenVPN needs your own `.ovpn` configuration. Both ship disabled.
+
+??? question "Can I run Passwall and HomeProxy at the same time?"
+    It is better not to. Several proxy suites on one router make firewall and DNS rules fight, so enable the one you want.
+
+??? question "Why do I need IPv6 TProxy in Passwall 2?"
+    Without it, devices can reach IPv6 sites directly, outside the proxy. Enable it in the forwarding settings when you proxy traffic through Passwall 2.

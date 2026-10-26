@@ -44,3 +44,14 @@ You can also run your own WireGuard server on the router. See [VPN and proxies](
 | to reach the whole LAN from your devices with little setup | Tailscale |
 | to publish one web service under your own domain | Cloudflare Tunnel |
 | a classic VPN you control end to end (needs a public endpoint somewhere) | WireGuard |
+
+## Common questions
+
+??? question "How can I reach my router behind 5G CGNAT?"
+    5G gives you a carrier-grade NAT address, so port forwarding does not work. Use Tailscale, a Cloudflare Tunnel or a WireGuard server you run yourself. All of them ship disabled.
+
+??? question "Should I use Tailscale or Cloudflare Tunnel on the AW1000?"
+    Tailscale is the easiest way to reach the whole LAN from your own devices. A Cloudflare Tunnel is better for publishing one web service under your own domain.
+
+??? question "Why does cloudflared show a red error?"
+    That is expected until you configure the tunnel token on the *Configuration* tab. It is not a fault.
