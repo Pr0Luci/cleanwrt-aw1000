@@ -1,3 +1,8 @@
+---
+title: "Updating CleanWRT and package pinning"
+description: "How to update CleanWRT on the AW1000, which packages are pinned and why, and what to do if a package upgrade breaks something."
+---
+
 # Updating and pinning
 
 ## Firmware updates

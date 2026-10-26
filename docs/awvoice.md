@@ -1,4 +1,9 @@
-# AWvoice: phone calls on the RJ11 port
+---
+title: "AW1000 RJ11 phone port: VoLTE calls with AWvoice"
+description: "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more."
+---
+
+# AWvoice: an RJ11 phone port with VoLTE calls on the AW1000
 
 **AWvoice** turns the AW1000's RJ11 socket into a working phone line. Plug an ordinary desk
 phone into the router and make and take calls over the SIM card, with no extra box, no PBX and no
@@ -111,6 +116,29 @@ the LED name) are in `/etc/config/awvoice`.
   the line LED;
 - **health and tests:** the AT port, the line, the modem, counters and the log, with ring, line and
   loopback tests.
+
+## Frequently asked questions
+
+??? question "How do I make phone calls on the Arcadyan AW1000?"
+    Install CleanWRT, which includes AWvoice, plug an ordinary analogue desk phone into the RJ11
+    socket, enable the phone service and lift the handset. Calls go out over the router's 5G modem
+    with your SIM's number.
+
+??? question "Which phones work on the RJ11 port?"
+    An ordinary analogue (tone dial) phone with an RJ11 plug. A handset with a display also shows
+    the caller id.
+
+??? question "Does AWvoice need Asterisk, SIP or a second phone number?"
+    No. There is no PBX and no SIP account. The cellular network is the exchange and the SIM's
+    number is the line's number.
+
+??? question "Does the AW1000 need VoLTE for voice calls?"
+    Yes. The call is carried by the modem over VoLTE, so you need a SIM and an operator that
+    provide VoLTE. The modem must also be in PCM slave mode, which AWvoice checks and reports.
+
+??? question "Can I use it for emergency calls?"
+    No. The line works only while the router has power, the modem is registered for VoLTE and the
+    operator carries the call, and there is no battery backup. Keep a mobile phone at hand.
 
 ## Known limits
 

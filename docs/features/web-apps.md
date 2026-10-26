@@ -1,3 +1,8 @@
+---
+title: "Syncthing, AdGuard Home and qBittorrent on the AW1000"
+description: "How to start and open the apps with their own web interface in CleanWRT: Syncthing, AdGuard Home and qBittorrent, with the first-run steps."
+---
+
 # Apps with their own web interface
 
 Some apps are configured in their own dashboard, opened in the browser, and not inside LuCI. The

@@ -1,3 +1,8 @@
+---
+title: "Arcadyan AW1000 hardware: IPQ8072, 5G modem, RJ11 port"
+description: "Specification of the Arcadyan AW1000 5G router: Qualcomm IPQ8072, 1 GiB RAM and NAND, Quectel RG500Q-EA modem, ath11k Wi-Fi and the RJ11 phone port."
+---
+
 # Hardware
 
 CleanWRT supports **one device**: the Arcadyan AW1000 5G router (the Telstra variant).

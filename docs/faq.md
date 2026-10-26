@@ -1,3 +1,8 @@
+---
+title: "Arcadyan AW1000 OpenWrt FAQ and troubleshooting"
+description: "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT."
+---
+
 # FAQ and troubleshooting
 
 ## Known limits { #known-limits }
@@ -13,6 +18,19 @@
 - The modem's own firmware is separate and is not provided by this project.
 
 ## Questions
+
+??? question "Does OpenWrt run on the Arcadyan AW1000?"
+    Yes. CleanWRT is OpenWrt 25.12.5 built for the AW1000 (`qualcommax/ipq807x`), with the 5G modem,
+    Wi-Fi, the front-panel LEDs and the RJ11 phone port working. It needs the expanded flash layout,
+    see the MTD layout page.
+
+??? question "Can I use a normal phone on the AW1000's RJ11 port?"
+    Yes, with AWvoice, which is part of CleanWRT: an ordinary analogue phone makes and takes calls
+    over the SIM.
+
+??? question "Does the AW1000 do VoLTE voice calls on OpenWrt?"
+    Yes, with AWvoice. The 5G modem carries the call over VoLTE, so you need a SIM and an operator
+    that provide VoLTE.
 
 ??? question "Why does the browser say the connection is not secure?"
     LuCI uses a self-signed certificate created on your router at first boot. The connection is

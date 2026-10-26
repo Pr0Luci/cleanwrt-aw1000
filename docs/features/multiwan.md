@@ -1,3 +1,8 @@
+---
+title: "Multi-WAN failover for a 5G router"
+description: "Add a phone tether, USB modem or Ethernet backup connection and switch to it with mwan3 when 5G drops or hits a data cap."
+---
+
 # Multi-WAN failover
 
 Add a second internet connection and let the router switch to it if 5G drops or hits a cap.

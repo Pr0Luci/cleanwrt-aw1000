@@ -1,3 +1,8 @@
+---
+title: "OpenWrt router security defaults on the AW1000"
+description: "How CleanWRT secures the Arcadyan AW1000 by default: no open services, HTTPS for the admin UI, a first-login password, Wi-Fi key and service advice."
+---
+
 # Security
 
 ## Defaults

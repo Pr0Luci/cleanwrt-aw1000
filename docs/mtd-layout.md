@@ -1,3 +1,8 @@
+---
+title: "AW1000 expanded MTD layout explained"
+description: "Why the Arcadyan AW1000 needs the expanded flash layout for CleanWRT, what has to fit in the rootfs partition, and how to check your router first."
+---
+
 # MTD layout
 
 !!! danger "Read this before the first flash"

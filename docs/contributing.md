@@ -1,3 +1,8 @@
+---
+title: "Contribute to CleanWRT"
+description: "How to report problems, send pull requests and improve the CleanWRT documentation for the Arcadyan AW1000."
+---
+
 # Contributing
 
 Improvements are welcome: fixes, documentation, test reports and package suggestions.

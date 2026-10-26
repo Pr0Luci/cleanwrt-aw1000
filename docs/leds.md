@@ -1,3 +1,8 @@
+---
+title: "Arcadyan AW1000 LEDs: 5G, signal and night mode"
+description: "What every front-panel LED of the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality, internet check, night mode and settings."
+---
+
 # Front-panel LEDs
 
 CleanWRT replaces the stock *LED Configuration* page with **LED Management**

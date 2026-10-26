@@ -1,3 +1,8 @@
+---
+title: "Install OpenWrt on the Arcadyan AW1000"
+description: "How to install CleanWRT on the Arcadyan AW1000: the first install from stock with UART and TFTP, or sysupgrade from an existing OpenWrt, step by step."
+---
+
 # Installation
 
 !!! danger "Read this page fully before you start"

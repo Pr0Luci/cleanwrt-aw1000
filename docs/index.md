@@ -1,4 +1,9 @@
-# CleanWRT
+---
+title: "OpenWrt firmware for the Arcadyan AW1000 5G router"
+description: "CleanWRT is OpenWrt 25.12 firmware for the Arcadyan AW1000 (Telstra variant): an RJ11 phone port with VoLTE calls (AWvoice), a 5G modem stack and the Apex theme."
+---
+
+# CleanWRT: OpenWrt for the Arcadyan AW1000
 
 **CleanWRT** is an independent, community build of OpenWrt 25.12.5 for the
 **Arcadyan AW1000** 5G router (Qualcomm IPQ8072, Quectel RG500Q-EA modem). It adds

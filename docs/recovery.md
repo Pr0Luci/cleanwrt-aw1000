@@ -1,3 +1,8 @@
+---
+title: "Recover or unbrick an Arcadyan AW1000"
+description: "Failsafe mode, U-Boot and TFTP recovery for the Arcadyan AW1000, what sysupgrade keeps, and what to do when the bootloader does not answer."
+---
+
 # Recovery and unbrick
 
 Read this page before you flash. The AW1000 has a **single NAND layout with no A/B fallback

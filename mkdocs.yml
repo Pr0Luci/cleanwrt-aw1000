@@ -1,5 +1,5 @@
 site_name: CleanWRT
-site_description: OpenWrt based firmware for the Arcadyan AW1000 5G router
+site_description: OpenWrt firmware for the Arcadyan AW1000 5G router with AWvoice, an RJ11 phone port with VoLTE calls, a 5G modem stack and the Apex theme.
 site_url: https://pr0luci.github.io/cleanwrt-aw1000/docs/
 repo_url: https://github.com/Pr0Luci/cleanwrt-aw1000
 repo_name: Pr0Luci/cleanwrt-aw1000
@@ -9,6 +9,9 @@ copyright: GPL-2.0-only. CleanWRT is not affiliated with or endorsed by the Open
 theme:
   name: material
   language: en
+  font: false
+  favicon: assets/img/favicon.svg
+  logo: assets/img/logo.svg
   palette:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
@@ -60,6 +63,9 @@ markdown_extensions:
 
 extra:
   generator: false
+  # Search Console / Bing Webmaster verification tokens (the content value of the meta tag):
+  # google_site_verification: ""
+  # bing_site_verification: ""
 
 nav:
   - Home: index.md
