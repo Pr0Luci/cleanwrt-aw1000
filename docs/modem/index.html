@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "The 5G modem", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The 5G modem", "description": "Set up and manage the Quectel RG500Q-EA 5G modem of the Arcadyan AW1000 with QModem: signal, SMS, TTL, IPv4/IPv6, AT ports and modem firmware.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does the 5G modem of my AW1000 not register?", "acceptedAnswer": {"@type": "Answer", "text": "Open Modem → QModem and Modem → 3gInfo-lite and check the SIM, the APN and the signal first. A modem firmware upgrade is only a last resort, and only when the carrier or Quectel confirms that a newer firmware fixes your problem."}}, {"@type": "Question", "name": "How do I read and send SMS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Use Modem → SMS in LuCI. You can read and send messages there, and received SMS can be forwarded."}}, {"@type": "Question", "name": "What does the TTL setting do on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "It gives forwarded packets a fixed TTL of 64 so tethered traffic looks like traffic from the router itself. It is on by default. Whether that is allowed depends on your carrier's terms, and you can change or switch it off in Modem → TTL."}}, {"@type": "Question", "name": "How do I use IPv4 only on the AW1000 5G connection?", "acceptedAnswer": {"@type": "Answer", "text": "Set the modem's PDP type to IPv4 in Modem → QModem. If you send traffic through Passwall 2, also enable IPv6 TProxy in its forwarding settings so devices cannot reach IPv6 sites outside the proxy."}}, {"@type": "Question", "name": "Which AT port do I use on the AW1000 modem?", "acceptedAnswer": {"@type": "Answer", "text": "The modem exposes two AT ports. The LED daemon uses /dev/ttyUSB2 and QModem uses /dev/ttyUSB3. Do not leave a terminal open on either one, because two programs reading one port interleave their replies."}}, {"@type": "Question", "name": "Do I need to upgrade the modem firmware on my AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Only if the modem misbehaves on your carrier. If it works, leave it alone. The firmware is separate from CleanWRT, comes only from Quectel, and an interrupted or wrong flash can leave the modem unusable."}}]}</script>
 </head>
   
   
@@ -847,6 +848,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1743,6 +1755,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1902,6 +1925,31 @@ of the version you receive, because the flags differ between versions. In outlin
 <li>If the modem does not come back, the vendor's tool and package are the recovery path. Contact
   Quectel with the revision string you saved.</li>
 </ul>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Why does the 5G modem of my AW1000 not register?</summary>
+<p>Open <em>Modem → QModem</em> and <em>Modem → 3gInfo-lite</em> and check the SIM, the APN and the signal first. A modem firmware upgrade is only a last resort, and only when the carrier or Quectel confirms that a newer firmware fixes your problem.</p>
+</details>
+<details class="question">
+<summary>How do I read and send SMS on the Arcadyan AW1000?</summary>
+<p>Use <em>Modem → SMS</em> in LuCI. You can read and send messages there, and received SMS can be forwarded.</p>
+</details>
+<details class="question">
+<summary>What does the TTL setting do on the AW1000?</summary>
+<p>It gives forwarded packets a fixed TTL of 64 so tethered traffic looks like traffic from the router itself. It is on by default. Whether that is allowed depends on your carrier's terms, and you can change or switch it off in <em>Modem → TTL</em>.</p>
+</details>
+<details class="question">
+<summary>How do I use IPv4 only on the AW1000 5G connection?</summary>
+<p>Set the modem's PDP type to IPv4 in <em>Modem → QModem</em>. If you send traffic through Passwall 2, also enable IPv6 TProxy in its forwarding settings so devices cannot reach IPv6 sites outside the proxy.</p>
+</details>
+<details class="question">
+<summary>Which AT port do I use on the AW1000 modem?</summary>
+<p>The modem exposes two AT ports. The LED daemon uses <code>/dev/ttyUSB2</code> and QModem uses <code>/dev/ttyUSB3</code>. Do not leave a terminal open on either one, because two programs reading one port interleave their replies.</p>
+</details>
+<details class="question">
+<summary>Do I need to upgrade the modem firmware on my AW1000?</summary>
+<p>Only if the modem misbehaves on your carrier. If it works, leave it alone. The firmware is separate from CleanWRT, comes only from Quectel, and an interrupted or wrong flash can leave the modem unusable.</p>
+</details>
 
 
 

@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Multi-WAN failover", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/multiwan/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Multi-WAN failover", "description": "Add a phone tether, USB modem or Ethernet backup connection and switch to it with mwan3 when 5G drops or hits a data cap.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/multiwan/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can the Arcadyan AW1000 fail over to another connection when 5G drops?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with mwan3. Add a phone USB tether, a USB modem or a USB Ethernet adapter as a second interface, then set the 5G modem as the primary member and the other as the backup."}}, {"@type": "Question", "name": "Is mwan3 included in CleanWRT?", "acceptedAnswer": {"@type": "Answer", "text": "No. The 5G modem already reconnects by itself, so mwan3 is only needed to switch to a different connection. Install it with apk add mwan3 luci-app-mwan3."}}]}</script>
 </head>
   
   
@@ -924,6 +925,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1555,6 +1567,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1614,6 +1637,15 @@
 </code></pre></div>
 <p>Configure members and policies in <em>Network → Load Balancing</em>. Point the primary at the modem
 interface (<code>4_1</code>) and the backup at your second connection.</p>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Can the Arcadyan AW1000 fail over to another connection when 5G drops?</summary>
+<p>Yes, with mwan3. Add a phone USB tether, a USB modem or a USB Ethernet adapter as a second interface, then set the 5G modem as the primary member and the other as the backup.</p>
+</details>
+<details class="question">
+<summary>Is mwan3 included in CleanWRT?</summary>
+<p>No. The 5G modem already reconnects by itself, so mwan3 is only needed to switch to a different connection. Install it with <code>apk add mwan3 luci-app-mwan3</code>.</p>
+</details>
 
 
 

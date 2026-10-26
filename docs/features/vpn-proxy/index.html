@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "VPN and proxies", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "VPN and proxies", "description": "The VPN and proxy tools in CleanWRT for the Arcadyan AW1000: WireGuard, OpenVPN, Passwall, Passwall 2 and HomeProxy, installed and disabled by default.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is fully installed with no interfaces configured, and OpenVPN needs your own .ovpn configuration. Both ship disabled."}}, {"@type": "Question", "name": "Can I run Passwall and HomeProxy at the same time?", "acceptedAnswer": {"@type": "Answer", "text": "It is better not to. Several proxy suites on one router make firewall and DNS rules fight, so enable the one you want."}}, {"@type": "Question", "name": "Why do I need IPv6 TProxy in Passwall 2?", "acceptedAnswer": {"@type": "Answer", "text": "Without it, devices can reach IPv6 sites directly, outside the proxy. Enable it in the forwarding settings when you proxy traffic through Passwall 2."}}]}</script>
 </head>
   
   
@@ -907,6 +908,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1577,6 +1589,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1653,6 +1676,19 @@ Enable the one you want.</p>
 </div>
 <p><strong>IPv6:</strong> if you send traffic through Passwall 2, enable <strong>IPv6 TProxy</strong> in its forwarding
 settings. Passwall 1 hides IPv6 answers for proxied names by default.</p>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Does CleanWRT include WireGuard and OpenVPN?</summary>
+<p>Yes. WireGuard is fully installed with no interfaces configured, and OpenVPN needs your own <code>.ovpn</code> configuration. Both ship disabled.</p>
+</details>
+<details class="question">
+<summary>Can I run Passwall and HomeProxy at the same time?</summary>
+<p>It is better not to. Several proxy suites on one router make firewall and DNS rules fight, so enable the one you want.</p>
+</details>
+<details class="question">
+<summary>Why do I need IPv6 TProxy in Passwall 2?</summary>
+<p>Without it, devices can reach IPv6 sites directly, outside the proxy. Enable it in the forwarding settings when you proxy traffic through Passwall 2.</p>
+</details>
 
 
 

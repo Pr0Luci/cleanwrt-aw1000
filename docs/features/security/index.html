@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Security", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/security/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Security", "description": "How CleanWRT secures the Arcadyan AW1000 by default: no open services, HTTPS for the admin UI, a first-login password, Wi-Fi key and service advice.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/security/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does my browser say the OpenWrt router connection is not secure?", "acceptedAnswer": {"@type": "Answer", "text": "LuCI uses a self-signed certificate that your router creates at first boot. The connection is still encrypted, but no public authority signed the certificate. Click Advanced → Proceed, or install a trusted certificate with ACME if you own a domain."}}, {"@type": "Question", "name": "What are the default passwords on CleanWRT?", "acceptedAnswer": {"@type": "Answer", "text": "There is no root password at first. The first login happens over Ethernet and LuCI asks you to set one. Wi-Fi is WPA2-PSK with the default key CleanWRT#40. Change both on the first login."}}, {"@type": "Question", "name": "How do I get a trusted HTTPS certificate on the router?", "acceptedAnswer": {"@type": "Answer", "text": "Install acme-common and luci-app-acme, then issue a Let's Encrypt certificate with a DNS challenge. That works behind CGNAT because it needs no inbound connection."}}]}</script>
 </head>
   
   
@@ -873,6 +874,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1621,6 +1633,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1717,6 +1740,19 @@ as they do on stock OpenWrt. The connection is still encrypted. Click <em>Advanc
 <p>For a security problem, please open a private report from the repository's <em>Security</em> tab
 (<em>Report a vulnerability</em>) if it is enabled, or open an issue that does not include exploit
 details and ask for a private channel.</p>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Why does my browser say the OpenWrt router connection is not secure?</summary>
+<p>LuCI uses a self-signed certificate that your router creates at first boot. The connection is still encrypted, but no public authority signed the certificate. Click <em>Advanced → Proceed</em>, or install a trusted certificate with ACME if you own a domain.</p>
+</details>
+<details class="question">
+<summary>What are the default passwords on CleanWRT?</summary>
+<p>There is no root password at first. The first login happens over Ethernet and LuCI asks you to set one. Wi-Fi is WPA2-PSK with the default key <code>CleanWRT#40</code>. Change both on the first login.</p>
+</details>
+<details class="question">
+<summary>How do I get a trusted HTTPS certificate on the router?</summary>
+<p>Install <code>acme-common</code> and <code>luci-app-acme</code>, then issue a Let's Encrypt certificate with a DNS challenge. That works behind CGNAT because it needs no inbound connection.</p>
+</details>
 
 
 

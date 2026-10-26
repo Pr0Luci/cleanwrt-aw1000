@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Remote access", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/remote-access/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Remote access", "description": "Reach your AW1000 and your LAN behind 5G CGNAT with Tailscale, Cloudflare Tunnel or WireGuard. Everything ships disabled until you turn it on.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/remote-access/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How can I reach my router behind 5G CGNAT?", "acceptedAnswer": {"@type": "Answer", "text": "5G gives you a carrier-grade NAT address, so port forwarding does not work. Use Tailscale, a Cloudflare Tunnel or a WireGuard server you run yourself. All of them ship disabled."}}, {"@type": "Question", "name": "Should I use Tailscale or Cloudflare Tunnel on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Tailscale is the easiest way to reach the whole LAN from your own devices. A Cloudflare Tunnel is better for publishing one web service under your own domain."}}, {"@type": "Question", "name": "Why does cloudflared show a red error?", "acceptedAnswer": {"@type": "Answer", "text": "That is expected until you configure the tunnel token on the Configuration tab. It is not a fault."}}]}</script>
 </head>
   
   
@@ -890,6 +891,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1599,6 +1611,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1671,6 +1694,19 @@ an unconfigured tunnel, not a fault. Configure the token first.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>How can I reach my router behind 5G CGNAT?</summary>
+<p>5G gives you a carrier-grade NAT address, so port forwarding does not work. Use Tailscale, a Cloudflare Tunnel or a WireGuard server you run yourself. All of them ship disabled.</p>
+</details>
+<details class="question">
+<summary>Should I use Tailscale or Cloudflare Tunnel on the AW1000?</summary>
+<p>Tailscale is the easiest way to reach the whole LAN from your own devices. A Cloudflare Tunnel is better for publishing one web service under your own domain.</p>
+</details>
+<details class="question">
+<summary>Why does cloudflared show a red error?</summary>
+<p>That is expected until you configure the tunnel token on the <em>Configuration</em> tab. It is not a fault.</p>
+</details>
 
 
 

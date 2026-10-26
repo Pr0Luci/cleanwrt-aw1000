@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "MTD layout", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "MTD layout", "description": "Why the Arcadyan AW1000 needs the expanded flash layout for CleanWRT, what has to fit in the rootfs partition, and how to check your router first.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I check the flash layout of my Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Run cat /proc/mtd on a router that runs OpenWrt. The rootfs partition must be at least 0x08000000 (128 MiB). If it shows up as rootfsbak instead, you have the stock layout, so do not flash this image."}}, {"@type": "Question", "name": "Why does OpenWrt not fit on the stock AW1000 flash layout?", "acceptedAnswer": {"@type": "Answer", "text": "The stock rootfs partition leaves 316 erase blocks for UBI volumes, and the CleanWRT image needs 498. The build checks this and fails if the image does not fit the layout it targets."}}, {"@type": "Question", "name": "Can I flash CleanWRT if my AW1000 has the stock layout?", "acceptedAnswer": {"@type": "Answer", "text": "No. CleanWRT does not convert the layout. Use a layout-conversion procedure from the OpenWrt community first, make sure you can reach the serial console, and only then install."}}]}</script>
 </head>
   
   
@@ -549,6 +550,17 @@
     <span class="md-ellipsis">
       
         If your router has the stock layout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
       
     </span>
   </a>
@@ -1599,6 +1611,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1687,6 +1710,19 @@ table can brick the router.</p>
 community for this device first, and only then install CleanWRT. Make sure you can reach the
 <a href="../uart/">serial console</a> before you start; you will need it if anything goes wrong.</p>
 <p>Next: <a href="../recovery/">Recovery</a>. Read it before you flash.</p>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>How do I check the flash layout of my Arcadyan AW1000?</summary>
+<p>Run <code>cat /proc/mtd</code> on a router that runs OpenWrt. The <code>rootfs</code> partition must be at least <code>0x08000000</code> (128 MiB). If it shows up as <code>rootfs_bak</code> instead, you have the stock layout, so do not flash this image.</p>
+</details>
+<details class="question">
+<summary>Why does OpenWrt not fit on the stock AW1000 flash layout?</summary>
+<p>The stock <code>rootfs</code> partition leaves 316 erase blocks for UBI volumes, and the CleanWRT image needs 498. The build checks this and fails if the image does not fit the layout it targets.</p>
+</details>
+<details class="question">
+<summary>Can I flash CleanWRT if my AW1000 has the stock layout?</summary>
+<p>No. CleanWRT does not convert the layout. Use a layout-conversion procedure from the OpenWrt community first, make sure you can reach the serial console, and only then install.</p>
+</details>
 
 
 

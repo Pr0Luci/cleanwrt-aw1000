@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Front-panel LEDs", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Front-panel LEDs", "description": "What every front-panel LED of the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality, internet check, night mode and settings.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What do the front-panel LEDs of the Arcadyan AW1000 mean?", "acceptedAnswer": {"@type": "Answer", "text": "Power is always on. Wi-Fi is on while a radio is up. The 5G LED shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes."}}, {"@type": "Question", "name": "How do I turn off the AW1000 LEDs at night?", "acceptedAnswer": {"@type": "Answer", "text": "Enable night mode in System → LED Management. The default window is 22:30 to 06:00, and a window past midnight works. Remove an LED from the keep-on list to switch it off inside the window."}}, {"@type": "Question", "name": "Why is the 5G LED on my AW1000 off?", "acceptedAnswer": {"@type": "Answer", "text": "The 5G LED lights only for 5G. It is off on 4G, 3G, with no service, or when the type is unknown. If the signal LED is off too, the daemon probably cannot read the modem on its AT port."}}, {"@type": "Question", "name": "Why is the internet LED off when my internet works?", "acceptedAnswer": {"@type": "Answer", "text": "The LED mirrors a connectivity probe. If the probe address is blocked, it stays off. Change the probe URL in LED Management, or switch the check to the default-route mode."}}]}</script>
 </head>
   
   
@@ -850,6 +851,17 @@
     <span class="md-ellipsis">
       
         Under the hood
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
       
     </span>
   </a>
@@ -1699,6 +1711,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1954,6 +1977,23 @@ daemon-owned LEDs are turned off.</p>
 <p>The daemon reads the modem directly over the AT port with plain shell, so no other app is
 needed. It writes the LED state through sysfs, only when something changes. The source is in the
 <a href="https://github.com/Pr0Luci/luci-app-cw-led"><code>luci-app-cw-led</code></a> repository.</p>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>What do the front-panel LEDs of the Arcadyan AW1000 mean?</summary>
+<p>Power is always on. Wi-Fi is on while a radio is up. The 5G LED shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes.</p>
+</details>
+<details class="question">
+<summary>How do I turn off the AW1000 LEDs at night?</summary>
+<p>Enable night mode in <em>System → LED Management</em>. The default window is 22:30 to 06:00, and a window past midnight works. Remove an LED from the keep-on list to switch it off inside the window.</p>
+</details>
+<details class="question">
+<summary>Why is the 5G LED on my AW1000 off?</summary>
+<p>The 5G LED lights only for 5G. It is off on 4G, 3G, with no service, or when the type is unknown. If the signal LED is off too, the daemon probably cannot read the modem on its AT port.</p>
+</details>
+<details class="question">
+<summary>Why is the internet LED off when my internet works?</summary>
+<p>The LED mirrors a connectivity probe. If the probe address is blocked, it stays off. Change the probe URL in <em>LED Management</em>, or switch the check to the default-route mode.</p>
+</details>
 
 
 

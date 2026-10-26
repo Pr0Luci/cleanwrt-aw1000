@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "USB storage and NAS", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/storage/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "USB storage and NAS", "description": "Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, qBittorrent, Syncthing, a DLNA media server and a printer server, all opt-in.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/storage/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can I use a USB drive as a NAS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. A drive auto-mounts under /mnt (ext4, FAT, exFAT and NTFS), and you can share it with SMB, DLNA, Syncthing and qBittorrent. All of these ship installed but disabled, so set credentials before you enable them."}}, {"@type": "Question", "name": "Can the AW1000 stream media to a smart TV?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Enable miniDLNA with a drive of media attached. Smart TVs, VLC, Kodi and phone apps on the LAN will see the server. A PlayStation 5 has no built-in DLNA player, so use an app such as Plex there."}}, {"@type": "Question", "name": "Why should I plug a drive in before downloading?", "acceptedAnswer": {"@type": "Answer", "text": "Downloads default to the first USB drive. With no drive attached they would fill the router's small internal flash."}}]}</script>
 </head>
   
   
@@ -991,6 +992,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1577,6 +1589,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1683,6 +1706,19 @@ it does not re-scan on every reboot.</p>
 <p class="admonition-title">PlayStation 5</p>
 <p>The PS5 has no built-in DLNA player. Use an app such as Plex on it.</p>
 </div>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Can I use a USB drive as a NAS on the Arcadyan AW1000?</summary>
+<p>Yes. A drive auto-mounts under <code>/mnt</code> (ext4, FAT, exFAT and NTFS), and you can share it with SMB, DLNA, Syncthing and qBittorrent. All of these ship installed but disabled, so set credentials before you enable them.</p>
+</details>
+<details class="question">
+<summary>Can the AW1000 stream media to a smart TV?</summary>
+<p>Yes. Enable miniDLNA with a drive of media attached. Smart TVs, VLC, Kodi and phone apps on the LAN will see the server. A PlayStation 5 has no built-in DLNA player, so use an app such as Plex there.</p>
+</details>
+<details class="question">
+<summary>Why should I plug a drive in before downloading?</summary>
+<p>Downloads default to the first USB drive. With no drive attached they would fill the router's small internal flash.</p>
+</details>
 
 
 

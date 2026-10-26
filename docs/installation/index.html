@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Installation", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/installation/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Installation", "description": "How to install CleanWRT on the Arcadyan AW1000: the first install from stock with UART and TFTP, or sysupgrade from an existing OpenWrt, step by step.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/installation/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I install OpenWrt on the Arcadyan AW1000 for the first time?", "acceptedAnswer": {"@type": "Answer", "text": "From the stock firmware you need a 3.3 V USB-UART adapter and a TFTP server. Stop U-Boot on the serial console, boot the initramfs image from RAM over TFTP, then run sysupgrade from that live system to write the permanent image."}}, {"@type": "Question", "name": "Can I install OpenWrt on the AW1000 without opening the case?", "acceptedAnswer": {"@type": "Answer", "text": "If the router already runs OpenWrt, yes: copy the sysupgrade image over and flash it, or use System → Backup / Flash Firmware in LuCI. From the stock firmware you need the serial console. A community no-UART method existed for very old stock firmware, but it is not maintained here and is reported to be patched on newer revisions."}}, {"@type": "Question", "name": "Which file do I flash on the AW1000, initramfs or sysupgrade?", "acceptedAnswer": {"@type": "Answer", "text": "Both, in order, on a first install. The initramfs image only boots a live system from RAM and writes nothing. The sysupgrade image is the permanent one. Later updates need only the sysupgrade image."}}, {"@type": "Question", "name": "Should I keep settings or use sysupgrade -n on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Keep settings between CleanWRT releases. Use sysupgrade -n (a clean install) when you change major versions, when you come from another firmware, or when the interface misbehaves. It also puts the default credentials back."}}]}</script>
 </head>
   
   
@@ -521,6 +522,17 @@
     <span class="md-ellipsis">
       
         After flashing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
       
     </span>
   </a>
@@ -1599,6 +1611,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1713,6 +1736,23 @@ ssh<span class="w"> </span>root@192.168.1.1<span class="w"> </span><span class="
 <li>Check the version in the login banner or <em>Status → Overview</em>.</li>
 <li>If something is wrong, go to <a href="../recovery/">Recovery</a>.</li>
 </ul>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>How do I install OpenWrt on the Arcadyan AW1000 for the first time?</summary>
+<p>From the stock firmware you need a 3.3 V USB-UART adapter and a TFTP server. Stop U-Boot on the serial console, boot the initramfs image from RAM over TFTP, then run <code>sysupgrade</code> from that live system to write the permanent image.</p>
+</details>
+<details class="question">
+<summary>Can I install OpenWrt on the AW1000 without opening the case?</summary>
+<p>If the router already runs OpenWrt, yes: copy the sysupgrade image over and flash it, or use <em>System → Backup / Flash Firmware</em> in LuCI. From the stock firmware you need the serial console. A community no-UART method existed for very old stock firmware, but it is not maintained here and is reported to be patched on newer revisions.</p>
+</details>
+<details class="question">
+<summary>Which file do I flash on the AW1000, initramfs or sysupgrade?</summary>
+<p>Both, in order, on a first install. The initramfs image only boots a live system from RAM and writes nothing. The sysupgrade image is the permanent one. Later updates need only the sysupgrade image.</p>
+</details>
+<details class="question">
+<summary>Should I keep settings or use sysupgrade -n on the AW1000?</summary>
+<p>Keep settings between CleanWRT releases. Use <code>sysupgrade -n</code> (a clean install) when you change major versions, when you come from another firmware, or when the interface misbehaves. It also puts the default credentials back.</p>
+</details>
 
 
 

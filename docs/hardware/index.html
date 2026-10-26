@@ -70,6 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Hardware", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/hardware/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Hardware", "description": "Specification of the Arcadyan AW1000 5G router: Qualcomm IPQ8072, 1 GiB RAM and NAND, Quectel RG500Q-EA modem, ath11k Wi-Fi and the RJ11 phone port.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/hardware/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What chip and memory does the Arcadyan AW1000 have?", "acceptedAnswer": {"@type": "Answer", "text": "A Qualcomm IPQ8072 with four cores, 1 GiB of RAM and 1 GiB of NAND flash. Wi-Fi comes from Qualcomm ath11k radios, and the Ethernet ports sit on the NSS data plane."}}, {"@type": "Question", "name": "Which 5G modem is inside the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "A Quectel RG500Q-EA. Its firmware is separate from the router firmware, so flashing CleanWRT does not touch it. See The 5G modem."}}, {"@type": "Question", "name": "Which AW1000 does CleanWRT run on?", "acceptedAnswer": {"@type": "Answer", "text": "The Arcadyan AW1000 in its Telstra variant, and nothing else. The image is built for board arcadyan,aw1000 on qualcommax/ipq807x, and an image for a different partition table can brick a router."}}, {"@type": "Question", "name": "Does the Arcadyan AW1000 have a phone port?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It has an RJ11 socket with a line-interface chip. With AWvoice an ordinary analogue desk phone can make and take calls over the SIM card."}}]}</script>
 </head>
   
   
@@ -493,6 +494,17 @@
     <span class="md-ellipsis">
       
         What you need to know before flashing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
       
     </span>
   </a>
@@ -1599,6 +1611,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1693,6 +1716,23 @@ contacts, and see the safety notes on that page.</p>
   <a href="../uart/">UART guide</a>.</li>
 <li>Keep a copy of the stock firmware settings if you may ever want to go back.</li>
 </ul>
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>What chip and memory does the Arcadyan AW1000 have?</summary>
+<p>A Qualcomm IPQ8072 with four cores, 1 GiB of RAM and 1 GiB of NAND flash. Wi-Fi comes from Qualcomm ath11k radios, and the Ethernet ports sit on the NSS data plane.</p>
+</details>
+<details class="question">
+<summary>Which 5G modem is inside the Arcadyan AW1000?</summary>
+<p>A Quectel RG500Q-EA. Its firmware is separate from the router firmware, so flashing CleanWRT does not touch it. See <a href="../modem/">The 5G modem</a>.</p>
+</details>
+<details class="question">
+<summary>Which AW1000 does CleanWRT run on?</summary>
+<p>The Arcadyan AW1000 in its Telstra variant, and nothing else. The image is built for board <code>arcadyan,aw1000</code> on <code>qualcommax/ipq807x</code>, and an image for a different partition table can brick a router.</p>
+</details>
+<details class="question">
+<summary>Does the Arcadyan AW1000 have a phone port?</summary>
+<p>Yes. It has an RJ11 socket with a line-interface chip. With <a href="../awvoice/">AWvoice</a> an ordinary analogue desk phone can make and take calls over the SIM card.</p>
+</details>
 
 
 
