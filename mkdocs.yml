@@ -1,0 +1,98 @@
+site_name: CleanWRT
+site_description: OpenWrt based firmware for the Arcadyan AW1000 5G router
+site_url: https://pr0luci.github.io/cleanwrt-aw1000/docs/
+repo_url: https://github.com/Pr0Luci/cleanwrt-aw1000
+repo_name: Pr0Luci/cleanwrt-aw1000
+edit_uri: edit/main/docs/
+copyright: GPL-2.0-only. CleanWRT is not affiliated with or endorsed by the OpenWrt project.
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+hooks:
+  - tools/docs-hooks.py
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: false
+  - pymdownx.inlinehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  generator: false
+
+nav:
+  - Home: index.md
+  - Get started:
+      - Releases: releases.md
+      - Hardware: hardware.md
+      - Installation: installation.md
+      - MTD layout: mtd-layout.md
+      - UART guide: uart.md
+      - First boot: first-boot.md
+      - Recovery: recovery.md
+  - Using CleanWRT:
+      - AWvoice, the phone port: awvoice.md
+      - The 5G modem: modem.md
+      - Front-panel LEDs: leds.md
+      - The Apex theme: theme.md
+      - Security: features/security.md
+      - Remote access: features/remote-access.md
+      - VPN and proxies: features/vpn-proxy.md
+      - Multi-WAN failover: features/multiwan.md
+      - Monitoring: features/monitoring.md
+      - USB storage and NAS: features/storage.md
+      - Apps with their own web interface: features/web-apps.md
+  - Packages:
+      - What is included: included.md
+      - Full package list: generated/packages.md
+      - Extra packages: extra-packages.md
+      - Updating and pinning: updating.md
+  - Building:
+      - Build from source: building.md
+      - Repositories: repositories.md
+  - Help:
+      - FAQ and troubleshooting: faq.md
+      - Contributing: contributing.md
+      - Licence and notices: licence.md
+      - Changelog: changelog.md

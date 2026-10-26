@@ -5,3 +5,7 @@ key-build
 key-build.ucert
 *.key
 .DS_Store
+
+# generated docs page
+docs/generated/
+site/
