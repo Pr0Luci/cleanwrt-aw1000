@@ -9,9 +9,9 @@
 # installed from that subdirectory; ones with the Makefile at the repo root as a whole.
 
 # luci-app-cw-led: front-panel LED daemon and LuCI page, GPL-2.0-only
-luci-app-cw-led https://github.com/Pr0Luci/luci-app-cw-led.git f4bca47cc9c4b64bc6624787db9f42f1e4cfc4e3
+luci-app-cw-led https://github.com/Pr0Luci/luci-app-cw-led.git ee7b5f8861f1c247868207ccbff6b65c988783ce
 # luci-theme-apex: default LuCI theme, GPL-2.0-only with bundled OFL fonts
-luci-theme-apex https://github.com/Pr0Luci/luci-theme-apex.git 740d9b316af88c593ca7334462d1f10e8f97b503
+luci-theme-apex https://github.com/Pr0Luci/luci-theme-apex.git a3351c31309eb1a273281c427e161409a4e461dd
 
 # luci-app-homeproxy: HomeProxy LuCI app (ImmortalWrt), another proxy app on the same
 # cores the image already ships (sing-box). Single-package repo with the Makefile at
