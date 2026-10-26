@@ -90,13 +90,13 @@ AWvoice is installed with CleanWRT but the phone service starts only when you en
 line is never left ringing by accident:
 
 ```sh
-uci set zw_phone.main.enabled=1
-uci commit zw_phone
-/etc/init.d/zw-phone start
+uci set awvoice.main.enabled=1
+uci commit awvoice
+/etc/init.d/awvoice start
 ```
 
 The defaults fit the AW1000. The settings the page does not show (the modem's AT interface number,
-the LED name) are in `/etc/config/zw_phone`.
+the LED name) are in `/etc/config/awvoice`.
 
 ## The web page
 
