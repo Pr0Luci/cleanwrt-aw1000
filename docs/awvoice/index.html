@@ -1897,12 +1897,12 @@ of the page. It does not change them itself.</p>
 <h2 id="turn-it-on">Turn it on<a class="headerlink" href="#turn-it-on" title="Permanent link">&para;</a></h2>
 <p>AWvoice is installed with CleanWRT but the phone service starts only when you enable it, so the
 line is never left ringing by accident:</p>
-<div class="highlight"><pre><span></span><code>uci<span class="w"> </span><span class="nb">set</span><span class="w"> </span>zw_phone.main.enabled<span class="o">=</span><span class="m">1</span>
-uci<span class="w"> </span>commit<span class="w"> </span>zw_phone
-/etc/init.d/zw-phone<span class="w"> </span>start
+<div class="highlight"><pre><span></span><code>uci<span class="w"> </span><span class="nb">set</span><span class="w"> </span>awvoice.main.enabled<span class="o">=</span><span class="m">1</span>
+uci<span class="w"> </span>commit<span class="w"> </span>awvoice
+/etc/init.d/awvoice<span class="w"> </span>start
 </code></pre></div>
 <p>The defaults fit the AW1000. The settings the page does not show (the modem's AT interface number,
-the LED name) are in <code>/etc/config/zw_phone</code>.</p>
+the LED name) are in <code>/etc/config/awvoice</code>.</p>
 <h2 id="the-web-page">The web page<a class="headerlink" href="#the-web-page" title="Permanent link">&para;</a></h2>
 <p><em>Services → AWvoice(RJ11)</em> is one page for everything:</p>
 <ul>
