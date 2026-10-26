@@ -1,3 +1,8 @@
+---
+title: "Arcadyan AW1000 UART serial console guide"
+description: "Connect a 3.3 V USB-UART adapter to the Arcadyan AW1000: settings (115200 8N1), wiring, and how to stop U-Boot for TFTP installs and recovery."
+---
+
 # UART guide
 
 The serial console (UART) is how you reach the bootloader. It is required for the first

@@ -1,3 +1,8 @@
+---
+title: "Apex: a dark and light LuCI theme for OpenWrt"
+description: "Apex is the default LuCI theme of CleanWRT: dark and light mode, a sidebar and mobile drawer, and card-style status widgets. Screenshots and details."
+---
+
 # The Apex theme
 
 Apex is the default LuCI theme in CleanWRT. It is a dense, technical interface that stays

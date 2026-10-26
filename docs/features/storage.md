@@ -1,3 +1,8 @@
+---
+title: "USB storage, Samba, DLNA and torrents on OpenWrt"
+description: "Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, qBittorrent, Syncthing, a DLNA media server and a printer server, all opt-in."
+---
+
 # USB storage and NAS
 
 Plug in a USB drive and it auto-mounts under `/mnt` (ext4, FAT, exFAT and NTFS). Manage mounts in

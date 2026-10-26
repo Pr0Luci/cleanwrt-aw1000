@@ -1,3 +1,8 @@
+---
+title: "Download CleanWRT for the Arcadyan AW1000"
+description: "Where to download CleanWRT images for the Arcadyan AW1000, what each file is, and how to verify the sha256 checksum before you flash."
+---
+
 # Releases
 
 Images are published on the project's

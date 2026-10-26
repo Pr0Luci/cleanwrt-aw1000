@@ -1,3 +1,8 @@
+---
+title: "CleanWRT changelog"
+description: "What is new in each CleanWRT release for the Arcadyan AW1000."
+---
+
 # Changelog
 
 ## 25.12.5-rc1

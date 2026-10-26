@@ -1,3 +1,8 @@
+---
+title: "Build OpenWrt for the AW1000 on GitHub Actions"
+description: "Build CleanWRT for the Arcadyan AW1000 from source on GitHub Actions or locally with Docker: pinned feeds, checks, signing and the repository layout."
+---
+
 # Build from source
 
 Anyone can rebuild a release. The repository holds only build configuration, patches and the

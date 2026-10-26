@@ -1,3 +1,8 @@
+---
+title: "Data usage, bandwidth and ad blocking on the AW1000"
+description: "vnStat data usage, live bandwidth per host, Adblock, Watchcat, SQM and the cw-diag diagnostic tool on CleanWRT for the Arcadyan AW1000."
+---
+
 # Monitoring
 
 | What | Where |

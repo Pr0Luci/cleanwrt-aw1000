@@ -1,3 +1,8 @@
+---
+title: "Remote access to a 5G CGNAT router"
+description: "Reach your AW1000 and your LAN behind 5G CGNAT with Tailscale, Cloudflare Tunnel or WireGuard. Everything ships disabled until you turn it on."
+---
+
 # Remote access
 
 5G gives you a **CGNAT** address, so port forwarding does not work. To reach the router or your

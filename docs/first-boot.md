@@ -1,3 +1,8 @@
+---
+title: "CleanWRT first boot and setup on the AW1000"
+description: "The first login, default Wi-Fi and password, HTTPS, time zone and a short tour of LuCI after you flash CleanWRT on the Arcadyan AW1000."
+---
+
 # First boot
 
 CleanWRT follows the stock OpenWrt first-login model.

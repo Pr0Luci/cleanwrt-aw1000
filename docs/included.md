@@ -1,3 +1,8 @@
+---
+title: "What is included in CleanWRT"
+description: "Every app in CleanWRT for the Arcadyan AW1000, where to find it in LuCI, and whether it is on or off out of the box."
+---
+
 # What is included
 
 CleanWRT is vanilla OpenWrt 25.12.5 plus the apps below. Everything else in the firmware is

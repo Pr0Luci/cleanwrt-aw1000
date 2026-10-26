@@ -1,3 +1,8 @@
+---
+title: "Extra packages and the CleanWRT package feed"
+description: "Install more packages on the Arcadyan AW1000 with apk from the official OpenWrt repositories, and how the optional CleanWRT feed works."
+---
+
 # Extra packages
 
 ## From the official repositories

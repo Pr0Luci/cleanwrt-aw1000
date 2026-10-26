@@ -1,3 +1,8 @@
+---
+title: "CleanWRT licence and third-party notices"
+description: "CleanWRT is GPL-2.0-only. The principal components and their licences, including the QModem non-commercial clause, and where the source is."
+---
+
 # Licence and notices
 
 ## This project

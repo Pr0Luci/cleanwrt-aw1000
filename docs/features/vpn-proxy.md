@@ -1,3 +1,8 @@
+---
+title: "WireGuard, OpenVPN, Passwall and HomeProxy on OpenWrt"
+description: "The VPN and proxy tools in CleanWRT for the Arcadyan AW1000: WireGuard, OpenVPN, Passwall, Passwall 2 and HomeProxy, installed and disabled by default."
+---
+
 # VPN and proxies
 
 All of these ship installed and **disabled**. They need your servers, keys or configuration.

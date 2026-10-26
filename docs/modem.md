@@ -1,3 +1,8 @@
+---
+title: "AW1000 5G modem: QModem, SMS, TTL and firmware"
+description: "Set up and manage the Quectel RG500Q-EA 5G modem of the Arcadyan AW1000 with QModem: signal, SMS, TTL, IPv4/IPv6, AT ports and modem firmware."
+---
+
 # The 5G modem
 
 The AW1000 has a Quectel **RG500Q-EA** 5G modem. CleanWRT drives it with **QModem** and the
