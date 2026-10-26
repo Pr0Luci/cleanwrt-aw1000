@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="OpenWrt based firmware for the Arcadyan AW1000 5G router">
+        <meta name="description" content="Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT.">
       
       
       
@@ -22,12 +22,12 @@
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../assets/img/favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
-        <title>FAQ and troubleshooting - CleanWRT</title>
+        <title>Arcadyan AW1000 OpenWrt FAQ and troubleshooting - CleanWRT</title>
       
     
     
@@ -45,12 +45,6 @@
     
     
       
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
     
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
@@ -59,18 +53,24 @@
 
     
     
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="FAQ and troubleshooting - CleanWRT">
-<meta property="og:description" content="OpenWrt based firmware for the Arcadyan AW1000 5G router">
+<meta property="og:description" content="Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FAQ and troubleshooting - CleanWRT">
-<meta name="twitter:description" content="OpenWrt based firmware for the Arcadyan AW1000 5G router">
+<meta name="twitter:description" content="Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#14b8a6">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "FAQ and troubleshooting", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "FAQ and troubleshooting", "description": "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does OpenWrt run on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. CleanWRT is OpenWrt 25.12.5 built for the AW1000 (qualcommax/ipq807x), with the 5G modem, Wi-Fi, the front-panel LEDs and the RJ11 phone port working. It needs the expanded flash layout, see the MTD layout page."}}, {"@type": "Question", "name": "Can I use a normal phone on the AW1000's RJ11 port?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with AWvoice, which is part of CleanWRT: an ordinary analogue phone makes and takes calls over the SIM."}}, {"@type": "Question", "name": "Does the AW1000 do VoLTE voice calls on OpenWrt?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with AWvoice. The 5G modem carries the call over VoLTE, so you need a SIM and an operator that provide VoLTE."}}, {"@type": "Question", "name": "Why does the browser say the connection is not secure?", "acceptedAnswer": {"@type": "Answer", "text": "LuCI uses a self-signed certificate created on your router at first boot. The connection is encrypted, but no public authority signed the certificate. See Security."}}, {"@type": "Question", "name": "I cannot log in after flashing.", "acceptedAnswer": {"@type": "Answer", "text": "The first login is over Ethernet with no password, at http://192.168.1.1. Connect a computer to a LAN port and set its address to 192.168.1.x if it does not get one. If it still fails, use failsafe mode."}}, {"@type": "Question", "name": "Can I flash it on my router if it is not an AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "No. Never flash an image built for another device. It can brick the router."}}, {"@type": "Question", "name": "sysupgrade says the image is not valid.", "acceptedAnswer": {"@type": "Answer", "text": "Check the file name (arcadyanaw1000), re-download the image and check its checksum. If you flash a community build that has no metadata, you would need -F; do not force an image you did not verify."}}, {"@type": "Question", "name": "The 5G modem does not register.", "acceptedAnswer": {"@type": "Answer", "text": "Open Modem → QModem and Modem → 3gInfo-lite and check the SIM, the APN and the signal. See The 5G modem. A modem firmware upgrade is only a last resort."}}, {"@type": "Question", "name": "The 5G and signal LEDs went dark.", "acceptedAnswer": {"@type": "Answer", "text": "The LED daemon cannot read the modem. Check that nothing holds the AT port open, and read logread -e cw-led. See Front-panel LEDs."}}, {"@type": "Question", "name": "Wi-Fi works but 'Internet' says unreachable.", "acceptedAnswer": {"@type": "Answer", "text": "Open the connectivity check settings in System → LED Management. The LED only mirrors the probe. Test the real connection from a computer too."}}, {"@type": "Question", "name": "Cloudflared shows a red error.", "acceptedAnswer": {"@type": "Answer", "text": "That is expected until you configure the tunnel token. See Remote access."}}, {"@type": "Question", "name": "I ran apk upgrade and the overview cards look different.", "acceptedAnswer": {"@type": "Answer", "text": "The LuCI packages are pinned for a reason (see Updating and pinning). Flash the release again to get back to its state. A factory reset does not restore replaced packages."}}, {"@type": "Question", "name": "Downloads are filling the router's flash.", "acceptedAnswer": {"@type": "Answer", "text": "Downloads default to the first USB drive. Plug a drive in before you start a download."}}, {"@type": "Question", "name": "Can I use it commercially?", "acceptedAnswer": {"@type": "Answer", "text": "The project is free of charge. The bundled QModem component prohibits commercial use. Check its licence before you deploy this firmware in a business, an ISP or a paid service."}}, {"@type": "Question", "name": "How do I go back to the stock firmware?", "acceptedAnswer": {"@type": "Answer", "text": "Restoring the stock firmware needs the stock image and a serial console. Keep a backup of the stock firmware before you flash."}}]}</script>
 </head>
   
   
@@ -108,8 +108,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="CleanWRT" class="md-header__button md-logo" aria-label="CleanWRT" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/img/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -126,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              FAQ and troubleshooting
+              Arcadyan AW1000 OpenWrt FAQ and troubleshooting
             
           </span>
         </div>
@@ -246,8 +245,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="CleanWRT" class="md-nav__button md-logo" aria-label="CleanWRT" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/img/logo.svg" alt="logo">
 
     </a>
     CleanWRT
@@ -1620,6 +1618,22 @@
 </ul>
 <h2 id="questions">Questions<a class="headerlink" href="#questions" title="Permanent link">&para;</a></h2>
 <details class="question">
+<summary>Does OpenWrt run on the Arcadyan AW1000?</summary>
+<p>Yes. CleanWRT is OpenWrt 25.12.5 built for the AW1000 (<code>qualcommax/ipq807x</code>), with the 5G modem,
+Wi-Fi, the front-panel LEDs and the RJ11 phone port working. It needs the expanded flash layout,
+see the MTD layout page.</p>
+</details>
+<details class="question">
+<summary>Can I use a normal phone on the AW1000's RJ11 port?</summary>
+<p>Yes, with AWvoice, which is part of CleanWRT: an ordinary analogue phone makes and takes calls
+over the SIM.</p>
+</details>
+<details class="question">
+<summary>Does the AW1000 do VoLTE voice calls on OpenWrt?</summary>
+<p>Yes, with AWvoice. The 5G modem carries the call over VoLTE, so you need a SIM and an operator
+that provide VoLTE.</p>
+</details>
+<details class="question">
 <summary>Why does the browser say the connection is not secure?</summary>
 <p>LuCI uses a self-signed certificate created on your router at first boot. The connection is
 encrypted, but no public authority signed the certificate. See
@@ -1694,6 +1708,9 @@ stock firmware before you flash.</p>
 
 
 
+
+  
+  
 
 
 

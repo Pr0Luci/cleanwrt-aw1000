@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="OpenWrt based firmware for the Arcadyan AW1000 5G router">
+        <meta name="description" content="AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.">
       
       
       
@@ -22,12 +22,12 @@
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../assets/img/favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
-        <title>AWvoice, the phone port - CleanWRT</title>
+        <title>AW1000 RJ11 phone port: VoLTE calls with AWvoice - CleanWRT</title>
       
     
     
@@ -45,12 +45,6 @@
     
     
       
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
     
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
@@ -59,18 +53,24 @@
 
     
     
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="AWvoice, the phone port - CleanWRT">
-<meta property="og:description" content="OpenWrt based firmware for the Arcadyan AW1000 5G router">
+<meta property="og:description" content="AWvoice turns the Arcadyan AW1000&#x27;s RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AWvoice, the phone port - CleanWRT">
-<meta name="twitter:description" content="OpenWrt based firmware for the Arcadyan AW1000 5G router">
+<meta name="twitter:description" content="AWvoice turns the Arcadyan AW1000&#x27;s RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#14b8a6">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "AWvoice, the phone port", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "AWvoice, the phone port", "description": "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I make phone calls on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Install CleanWRT, which includes AWvoice, plug an ordinary analogue desk phone into the RJ11 socket, enable the phone service and lift the handset. Calls go out over the router's 5G modem with your SIM's number."}}, {"@type": "Question", "name": "Which phones work on the RJ11 port?", "acceptedAnswer": {"@type": "Answer", "text": "An ordinary analogue (tone dial) phone with an RJ11 plug. A handset with a display also shows the caller id."}}, {"@type": "Question", "name": "Does AWvoice need Asterisk, SIP or a second phone number?", "acceptedAnswer": {"@type": "Answer", "text": "No. There is no PBX and no SIP account. The cellular network is the exchange and the SIM's number is the line's number."}}, {"@type": "Question", "name": "Does the AW1000 need VoLTE for voice calls?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The call is carried by the modem over VoLTE, so you need a SIM and an operator that provide VoLTE. The modem must also be in PCM slave mode, which AWvoice checks and reports."}}, {"@type": "Question", "name": "Can I use it for emergency calls?", "acceptedAnswer": {"@type": "Answer", "text": "No. The line works only while the router has power, the modem is registered for VoLTE and the operator carries the call, and there is no battery backup. Keep a mobile phone at hand."}}]}</script>
 </head>
   
   
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#awvoice-phone-calls-on-the-rj11-port" class="md-skip">
+        <a href="#awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000" class="md-skip">
           Skip to content
         </a>
       
@@ -108,8 +108,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="CleanWRT" class="md-header__button md-logo" aria-label="CleanWRT" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/img/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -126,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AWvoice, the phone port
+              AW1000 RJ11 phone port: VoLTE calls with AWvoice
             
           </span>
         </div>
@@ -246,8 +245,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="CleanWRT" class="md-nav__button md-logo" aria-label="CleanWRT" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/img/logo.svg" alt="logo">
 
     </a>
     CleanWRT
@@ -791,6 +789,17 @@
     <span class="md-ellipsis">
       
         The web page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequently asked questions
       
     </span>
   </a>
@@ -1713,6 +1722,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#frequently-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequently asked questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1759,7 +1779,7 @@
   
 
 
-<h1 id="awvoice-phone-calls-on-the-rj11-port">AWvoice: phone calls on the RJ11 port<a class="headerlink" href="#awvoice-phone-calls-on-the-rj11-port" title="Permanent link">&para;</a></h1>
+<h1 id="awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000">AWvoice: an RJ11 phone port with VoLTE calls on the AW1000<a class="headerlink" href="#awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000" title="Permanent link">&para;</a></h1>
 <p><strong>AWvoice</strong> turns the AW1000's RJ11 socket into a working phone line. Plug an ordinary desk
 phone into the router and make and take calls over the SIM card, with no extra box, no PBX and no
 SIP account. It is the headline feature of CleanWRT, and it ships with the <code>25.12.5-rc1</code>
@@ -1928,6 +1948,33 @@ the LED name) are in <code>/etc/config/awvoice</code>.</p>
 <li><strong>health and tests:</strong> the AT port, the line, the modem, counters and the log, with ring, line and
   loopback tests.</li>
 </ul>
+<h2 id="frequently-asked-questions">Frequently asked questions<a class="headerlink" href="#frequently-asked-questions" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>How do I make phone calls on the Arcadyan AW1000?</summary>
+<p>Install CleanWRT, which includes AWvoice, plug an ordinary analogue desk phone into the RJ11
+socket, enable the phone service and lift the handset. Calls go out over the router's 5G modem
+with your SIM's number.</p>
+</details>
+<details class="question">
+<summary>Which phones work on the RJ11 port?</summary>
+<p>An ordinary analogue (tone dial) phone with an RJ11 plug. A handset with a display also shows
+the caller id.</p>
+</details>
+<details class="question">
+<summary>Does AWvoice need Asterisk, SIP or a second phone number?</summary>
+<p>No. There is no PBX and no SIP account. The cellular network is the exchange and the SIM's
+number is the line's number.</p>
+</details>
+<details class="question">
+<summary>Does the AW1000 need VoLTE for voice calls?</summary>
+<p>Yes. The call is carried by the modem over VoLTE, so you need a SIM and an operator that
+provide VoLTE. The modem must also be in PCM slave mode, which AWvoice checks and reports.</p>
+</details>
+<details class="question">
+<summary>Can I use it for emergency calls?</summary>
+<p>No. The line works only while the router has power, the modem is registered for VoLTE and the
+operator carries the call, and there is no battery backup. Keep a mobile phone at hand.</p>
+</details>
 <h2 id="known-limits">Known limits<a class="headerlink" href="#known-limits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Hide my number (CLIR) and call forwarding can be refused by the operator's network when the
@@ -1951,6 +1998,9 @@ GPL-2.0-only; see <a href="../licence/">Licence and notices</a>.</p>
 
 
 
+
+  
+  
 
 
 
