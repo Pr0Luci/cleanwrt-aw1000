@@ -21,6 +21,7 @@ relicenses them.
 | QModem | MPL-2.0 **plus an added non-commercial clause** - see below | `LICENSE` of FUjr/QModem @ pinned commit |
 | Vendor `qmi_wwan_{q,f,s}` kernel modules (from QModem) | GPL (`MODULE_LICENSE("GPL")`) | driver sources @ pinned commit |
 | ath11k firmware | Qualcomm Atheros firmware licence (`LICENSE.qca_firmware`) | OpenWrt package Makefile |
+| AWvoice (kernel module, phone daemon, LuCI page) | GPL-2.0-only | shipped with the release |
 | `luci-app-cw-led` (our LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
 | `luci-theme-apex` (our LuCI theme; bundled fonts are SIL OFL 1.1) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-theme-apex> |
 
