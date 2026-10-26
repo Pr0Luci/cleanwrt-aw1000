@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-label="CleanWRT for the Arcadyan AW1000">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1f1d"/>
+      <stop offset="1" stop-color="#0e1114"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.1" r="0.7">
+      <stop offset="0" stop-color="#14b8a6" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#14b8a6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="280" rx="18" fill="url(#bg)"/>
+  <rect width="1200" height="280" rx="18" fill="url(#glow)"/>
+  <circle cx="1010" cy="140" r="150" fill="none" stroke="#14b8a6" stroke-opacity="0.18" stroke-width="2"/>
+  <circle cx="1010" cy="140" r="105" fill="none" stroke="#14b8a6" stroke-opacity="0.28" stroke-width="2"/>
+  <circle cx="1010" cy="140" r="60" fill="none" stroke="#14b8a6" stroke-opacity="0.45" stroke-width="2"/>
+  <rect x="64" y="70" width="84" height="84" rx="18" fill="#14b8a6"/>
+  <text x="106" y="130" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="#041815" text-anchor="middle">C</text>
+  <text x="174" y="132" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="76" font-weight="700" fill="#ffffff">Clean<tspan fill="#2dd4bf">WRT</tspan></text>
+  <text x="66" y="198" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#c9d4d8">OpenWrt for the Arcadyan AW1000 5G router</text>
+  <text x="66" y="238" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" fill="#2dd4bf">AWvoice phone port  ·  5G  ·  Apex theme  ·  open build</text>
+</svg>

@@ -1,0 +1,61 @@
+name: Bug report
+description: Something does not work as the documentation says
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Please check the [FAQ](https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/) first.
+        **Never paste passwords, Wi-Fi keys, tokens or full IMEI/IMSI/ICCID numbers.**
+  - type: input
+    id: version
+    attributes:
+      label: CleanWRT version
+      description: Output of `cat /etc/openwrt_release`, or the version in the login footer.
+      placeholder: CleanWRT 25.12.5-rc1
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options:
+        - Clean install (sysupgrade -n)
+        - Keep settings (sysupgrade)
+        - First install from stock (UART + TFTP)
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part is affected?
+      options:
+        - 5G modem / QModem
+        - AWvoice (phone port)
+        - Front-panel LEDs
+        - Apex theme / LuCI
+        - Proxy / VPN apps
+        - USB storage / NAS apps
+        - Wi-Fi / network
+        - Build / packages
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: The relevant lines of `logread`, or the output of `cw-diag full` (SIM identifiers, public IPs and Wi-Fi keys are redacted).
+      render: text

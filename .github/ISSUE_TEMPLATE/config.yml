@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://pr0luci.github.io/cleanwrt-aw1000/docs/
+    about: Installation, recovery, the 5G modem, AWvoice and more.
+  - name: FAQ and troubleshooting
+    url: https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/
+    about: Known limits and the most common questions.

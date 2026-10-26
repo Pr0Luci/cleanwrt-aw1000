@@ -1,0 +1,46 @@
+name: Test report
+description: Tell us how an image worked on your router, good or bad
+labels: [report]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reports from real routers are the most useful thing you can give a release candidate.
+        **Please do not include passwords, keys or full IMEI/IMSI/ICCID numbers.**
+  - type: input
+    id: version
+    attributes:
+      label: CleanWRT version
+      placeholder: CleanWRT 25.12.5-rc1
+    validations:
+      required: true
+  - type: input
+    id: carrier
+    attributes:
+      label: Carrier and country (optional)
+      description: Helps when a modem or VoLTE problem depends on the network.
+  - type: dropdown
+    id: mtd
+    attributes:
+      label: Flash layout of the router
+      options:
+        - Expanded (rootfs 128 MiB or more)
+        - Not sure
+    validations:
+      required: true
+  - type: checkboxes
+    id: worked
+    attributes:
+      label: What worked
+      options:
+        - label: Flash and first boot
+        - label: LuCI login and the Apex theme
+        - label: 5G registration and data
+        - label: Wi-Fi
+        - label: Front-panel LEDs
+        - label: AWvoice (phone port)
+        - label: USB storage and the opt-in apps
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything that did not work, or that surprised you

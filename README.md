@@ -1,103 +1,181 @@
-# CleanWRT - Arcadyan AW1000 5G router
+<p align="center">
+  <img src="docs/assets/img/banner.svg" alt="CleanWRT for the Arcadyan AW1000" width="100%">
+</p>
 
-CleanWRT is an OpenWrt 25.12.5 based firmware build for the **Arcadyan AW1000** 5G router
-(Qualcomm IPQ8074, kernel 6.12.94, target `qualcommax/ipq807x`).
-Versioning: `CleanWRT <openwrt-base>-<stage>`, e.g. `25.12.5-rc1`, then `25.12.5-r1` at
-stable. The running version shows in the login banner and the LuCI footer.
+<p align="center">
+  <a href="https://pr0luci.github.io/cleanwrt-aw1000/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
+  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--rc1-14b8a6?style=for-the-badge"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/Pr0Luci/cleanwrt-aw1000?style=for-the-badge&color=14b8a6"></a>
+  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/Pr0Luci/cleanwrt-aw1000/check.yml?style=for-the-badge&label=checks"></a>
+</p>
 
-> CleanWRT is an independent community rebuild, *Powered by OpenWrt*. It is not affiliated
-> with or endorsed by the OpenWrt project. OpenWrt(R) is a registered trademark of Software
-> Freedom Conservancy (SFC) - https://openwrt.org
+# CleanWRT: OpenWrt for the Arcadyan AW1000
 
-OpenWrt plus a curated set of community packages:
+CleanWRT is an independent build of **OpenWrt 25.12.5** for the **Arcadyan AW1000** 5G router
+(Qualcomm IPQ8072, Quectel RG500Q-EA modem). It is made for people who want the router to simply
+work: a phone on the RJ11 socket, a 5G modem that dials and recovers by itself, a modern interface,
+and the usual power tools, all switched off until you ask for them.
 
-| Package | Source | Purpose |
-|---|---|---|
-| Passwall / Passwall2 | [Openwrt-Passwall](https://github.com/Openwrt-Passwall/openwrt-passwall2) | Proxy / routing |
-| QModem | [FUjr/QModem](https://github.com/FUjr/QModem) | 5G modem management UI |
-| 3ginfo-lite | [4IceG/luci-app-3ginfo-lite](https://github.com/4IceG/luci-app-3ginfo-lite) | Mobile connection info |
-| [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | this project | Front-panel LED daemon + LuCI page |
-| [luci-theme-apex](https://github.com/Pr0Luci/luci-theme-apex) | this project | Default LuCI theme |
+The whole image is built in the open on GitHub from pinned sources, and every release comes with
+checksums and a provenance bundle.
 
-This repository holds only build configuration, patches and the rootfs overlay: no firmware
-binaries and no package source. The packages are pulled from their upstream feeds at build time.
+> CleanWRT is *Powered by OpenWrt* and is not affiliated with or endorsed by the OpenWrt project.
+> OpenWrt® is a registered trademark of Software Freedom Conservancy (SFC) - https://openwrt.org
 
-> **Licence notice - QModem:** the bundled QModem stack (`qmodem`, `luci-app-qmodem`, ...) is
-> MPL-2.0 **with a non-commercial clause** in its upstream licence. Free/community use is
-> fine; **commercial deployment of this firmware is not permitted by that component.** See
-> `NOTICE.md`.
+<p align="center">
+  <a href="docs/assets/img/overview-dark.png"><img src="docs/assets/img/overview-dark.png" alt="The Status overview of CleanWRT in dark mode" width="92%"></a>
+</p>
 
-## Build
+## Highlights
 
-`tools/cw-release-build.sh` is the one build command. It applies the overlay, the pinned
-feeds, the feed patches (zero fuzz, the build fails on upstream drift) and the mandatory
-post-defconfig fixups, then verifies the result. It needs a Linux host with the OpenWrt build
-prerequisites (or `docker/Dockerfile`).
+| | |
+|---|---|
+| **AWvoice, a phone on the router** | Plug an ordinary desk phone into the RJ11 socket and make and take calls over your SIM. Caller id, call waiting, hold, a three-way join, recall of a held call, a call log, speed dial, call blocking and alarm calls. No extra box, no PBX, no SIP account. |
+| **5G that just works** | QModem, auto-dial and auto-recovery, dual-stack IPv4/IPv6, SMS, TTL control, per-interface data usage, and a registration fix for data-only SIMs. |
+| **Apex, a modern interface** | Dark and light mode, a sidebar and a phone-friendly drawer, and card-style status widgets for system, modem, memory and storage. |
+| **LEDs that mean something** | The 5G LED shows SA or NSA, the signal LED shows quality, the internet LED runs a real connectivity check, and night mode switches them off at bedtime. |
+| **Tools, but off by default** | Passwall, Passwall 2, HomeProxy, WireGuard, OpenVPN, Tailscale, Cloudflare Tunnel, Adblock, AdGuard Home, Syncthing, qBittorrent, DLNA, file sharing and a printer server. Nothing listens until you tick **Enable**. |
+| **Careful defaults** | HTTPS for the admin UI, no hidden remote access, BBR congestion control, pinned LuCI so an `apk upgrade` cannot undo the build. |
+| **Verifiable builds** | Built on GitHub Actions in a pinned Docker environment from commits you can read, with checksums and a provenance bundle for each release. |
 
-```sh
-git clone --branch v25.12.5 https://git.openwrt.org/openwrt/openwrt.git
-/path/to/cleanwrt-aw1000/tools/cw-release-build.sh ./openwrt --clean
-```
+## Screenshots
 
-The sysupgrade image and a provenance bundle land in `openwrt/bin/targets/qualcommax/ipq807x/`.
+<table>
+  <tr>
+    <td align="center" width="50%"><a href="docs/assets/img/leds-dark-status.png"><img src="docs/assets/img/leds-dark-status.png" alt="LED Management with the live status card"></a><br><sub>LED Management: live state of the panel LEDs</sub></td>
+    <td align="center" width="50%"><a href="docs/assets/img/overview-light.png"><img src="docs/assets/img/overview-light.png" alt="The Status overview in light mode"></a><br><sub>Light mode follows your system, or the toggle</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/assets/img/login-dark.png"><img src="docs/assets/img/login-dark.png" alt="The login page" width="60%"></a><br><sub>The login page</sub></td>
+    <td align="center"><a href="docs/assets/img/overview-mobile.png"><img src="docs/assets/img/overview-mobile.png" alt="The Status overview on a phone" width="34%"></a><br><sub>Made to be used from a phone</sub></td>
+  </tr>
+</table>
 
-### On GitHub Actions
+<sub>The screenshots come from a development preview of the interface with a simulated modem. Values such as the kernel, memory and storage differ on a real router.</sub>
 
-The build runs on GitHub-hosted runners, nothing else is needed:
+## Before you flash
 
-- `check` runs on every push and pull request: shell syntax, the version label, the pins and
-  `CW_CHECK_ONLY=1` (feeds, feed patches, pins, defconfig and seed checks, no compile).
-- `build` is started by hand (Actions > build > Run workflow) or by pushing a tag `v<version>`
-  (the tag must equal `CW_VERSION`). It builds the image with a compiler cache and a download
-  cache, uploads the image, checksums and provenance, and with `publish` (or on a tag) creates
-  the GitHub release and updates the site on the `gh-pages` branch: `.versions.json` and the
-  `profiles.json` that the LuCI upgrade check reads.
-- A job is limited to six hours by GitHub. If a cold build does not finish, run it again: the
-  caches saved at the end of the failed run make the next one shorter.
-- Optional repository secrets: `APK_PRIVATE_KEY` (the apk feed signing key),
-  `USIGN_KEY_BUILD` and `USIGN_KEY_BUILD_PUB` (image signing). Without them the images are
-  unsigned and the `cw-opt` feed stays disabled.
+> [!CAUTION]
+> **Supported hardware: the Arcadyan AW1000 only, with the expanded flash layout.** The image does
+> not fit the stock layout, and flashing it there can leave the router unbootable. Check first:
+>
+> ```sh
+> cat /proc/mtd
+> ```
+>
+> The `rootfs` partition must be **at least `0x08000000`** (128 MiB). If it shows up as `rootfs_bak`
+> instead, stop. Read the [MTD layout page](https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/).
 
-Every feed is pinned to a commit in `feeds.conf.default`, and `configs/local-packages.pin`
-pins the out-of-feed packages (`luci-app-cw-led`, `luci-theme-apex`, `luci-app-homeproxy`);
-the build fails if a checkout does not match its pin. `CW_CHECK_ONLY=1` runs the feed,
-patch, pin, defconfig and seed checks and stops before compiling.
+> [!IMPORTANT]
+> The very first install from the stock firmware needs a **serial console (UART)** and a TFTP
+> server. Read [Installation](https://pr0luci.github.io/cleanwrt-aw1000/docs/installation/) and
+> [Recovery](https://pr0luci.github.io/cleanwrt-aw1000/docs/recovery/) before you start.
 
-### Release signing
+## Quick install
 
-- Images: `tools/cw-sign-keys.sh --generate <tree>` creates a usign keypair in `keys-release/`
-  (never commit it). With the keys present, the build signs every image.
-- The optional `cw-opt` apk feed (qBittorrent, AdGuard Home, OpenClash): see
-  `files/etc/apk/repositories.d/cw-opt.list.disabled` for the four steps that enable it.
-  `tools/cw-publish-feed.sh` verifies the feed and writes it to a directory for hosting.
+If the router already runs OpenWrt, and `cat /proc/mtd` is fine:
 
-## Hardware and flashing
+1. Download the `*-squashfs-sysupgrade.bin` from the
+   [Releases page](https://github.com/Pr0Luci/cleanwrt-aw1000/releases) and check it:
 
-Supported hardware: **Arcadyan AW1000 (Telstra variant) only, with the expanded MTD layout**
-(the `rootfs` partition must be at least 128 MiB: check `cat /proc/mtd`; the image needs 410+
-UBI blocks and does not fit the 100 MiB stock partition). The first install from the stock
-firmware requires serial (UART) access.
+   ```sh
+   sha256sum -c sha256sums.cw --ignore-missing
+   ```
 
-From an existing OpenWrt install:
+2. Copy it to the router:
 
-```sh
-scp *-arcadyan_aw1000-squashfs-sysupgrade.bin root@192.168.1.1:/tmp/
-ssh root@192.168.1.1 "sysupgrade -v /tmp/*-sysupgrade.bin"
-```
+   ```sh
+   scp cleanwrt-*-sysupgrade.bin root@192.168.1.1:/tmp/
+   ```
+
+3. Flash it. Use `-n` (a clean install) when you come from another firmware, because the theme and
+   some settings change names:
+
+   ```sh
+   ssh root@192.168.1.1 "sysupgrade -n -v /tmp/cleanwrt-*-sysupgrade.bin"
+   ```
 
 ## First boot
 
-- Hostname `CleanWRT`, timezone UTC (set yours in LuCI).
-- No root password, as in stock OpenWrt: connect over **Ethernet**, open
-  `http://192.168.1.1` and LuCI asks you to set one. Wi-Fi (`CleanWRT-2.4G` / `CleanWRT-5G`,
-  WPA2-PSK) is on with the default key **`CleanWRT#40`**: change it on first login
-  (LuCI > Network > Wireless).
-- 5G modem: configure it from the **QModem** page in LuCI (Network menu).
-- NAS services (SMB, Syncthing, miniDLNA, printer share) are installed but **disabled**;
-  enable only what you use.
+| | |
+|---|---|
+| Address | `http://192.168.1.1` (over Ethernet) |
+| Root password | none: LuCI asks you to set one |
+| Wi-Fi | `CleanWRT-5G`, `CleanWRT-2.4G`, WPA2-PSK, default key `CleanWRT#40` |
+| Hostname, time zone | `CleanWRT`, UTC |
+
+> [!WARNING]
+> Change the root password and the Wi-Fi key on the first login.
+
+## Documentation
+
+Everything is on the documentation site: **https://pr0luci.github.io/cleanwrt-aw1000/docs/**
+
+| Page | What is in it |
+|---|---|
+| [Installation](https://pr0luci.github.io/cleanwrt-aw1000/docs/installation/) | UART + TFTP for the first install, `sysupgrade` afterwards |
+| [MTD layout](https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/) | what must fit, and how to check your router |
+| [Recovery](https://pr0luci.github.io/cleanwrt-aw1000/docs/recovery/) | failsafe, bootloader recovery, the way back |
+| [AWvoice](https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/) | the phone port, flash codes, safety |
+| [The 5G modem](https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/) | QModem, signal, SMS, TTL, modem firmware |
+| [Front-panel LEDs](https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/) | what every LED shows, night mode, settings |
+| [What is included](https://pr0luci.github.io/cleanwrt-aw1000/docs/included/) | every app, where to find it, its default state |
+| [Build from source](https://pr0luci.github.io/cleanwrt-aw1000/docs/building/) | GitHub Actions, Docker, pins, signing |
+| [FAQ](https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/) | known limits and common questions |
+
+## How it is built
+
+The repository holds only build configuration, patches and the rootfs overlay. The build runs on
+GitHub Actions inside a pinned Docker image, applies the overlay and the patches to a clean OpenWrt
+`v25.12.5` tree, and **fails** rather than ship something stale: every feed and every package is
+pinned to a commit, a patch that no longer applies stops the build, and the image must fit the
+flash layout.
+
+```sh
+git clone --depth 1 --branch v25.12.5 https://github.com/openwrt/openwrt.git openwrt
+docker build -t cleanwrt-builder docker/
+docker run --rm -v "$PWD/openwrt":/build -v "$PWD":/cleanwrt \
+  cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build --clean
+```
+
+`CW_CHECK_ONLY=1` runs every check and stops before compiling. See the
+[build page](https://pr0luci.github.io/cleanwrt-aw1000/docs/building/) for signing and the optional
+package feed.
+
+## The parts
+
+| Repository | What it is |
+|---|---|
+| [cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000) | this repository: configuration, patches, overlay, workflows, documentation |
+| [AWvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice) | the phone port: kernel module, daemon and LuCI page |
+| [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | the front-panel LED daemon and its page |
+| [luci-theme-apex](https://github.com/Pr0Luci/luci-theme-apex) | the Apex theme |
+
+## Help and contributions
+
+- A bug or a question: open an [issue](https://github.com/Pr0Luci/cleanwrt-aw1000/issues) and fill in
+  the form. Please never paste passwords, keys or full IMEI/IMSI numbers.
+- A fix or an improvement: open a pull request. `main` is protected, the checks must pass, and
+  changes are squash-merged. See [Contributing](https://pr0luci.github.io/cleanwrt-aw1000/docs/contributing/).
+- A mistake in the docs: every page has an *Edit this page* button.
+
+## Thanks
+
+CleanWRT stands on the work of others: the [OpenWrt](https://openwrt.org) project and its
+contributors, [QModem](https://github.com/FUjr/QModem),
+[Passwall](https://github.com/Openwrt-Passwall) and Passwall 2,
+[3ginfo-lite](https://github.com/4IceG/luci-app-3ginfo-lite),
+[luci-app-diskman](https://github.com/lisaac/luci-app-diskman), and the ImmortalWrt packages that
+carry qBittorrent and AdGuard Home to LuCI. Each keeps its own licence, see
+[NOTICE.md](NOTICE.md).
 
 ## Licence
 
-GPL-2.0-only, see `LICENSE`. It covers the build configuration, patches and rootfs overlay
+GPL-2.0-only, see [LICENSE](LICENSE). It covers the build configuration, patches and rootfs overlay
 scripts of this repository. The OpenWrt base and each bundled package keep their own upstream
-licences, see `NOTICE.md`.
+licences.
+
+> [!NOTE]
+> **QModem** carries an added non-commercial clause. CleanWRT is free of charge and is not sold,
+> but if you deploy it in a business, for an ISP or in a paid service, read QModem's licence first.
+> See [Licence and notices](https://pr0luci.github.io/cleanwrt-aw1000/docs/licence/).

@@ -1,0 +1,15 @@
+name: Feature or package request
+description: Suggest an improvement or a package
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you like, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: How do you imagine it working?
+      description: For a package, say what it does and where it comes from. Anything that adds a listening service has to ship disabled.
