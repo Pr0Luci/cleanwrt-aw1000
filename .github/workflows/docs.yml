@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - "site-root/**"
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "tools/docs-hooks.py"
@@ -12,6 +13,7 @@ on:
   pull_request:
     paths:
       - "docs/**"
+      - "site-root/**"
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "tools/docs-hooks.py"
@@ -77,6 +79,7 @@ jobs:
           mkdir -p ../site/docs
           rsync -a --delete built/ ../site/docs/
           touch ../site/.nojekyll
+          [ -d site-root ] && cp -f site-root/* ../site/
           [ -f ../site/index.html ] || cat > ../site/index.html <<'HTML'
           <!doctype html>
           <meta charset="utf-8">
