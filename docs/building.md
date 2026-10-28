@@ -43,10 +43,12 @@ The inputs of a manual run:
 | `clean` | off | rebuild every package |
 | `opt_artifacts` | off | also compile and verify the optional `cw-opt` feed |
 | `artifacts` | off | upload the images as a workflow artifact (public for a public repository) |
-| `publish` | off | create a GitHub release and update the project site |
 
 A job is limited to six hours by GitHub. A cold build takes roughly two hours; later builds are
 shorter because of the caches.
+
+A tag `v<version>` is built by the same workflow, and its images go straight into a **draft**
+release: nothing is public and the site is not touched until that draft is published by hand.
 
 ## Locally
 

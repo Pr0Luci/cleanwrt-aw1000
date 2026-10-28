@@ -43,7 +43,7 @@ echo "== seed: $SEED =="
 # Image identity - SINGLE source of truth. Bump the RC label HERE;
 # the seeds carry a copy (kept readable) that must agree - asserted below, so a
 # stale seed fails the build instead of shipping a mismatched banner.
-CW_VERSION="25.12.5-rc1"
+CW_VERSION="25.12.5-rc2"
 seed_ver=$(sed -n 's/^CONFIG_VERSION_NUMBER="\(.*\)"$/\1/p' "$SEED")
 [ "$seed_ver" = "$CW_VERSION" ] || {
     echo "ERROR: $SEED has CONFIG_VERSION_NUMBER=\"$seed_ver\" but the build script says \"$CW_VERSION\" - bump both" >&2
