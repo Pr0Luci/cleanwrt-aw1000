@@ -29,9 +29,9 @@ partition uses exactly 316 (kernel 24 + rootfs 177 + rootfs_data 115).
 
 ## What CleanWRT needs
 
-The `25.12.5-rc1` image needs **498 blocks**. That is more than the stock layout offers (316)
-and fits the expanded layout (2720 blocks on a router with a 701 MiB `rootfs`). The release
-build prints a line like this and fails if the image does not fit:
+The `25.12.5-rc2` image needs **498 blocks**, the same as rc1. That is more than the stock layout
+offers (316) and fits the expanded layout (2720 blocks on a router with a 701 MiB `rootfs`). The
+release build prints a line like this and fails if the image does not fit:
 
 ```text
 UBI_PEBS volumes need 498 PEBs; stock 100 MiB layout (316): does NOT fit; gate layout=expanded (capacity 2720)
