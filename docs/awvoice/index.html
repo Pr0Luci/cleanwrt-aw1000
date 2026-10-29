@@ -1782,12 +1782,12 @@
 <h1 id="awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000">AWvoice: an RJ11 phone port with VoLTE calls on the AW1000<a class="headerlink" href="#awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000" title="Permanent link">&para;</a></h1>
 <p><strong>AWvoice</strong> turns the AW1000's RJ11 socket into a working phone line. Plug an ordinary desk
 phone into the router and make and take calls over the SIM card, with no extra box, no PBX and no
-SIP account. It is the headline feature of CleanWRT, and it ships with the <code>25.12.5-rc1</code>
+SIP account. It is the headline feature of CleanWRT, and it ships with the <code>25.12.5-rc2</code>
 release, in the same way QModem is the 5G modem app.</p>
 <div class="admonition info">
 <p class="admonition-title">Pre-release documentation</p>
-<p>This page describes the current state of AWvoice. Details, especially the setup steps, can
-change before <code>25.12.5-rc1</code> is published.</p>
+<p>CleanWRT is still a release-candidate series, so this page follows the current candidate.
+Details, especially the setup steps, can change from one candidate to the next.</p>
 </div>
 <h2 id="what-it-does">What it does<a class="headerlink" href="#what-it-does" title="Permanent link">&para;</a></h2>
 <table>
@@ -1825,6 +1825,14 @@ change before <code>25.12.5-rc1</code> is published.</p>
 <tr>
 <td><strong>Call log</strong></td>
 <td>incoming, outgoing and missed calls, with the names from your phone book</td>
+</tr>
+<tr>
+<td><strong>Call recordings</strong></td>
+<td>calls you answer are kept as stereo WAV files, the caller and the handset on separate channels; play, save or delete the recording from the call's card (off by default, with a size budget that removes the oldest)</td>
+</tr>
+<tr>
+<td><strong>Answering machine</strong></td>
+<td>after a delay you set, an unanswered call hears your greeting and leaves a message: play, save or delete it from the call's card. Off until a greeting is on the router; picking up the handset takes the call over and keeps the part of the message already recorded</td>
 </tr>
 <tr>
 <td><strong>Phone book</strong></td>

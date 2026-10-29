@@ -1684,9 +1684,9 @@ of 256 KiB). UBI reserves part of it for itself:</p>
 <p>So <strong>316 blocks (about 76 MiB)</strong> are left for volumes. The stock firmware's own UBI on that
 partition uses exactly 316 (kernel 24 + rootfs 177 + rootfs_data 115).</p>
 <h2 id="what-cleanwrt-needs">What CleanWRT needs<a class="headerlink" href="#what-cleanwrt-needs" title="Permanent link">&para;</a></h2>
-<p>The <code>25.12.5-rc1</code> image needs <strong>498 blocks</strong>. That is more than the stock layout offers (316)
-and fits the expanded layout (2720 blocks on a router with a 701 MiB <code>rootfs</code>). The release
-build prints a line like this and fails if the image does not fit:</p>
+<p>The <code>25.12.5-rc2</code> image needs <strong>498 blocks</strong>, the same as rc1. That is more than the stock layout
+offers (316) and fits the expanded layout (2720 blocks on a router with a 701 MiB <code>rootfs</code>). The
+release build prints a line like this and fails if the image does not fit:</p>
 <div class="highlight"><pre><span></span><code>UBI_PEBS volumes need 498 PEBs; stock 100 MiB layout (316): does NOT fit; gate layout=expanded (capacity 2720)
 </code></pre></div>
 <p>A <code>sysupgrade</code> that cannot create the new volumes after removing the old ones can leave the
