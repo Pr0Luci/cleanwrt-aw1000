@@ -34,7 +34,7 @@ CONFIG_VERSION_DIST="CleanWRT"
 # number: a rebuild before publication keeps it, a fix after publication gets a
 # sub-number (rc1.1, rc1.2, ...). Change it here AND in tools/cw-release-build.sh (CW_VERSION)
 # together; the script asserts the two agree.
-CONFIG_VERSION_NUMBER="25.12.5-rc1"
+CONFIG_VERSION_NUMBER="25.12.5-rc2"
 CONFIG_VERSION_CODE=""
 CONFIG_VERSION_PRODUCT="CleanWRT AW1000 5G Router"
 CONFIG_VERSION_HWREV="v1"

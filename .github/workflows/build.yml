@@ -15,10 +15,6 @@ on:
         description: "Upload the images as a workflow artifact (public repository: anyone signed in to GitHub can download it)"
         type: boolean
         default: false
-      publish:
-        description: "Publish a GitHub release and update the site (the tag v<version> is created)"
-        type: boolean
-        default: false
   push:
     tags: ["v*"]
 
@@ -36,8 +32,11 @@ jobs:
   image:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    # The tag run uploads the images straight into a draft release from here: a
+    # workflow artifact is downloadable by anyone signed in, which would bypass
+    # the draft gate. Workflow-dispatch runs stay read-only in effect.
     permissions:
-      contents: read
+      contents: write
     outputs:
       version: ${{ steps.ver.outputs.version }}
     steps:
@@ -153,43 +152,11 @@ jobs:
             /cleanwrt/tools/cw-publish-feed.sh /build --out /cleanwrt/feed-out
           tar -C feed-out -czf dist/cw-opt-feed.tar.gz .
 
-      - name: Upload build files
-        if: success() && (inputs.artifacts || inputs.publish || startsWith(github.ref, 'refs/tags/v'))
-        uses: actions/upload-artifact@v4
-        with:
-          name: cleanwrt-${{ steps.ver.outputs.version }}
-          path: dist/
-          retention-days: 30
-
-      - name: Upload build log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: /mnt/cw/build.log
-          retention-days: 14
-          if-no-files-found: ignore
-
-
-  release:
-    needs: image
-    if: ${{ startsWith(github.ref, 'refs/tags/v') || inputs.publish }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    permissions:
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      VERSION: ${{ needs.image.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: cleanwrt-${{ needs.image.outputs.version }}
-          path: dist
-
-      - name: GitHub release
+      - name: Draft release
+        if: success() && startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.ver.outputs.version }}
         run: |
           set -eu
           tag="v$VERSION"
@@ -204,27 +171,29 @@ jobs:
           the package manifest of this build. Built from commit $GITHUB_SHA.
           NOTES
           if gh release view "$tag" >/dev/null 2>&1; then
+            # a re-run refreshes the draft; a published release stays as it was
+            # published (the site and the LuCI check point at those bytes)
+            [ "$(gh release view "$tag" --json isDraft -q .isDraft)" = "true" ] ||
+              { echo "ERROR: $tag is published already; a tag build never rewrites it" >&2; exit 1; }
             gh release upload "$tag" dist/* --clobber
+            gh release edit "$tag" --notes-file notes.md
           else
-            gh release create "$tag" dist/* --target "$GITHUB_SHA" --title "CleanWRT $VERSION" --notes-file notes.md $pre
+            gh release create "$tag" dist/* --draft --target "$GITHUB_SHA" --title "CleanWRT $VERSION" --notes-file notes.md $pre
           fi
 
-      - name: Update the site (gh-pages)
-        run: |
-          set -eu
-          git config user.name "Pr0Luci"
-          git config user.email "Pr0Luci@users.noreply.github.com"
-          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
-            git fetch -q origin gh-pages
-            git worktree add -q ../site FETCH_HEAD
-            git -C ../site checkout -q -B gh-pages
-          else
-            git worktree add -q --detach ../site
-            git -C ../site checkout -q --orphan gh-pages
-            git -C ../site rm -rqf . || true
-          fi
-          sh tools/cw-site-update.sh ../site "$VERSION" \
-            "https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION" dist/profiles.json
-          git -C ../site add -A
-          git -C ../site commit -q -m "Site: CleanWRT $VERSION" || { echo "nothing to commit"; exit 0; }
-          git -C ../site push -q origin gh-pages
+      - name: Upload build files
+        if: success() && inputs.artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanwrt-${{ steps.ver.outputs.version }}
+          path: dist/
+          retention-days: 30
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: /mnt/cw/build.log
+          retention-days: 14
+          if-no-files-found: ignore
