@@ -11,7 +11,7 @@ body:
     id: version
     attributes:
       label: CleanWRT version
-      placeholder: CleanWRT 25.12.5-rc1
+      placeholder: CleanWRT 25.12.5-rc2
     validations:
       required: true
   - type: input

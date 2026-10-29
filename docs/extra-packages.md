@@ -22,7 +22,7 @@ Packages you add yourself stay unpinned and are yours to manage.
 ## The optional CleanWRT feed (`cw-opt`)
 
 CleanWRT can publish its own signed `apk` feed for packages the official repositories do not
-carry, such as OpenClash. **The feed is not active in the `25.12.5-rc1` image**: the repository
+carry, such as OpenClash. **The feed is not active in the `25.12.5-rc2` image**: the repository
 holds a disabled template, `files/etc/apk/repositories.d/cw-opt.list.disabled`, and the feed is
 switched on only when its index is published and its signing key exists.
 

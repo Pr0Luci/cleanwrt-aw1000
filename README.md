@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://pr0luci.github.io/cleanwrt-aw1000/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
-  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--rc1-14b8a6?style=for-the-badge"></a>
+  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--rc2-14b8a6?style=for-the-badge"></a>
   <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/Pr0Luci/cleanwrt-aw1000?style=for-the-badge&color=14b8a6"></a>
   <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/Pr0Luci/cleanwrt-aw1000/check.yml?style=for-the-badge&label=checks"></a>
 </p>
@@ -30,7 +30,7 @@ checksums and a provenance bundle.
 
 | | |
 |---|---|
-| **AWvoice, a phone on the router** | Plug an ordinary desk phone into the RJ11 socket and make and take calls over your SIM. Caller id, call waiting, hold, a three-way join, recall of a held call, a call log, speed dial, call blocking and alarm calls. No extra box, no PBX, no SIP account. |
+| **AWvoice, a phone on the router** | Plug an ordinary desk phone into the RJ11 socket and make and take calls over your SIM. Caller id, call waiting, hold, a three-way join, recall of a held call, a call log, call recordings, an answering machine, speed dial, call blocking and alarm calls. No extra box, no PBX, no SIP account. |
 | **5G that just works** | QModem, auto-dial and auto-recovery, dual-stack IPv4/IPv6, SMS, TTL control, per-interface data usage, and a registration fix for data-only SIMs. |
 | **Apex, a modern interface** | Dark and light mode, a sidebar and a phone-friendly drawer, and card-style status widgets for system, modem, memory and storage. |
 | **LEDs that mean something** | The 5G LED shows SA or NSA, the signal LED shows quality, the internet LED runs a real connectivity check, and night mode switches them off at bedtime. |

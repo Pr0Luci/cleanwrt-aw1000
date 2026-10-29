@@ -12,7 +12,7 @@ body:
     attributes:
       label: CleanWRT version
       description: Output of `cat /etc/openwrt_release`, or the version in the login footer.
-      placeholder: CleanWRT 25.12.5-rc1
+      placeholder: CleanWRT 25.12.5-rc2
     validations:
       required: true
   - type: dropdown
@@ -41,6 +41,12 @@ body:
         - Other
     validations:
       required: true
+  - type: input
+    id: awvoice
+    attributes:
+      label: AWvoice package versions (if the phone port is involved)
+      description: Output of `apk list --installed | grep awvoice` — the three packages share one number.
+      placeholder: awvoice-phoned-1.1.2-r1, kmod-awvoice-fxs-6.12.94.1.1.2-r1, luci-app-awvoice-1.1.2-r1
   - type: textarea
     id: what
     attributes:

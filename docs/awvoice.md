@@ -7,12 +7,12 @@ description: "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line.
 
 **AWvoice** turns the AW1000's RJ11 socket into a working phone line. Plug an ordinary desk
 phone into the router and make and take calls over the SIM card, with no extra box, no PBX and no
-SIP account. It is the headline feature of CleanWRT, and it ships with the `25.12.5-rc1`
+SIP account. It is the headline feature of CleanWRT, and it ships with the `25.12.5-rc2`
 release, in the same way QModem is the 5G modem app.
 
 !!! info "Pre-release documentation"
-    This page describes the current state of AWvoice. Details, especially the setup steps, can
-    change before `25.12.5-rc1` is published.
+    CleanWRT is still a release-candidate series, so this page follows the current candidate.
+    Details, especially the setup steps, can change from one candidate to the next.
 
 ## What it does
 
@@ -25,6 +25,8 @@ release, in the same way QModem is the 5G modem app.
 | **Three-way join** | join two calls into one conversation: **hook flash, then 3** (can be switched off in Settings) |
 | **Recall** | put the handset down with a call on hold and the phone **rings back**; lift it to take the call back |
 | **Call log** | incoming, outgoing and missed calls, with the names from your phone book |
+| **Call recordings** | calls you answer are kept as stereo WAV files, the caller and the handset on separate channels; play, save or delete the recording from the call's card (off by default, with a size budget that removes the oldest) |
+| **Answering machine** | after a delay you set, an unanswered call hears your greeting and leaves a message: play, save or delete it from the call's card. Off until a greeting is on the router; picking up the handset takes the call over and keeps the part of the message already recorded |
 | **Phone book** | contacts with speed dial |
 | **Call blocking** | by direction (incoming or outgoing), by number or by prefix |
 | **Hotline** | dial a number automatically when the handset is lifted |

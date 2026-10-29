@@ -148,7 +148,7 @@ def on_post_page(output, page, config, **kwargs):
             "alternateName": ["CleanWRT for the Arcadyan AW1000", "AWvoice"],
             "applicationCategory": "OperatingSystem",
             "operatingSystem": "OpenWrt 25.12 on the Arcadyan AW1000 (qualcommax/ipq807x)",
-            "softwareVersion": "25.12.5-rc1",
+            "softwareVersion": "25.12.5-rc2",
             "description": desc,
             "url": base,
             "image": image,

@@ -9,6 +9,10 @@ Images are published on the project's
 [GitHub Releases page](https://github.com/Pr0Luci/cleanwrt-aw1000/releases). Every release is
 built by the `build` workflow in the repository, from the sources pinned in the release tag.
 
+A tag `v<version>` builds the images into a **draft** release, where they can be checked first.
+The release is published by hand, and that publish is also what tells this site (and the update
+notice in LuCI) that the version exists.
+
 ## Versions
 
 A version looks like `25.12.5-rc1`: the OpenWrt base (`25.12.5`) and the stage.
