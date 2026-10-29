@@ -1773,15 +1773,12 @@ upstream feeds at build time, every one pinned to a commit.</p>
 <td>off</td>
 <td>upload the images as a workflow artifact (public for a public repository)</td>
 </tr>
-<tr>
-<td><code>publish</code></td>
-<td>off</td>
-<td>create a GitHub release and update the project site</td>
-</tr>
 </tbody>
 </table>
 <p>A job is limited to six hours by GitHub. A cold build takes roughly two hours; later builds are
 shorter because of the caches.</p>
+<p>A tag <code>v&lt;version&gt;</code> is built by the same workflow, and its images go straight into a <strong>draft</strong>
+release: nothing is public and the site is not touched until that draft is published by hand.</p>
 <h2 id="locally">Locally<a class="headerlink" href="#locally" title="Permanent link">&para;</a></h2>
 <p>You need a Linux machine (or a Linux VM) and Docker.</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span>--branch<span class="w"> </span>v25.12.5<span class="w"> </span>https://github.com/openwrt/openwrt.git<span class="w"> </span>openwrt
