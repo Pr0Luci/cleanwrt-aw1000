@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://pr0luci.github.io/cleanwrt-aw1000/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
-  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--rc1-14b8a6?style=for-the-badge"></a>
+  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--rc2-14b8a6?style=for-the-badge"></a>
   <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/Pr0Luci/cleanwrt-aw1000?style=for-the-badge&color=14b8a6"></a>
   <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/Pr0Luci/cleanwrt-aw1000/check.yml?style=for-the-badge&label=checks"></a>
 </p>

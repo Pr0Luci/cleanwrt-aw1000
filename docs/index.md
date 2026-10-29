@@ -105,7 +105,7 @@ router supported?" to a flashed, working router, and tell you how to get out if 
 
 ## Status
 
-CleanWRT is a release-candidate series (`25.12.5-rc1`). The image is built on GitHub Actions
+CleanWRT is a release-candidate series (`25.12.5-rc2`). The image is built on GitHub Actions
 from the sources pinned in the repository. Read the [known limits](faq.md#known-limits)
 before relying on it for anything important.
 
