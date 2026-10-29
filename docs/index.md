@@ -86,8 +86,9 @@ router supported?" to a flashed, working router, and tell you how to get out if 
 ## What you get on top of stock OpenWrt
 
 - **AWvoice, phone calls on the RJ11 port:** an ordinary desk phone makes and takes calls over the
-  SIM, with caller id, call waiting, hold, a three-way join, recall of a held call, a call log, speed
-  dial, call blocking and alarm calls. See [AWvoice](awvoice.md).
+  SIM, with caller id, call waiting, hold, a three-way join, recall of a held call, a call log, call
+  recordings, an answering machine, speed dial, call blocking and alarm calls.
+  See [AWvoice](awvoice.md).
 - **A 5G stack that works out of the box:** QModem UI, auto-dial, dual-stack IPv4/IPv6 data,
   TTL control, SMS, a registration fix for data-only SIMs, per-interface vnStat accounting.
 - **A modern interface:** the [Apex theme](theme.md) with dark and light mode, a sidebar, a mobile
