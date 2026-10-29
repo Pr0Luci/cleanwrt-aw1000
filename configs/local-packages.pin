@@ -20,8 +20,9 @@ luci-app-homeproxy https://github.com/immortalwrt/homeproxy.git 98a6ad9e71484528
 
 # AWvoice: the RJ11 phone port (feed-layout repo; the three packages live at the
 # repository root). GPL-2.0-only, the board configuration data file included.
-# Pinned at the release commit of AWvoice 1.1.2 (tag v1.1.2, the first public
-# release); the three packages share that one number.
-kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 9a74d7951f2717af467cd3c76aa06dfe159871f0
-awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 9a74d7951f2717af467cd3c76aa06dfe159871f0
-luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 9a74d7951f2717af467cd3c76aa06dfe159871f0
+# Pinned at the commit tag v1.1.2 points to (the first public release); the three
+# packages share that one number. The commit one before it carries the same code
+# but still the 1.1.1 versions, so the tag's commit is the one to pin.
+kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git eba5ab94cbc1c1fc57c08104deac872eb90dbe4f
+awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git eba5ab94cbc1c1fc57c08104deac872eb90dbe4f
+luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git eba5ab94cbc1c1fc57c08104deac872eb90dbe4f
