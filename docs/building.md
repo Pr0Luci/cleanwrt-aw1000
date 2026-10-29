@@ -23,6 +23,7 @@ The firmware repository pins several smaller repositories, listed with their doc
 | `feeds-src/cwfeed/` | the vendored feed (qBittorrent stack, AdGuard Home app, Syncthing app) |
 | `files/` | the rootfs overlay (first-boot scripts, defaults, banner) |
 | `patches/feeds/` | patches applied to the pinned feeds, with zero fuzz |
+| `patches/tree/` | patches applied to packages the OpenWrt tree carries itself, with zero fuzz |
 | `tools/` | the build script and its helpers |
 | `docker/Dockerfile` | the pinned build environment |
 | `.github/workflows/` | the checks and the build |
@@ -71,13 +72,15 @@ The sysupgrade image and a provenance bundle land in `openwrt/bin/targets/qualco
 
 ## What the build script guarantees
 
-`tools/cw-release-build.sh` applies the overlay, the pinned feeds and the feed patches, then
-runs the mandatory post-defconfig fixups, and it **fails** rather than ship something stale:
+`tools/cw-release-build.sh` applies the overlay, the pinned feeds and the patches (to the feeds
+and to the tree), then runs the mandatory post-defconfig fixups, and it **fails** rather than ship
+something stale:
 
 - the OpenWrt tree must be exactly at `v25.12.5`;
 - the version label in the seed and in the script must agree;
 - every feed and every local package must match its pinned commit;
-- a feed patch that no longer applies cleanly fails the build, because the upstream code changed;
+- a feed or tree patch that no longer applies cleanly fails the build, because the upstream code
+  changed;
 - every package the seed selects must survive `make defconfig`;
 - init scripts must be executable and use procd correctly;
 - the image must fit the flash layout (`UBI_PEBS ...` line) and the size gate;
@@ -88,7 +91,13 @@ runs the mandatory post-defconfig fixups, and it **fails** rather than ship some
 | Key | Purpose | How |
 |---|---|---|
 | image signing (usign) | signs every image | `tools/cw-sign-keys.sh --generate <tree>` creates `keys-release/`. **Never commit it.** The build uses it when present. |
-| apk feed key | signs the optional `cw-opt` feed | created by the build tree on first build (`private-key.pem`). `tools/cw-check-release-keys.sh` proves a tree uses the key the devices trust. |
+| apk key | the key every image trusts and the one that signs the optional `cw-opt` feed | one fixed pair: the public half is committed at `files/etc/apk/keys/public-key.pem` and ships in the overlay; the private half is the repository secret `APK_PRIVATE_KEY` (and `keys-release/private-key.pem` for a local release build), never committed. The build writes it to `<tree>/private-key.pem`, and `tools/cw-check-release-keys.sh` proves the two halves match. |
+
+A tree with no key lets OpenWrt generate one during the build, so two builds of the same source
+produced different `/etc/apk/keys/public-key.pem` and apk database files. The fixed key above
+removes that difference, and two more are removed by patches: qca-ssdk stamped the build time into
+its module, and ndisc6's version banner carried configure's build hostname. With all three fixed,
+two builds of the same commit produce the same sysupgrade image.
 
 On GitHub Actions these keys come from the repository secrets `APK_PRIVATE_KEY`,
 `USIGN_KEY_BUILD` and `USIGN_KEY_BUILD_PUB`. Without them the images are unsigned and the
@@ -100,3 +109,6 @@ On GitHub Actions these keys come from the repository secrets `APK_PRIVATE_KEY`,
   every patch in `patches/feeds/` still applies (the `check` workflow does this).
 - **Re-port a patch:** apply it to the new upstream by hand, regenerate it with `diff -u`, and
   keep the header that says what it changes and why.
+- **Add a tree patch:** put it in `patches/tree/`, with paths from the tree root
+  (`package/kernel/qca-ssdk/Makefile`). `tools/cw-apply-feed-patches.sh` reverses the tree
+  patches before every `feeds update` and applies them again at the start of the build.

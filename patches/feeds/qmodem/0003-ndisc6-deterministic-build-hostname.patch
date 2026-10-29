@@ -1,0 +1,27 @@
+ndisc6: a fixed build hostname
+
+ndisc6's version banner is printf(_(" built %s on %s\n"), __DATE__,
+PACKAGE_BUILD_HOSTNAME), and PACKAGE_BUILD_HOSTNAME comes from configure's
+cached rdc_cv_build_hostname, which m4/hostname.m4 discovers from the build
+machine; on the release runners that is the container id, 12 hex characters
+that change from build to build. The banner is compiled into /usr/bin/ndisc6,
+so two builds of the same source differed there as well. configure treats a
+name=value argument as a shell assignment, including cached ones, so passing
+it through CONFIGURE_ARGS pins the value without patching the source.
+
+diff --git a/application/ndisc6/Makefile b/application/ndisc6/Makefile
+index 2e81c0d..94ea3bc 100644
+--- a/application/ndisc6/Makefile
++++ b/application/ndisc6/Makefile
+@@ -19,6 +19,11 @@ PKG_INSTALL:=1
+ 
+ include $(INCLUDE_DIR)/package.mk
+ 
++# ndisc6's version banner prints configure's build hostname, which defaults
++# to the build machine's (the CI runner's container id): it changed from
++# build to build. Pin the cached value through a configure argument.
++CONFIGURE_ARGS += rdc_cv_build_hostname=cleanwrt
++
+ define Package/ndisc
+   SECTION:=ipv6
+   CATEGORY:=IPv6

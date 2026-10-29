@@ -1,0 +1,26 @@
+qca-ssdk: a fixed build date in the module
+
+qca-ssdk's make/config.mk:139 assigns BUILD_DATE=$(shell date -u +%F-%T), and
+the driver compiles it into qca-ssdk.ko, so two builds of the same source
+produced images that differed in that module (and a reproducible image is what
+the release notes promise). The package runs `$(MAKE) ... $(MAKE_FLAGS) -C
+$(PKG_BUILD_DIR)`, and a variable given on make's command line wins over the
+makefile's assignment, so passing the source date there pins it. PKG_SOURCE_DATE
+is already set by this package (2025-05-30) and changes only when the source
+pin does, which is exactly when the stamped date should change too.
+
+diff --git a/package/kernel/qca-ssdk/Makefile b/package/kernel/qca-ssdk/Makefile
+index a5588d5..98106be 100644
+--- a/package/kernel/qca-ssdk/Makefile
++++ b/package/kernel/qca-ssdk/Makefile
+@@ -41,6 +41,10 @@ EXTRA_CFLAGS:= \
+ 	-I$(STAGING_DIR)/usr/include
+ 
++# qca-ssdk's config.mk stamps `date -u +%F-%T` into the module (BUILD_DATE),
++# so two builds of the same source differed. A command-line variable wins over
++# the makefile's assignment: pin the source date instead.
+ MAKE_FLAGS+= \
++	BUILD_DATE=$(PKG_SOURCE_DATE) \
+ 	TARGET_NAME=$(CONFIG_TARGET_NAME) \
+ 	TOOL_PATH=$(firstword $(TOOLCHAIN_BIN_DIRS)) \
+ 	SYS_PATH=$(LINUX_DIR) \
