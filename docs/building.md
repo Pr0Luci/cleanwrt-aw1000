@@ -23,7 +23,7 @@ The firmware repository pins several smaller repositories, listed with their doc
 | `feeds-src/cwfeed/` | the vendored feed (qBittorrent stack, AdGuard Home app, Syncthing app) |
 | `files/` | the rootfs overlay (first-boot scripts, defaults, banner) |
 | `patches/feeds/` | patches applied to the pinned feeds, with zero fuzz |
-| `patches/tree/` | patches applied to packages the OpenWrt tree carries itself, with zero fuzz |
+| `patches/tree/` | patches applied to files the OpenWrt tree carries itself (packages, build system), with zero fuzz |
 | `tools/` | the build script and its helpers |
 | `docker/Dockerfile` | the pinned build environment |
 | `.github/workflows/` | the checks and the build |
@@ -94,10 +94,11 @@ something stale:
 | apk key | the key every image trusts and the one that signs the optional `cw-opt` feed | one fixed pair: the public half is committed at `files/etc/apk/keys/public-key.pem` and ships in the overlay; the private half is the repository secret `APK_PRIVATE_KEY` (and `keys-release/private-key.pem` for a local release build), never committed. The build writes it to `<tree>/private-key.pem`, and `tools/cw-check-release-keys.sh` proves the two halves match. |
 
 A tree with no key lets OpenWrt generate one during the build, so two builds of the same source
-produced different `/etc/apk/keys/public-key.pem` and apk database files. The fixed key above
-removes that difference, and two more are removed by patches: qca-ssdk stamped the build time into
-its module, and ndisc6's version banner carried configure's build hostname. With all three fixed,
-two builds of the same commit produce the same sysupgrade image.
+produced different `/etc/apk/keys/public-key.pem`. Three more differences are removed by patches:
+qca-ssdk stamped the build time into its module, ndisc6's version banner carried configure's build
+hostname, and `apk mkpkg` stamped the build clock into every package, because a shallow clone has
+no per-package git history to take the date from. With the key fixed and those three patches
+applied, two builds of the same commit produce the same images.
 
 On GitHub Actions these keys come from the repository secrets `APK_PRIVATE_KEY`,
 `USIGN_KEY_BUILD` and `USIGN_KEY_BUILD_PUB`. Without them the images are unsigned and the
@@ -110,5 +111,5 @@ On GitHub Actions these keys come from the repository secrets `APK_PRIVATE_KEY`,
 - **Re-port a patch:** apply it to the new upstream by hand, regenerate it with `diff -u`, and
   keep the header that says what it changes and why.
 - **Add a tree patch:** put it in `patches/tree/`, with paths from the tree root
-  (`package/kernel/qca-ssdk/Makefile`). `tools/cw-apply-feed-patches.sh` reverses the tree
+  (`package/kernel/qca-ssdk/Makefile`, `include/package-pack.mk`). `tools/cw-apply-feed-patches.sh` reverses the tree
   patches before every `feeds update` and applies them again at the start of the build.

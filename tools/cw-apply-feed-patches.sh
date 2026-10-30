@@ -3,8 +3,8 @@
 #
 # Patches live in two places, both applied with `patch -p1` and ZERO fuzz:
 #   patches/feeds/<feed>/*.patch  inside <tree>/feeds/<feed>, filename order
-#   patches/tree/*.patch          at the tree root (package/...), filename order -
-#                                 for packages the tree carries itself
+#   patches/tree/*.patch          at the tree root (package/..., include/...),
+#                                 filename order - for files the tree carries itself
 # If upstream changes the code around a hunk, a patch no longer applies and this
 # script FAILS, so a build can never silently ship stale or half-applied code.
 # A patch that is already applied is detected and skipped (re-runnable).

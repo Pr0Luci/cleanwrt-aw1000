@@ -203,7 +203,7 @@ xray_need=$(sed -n 's/.*xray_min_version *= *"\([0-9.]*\)".*/\1/p' feeds/passwal
 echo "== xray-core $xray_ver (Passwall requires >= $xray_need) =="
 
 # 2a. Our patches - patches/feeds/<feed>/*.patch to the pinned feeds and
-#     patches/tree/*.patch to packages the tree carries itself - applied with
+#     patches/tree/*.patch to files the tree carries itself - applied with
 #     zero fuzz: the build fails if upstream drifted under a patch. Replaces the
 #     former whole-file 3ginfo.sh overlay.
 sh "$REPO/tools/cw-apply-feed-patches.sh" "$PWD" "$REPO"
@@ -250,7 +250,7 @@ if [ "${CW_CHECK_ONLY:-0}" != "1" ]; then
         done
     done
 
-    #     Tree patches (patches/tree/*.patch) sit on packages of the tree itself,
+    #     Tree patches (patches/tree/*.patch) sit on files of the tree itself,
     #     which neither loop above sees: same walk up, but from the tree root and
     #     with the package's own make target. A persistent tree keeps the module
     #     built before the flags changed, so clean it.

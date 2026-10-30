@@ -144,6 +144,7 @@ jobs:
           tar -C dist -czf dist/provenance.tar.gz provenance && rm -rf dist/provenance
           ls -l dist
           ls dist | grep -q 'sysupgrade.bin$'
+          sha256sum dist/*.itb dist/*.ubi dist/*.bin
 
       - name: Optional cw-opt feed
         if: success() && inputs.opt_artifacts
