@@ -1,0 +1,30 @@
+build: no timestamps in the .apk packages
+
+Every .apk carries a data tar whose entries are stamped with the mtime of the
+files on disk. The epoch for mkpkg comes from
+scripts/get_source_date_epoch.sh, which reads the package directory's last
+commit date with git -- and both the tree and the feeds are cloned --depth 1,
+so that git log finds no commit touching most package directories and hands
+mkpkg an empty epoch. mkpkg then stamps the build's own clock into every
+package, and /lib/apk/db/installed records a different package checksum for
+every one of them, so two builds of one commit produced images that differed.
+
+Upstream fixed it by running mkpkg with a fixed epoch (openwrt/openwrt
+b0b4bf6e, "build: don't store timestamps in APK packages"). The variable only
+reaches mkpkg: the SourceDateEpoch field in the package control still comes
+from the package's own source date, and the rootfs timestamps are normalised
+to the tree's epoch after install, so nothing on the device changes.
+
+diff --git a/include/package-pack.mk b/include/package-pack.mk
+index 9cb64d3..7c2998f 100644
+--- a/include/package-pack.mk
++++ b/include/package-pack.mk
+@@ -589,7 +589,7 @@
+ 		exit 1; \
+ 	fi
+ 
+-	$(FAKEROOT) $(STAGING_DIR_HOST)/bin/apk mkpkg \
++	SOURCE_DATE_EPOCH=0 $(FAKEROOT) $(STAGING_DIR_HOST)/bin/apk mkpkg \
+ 	  --info "name:$(1)$$(ABIV_$(1))" \
+ 	  --info "version:$(VERSION)" \
+ 	  $$(if $$(ABIV_$(1)),--info "tags:openwrt:abiversion=$$(ABIV_$(1))") \
