@@ -161,7 +161,8 @@ grep -E '^src-git[[:space:]]' feeds.conf | while read -r _ pname purl _; do
     echo "== feed $pname is at ${phead:-unknown}, pinned $ppin: clone again =="
     rm -rf "feeds/$pname" "feeds/$pname.index" "feeds/$pname.targetindex" "feeds/$pname.tmp" "package/feeds/$pname"
 done
-# Restore any feed we patched on a previous run, so `feeds update` sees a clean checkout.
+# Restore any feed patched on a previous run (and reverse the tree patches), so
+# `feeds update` sees a clean checkout.
 sh "$REPO/tools/cw-apply-feed-patches.sh" --reset "$PWD" "$REPO"
 ./scripts/feeds update -a
 # passwall_packages is the first feed (feeds.conf.default), so a clean
@@ -201,27 +202,31 @@ xray_need=$(sed -n 's/.*xray_min_version *= *"\([0-9.]*\)".*/\1/p' feeds/passwal
 }
 echo "== xray-core $xray_ver (Passwall requires >= $xray_need) =="
 
-# 2a. Our patches to the pinned feeds (patches/feeds/<feed>/*.patch), zero fuzz -
-#     fails the build if upstream drifted under a patch. Replaces the former
-#     whole-file 3ginfo.sh overlay.
+# 2a. The patches kept in this repository - patches/feeds/<feed>/*.patch to the pinned feeds and
+#     patches/tree/*.patch to files the tree carries itself - applied with
+#     zero fuzz: the build fails if upstream drifted under a patch. Replaces the
+#     former whole-file 3ginfo.sh overlay.
 sh "$REPO/tools/cw-apply-feed-patches.sh" "$PWD" "$REPO"
 
 # 2a-bis. Invalidate stale prebuilt packages for every patched feed. OpenWrt
 #     does not re-run Build/Prepare when feed CONTENT changes at the same pin,
 #     so an ipk built before a patch transition would be reused verbatim by an
 #     incremental build - shipping the unpatched file while everything prints
-#     success. Remove the ipks and clean the package build dir (no-op cost).
+#     success. Remove the built packages and clean the package build dir.
 #     Skipped in config-check mode: that mode never compiles, and CI runs it on
-#     a fresh clone with no build state, so each `make .../clean` (a full package re-scan per
-#     call) was 15-25 minutes of no-ops.
+#     a fresh clone with no build state.
+#     Every clean goal goes to ONE make call. Each call re-scans all package
+#     metadata, and one call per package measured 5 minutes of the build.
 if [ "${CW_CHECK_ONLY:-0}" != "1" ]; then
+    cleans=$(mktemp)
+
     for f in "$REPO"/patches/feeds/*/; do
         feed=$(basename "$f")
         for mk in "feeds/$feed"/*/Makefile; do
             [ -f "$mk" ] || continue
             pkg=$(dirname "$mk" | xargs basename)
             rm -f bin/packages/*/*/"$pkg"*.ipk 2>/dev/null || true
-            make "package/feeds/$feed/$pkg/clean" >/dev/null 2>&1 || true
+            printf 'package/feeds/%s/%s/clean\n' "$feed" "$pkg" >> "$cleans"
             echo "== invalidated stale build state for feeds/$feed/$pkg =="
         done
     done
@@ -243,10 +248,38 @@ if [ "${CW_CHECK_ONLY:-0}" != "1" ]; then
             pkg=$(basename "$d")
             name=$(sed -n 's/^PKG_NAME[[:space:]]*:\{0,1\}=[[:space:]]*//p' "$d/Makefile" | head -1)
             rm -f bin/packages/*/*/"${name:-$pkg}"[-_]*.apk bin/packages/*/*/"${name:-$pkg}"[-_]*.ipk 2>/dev/null || true
-            make "package/feeds/$feed/$pkg/clean" >/dev/null 2>&1 || true
+            printf 'package/feeds/%s/%s/clean\n' "$feed" "$pkg" >> "$cleans"
             echo "== invalidated (patched path) feeds/$feed/${d#feeds/$feed/} =="
         done
     done
+
+    #     Tree patches (patches/tree/*.patch) sit on files of the tree itself,
+    #     which neither loop above sees: same walk up, but from the tree root and
+    #     with the package's own make target. A persistent tree keeps a package
+    #     built before the flags changed, so clean it.
+    for pf in "$REPO"/patches/tree/*.patch; do
+        [ -f "$pf" ] || continue
+        sed -n 's,^+++ [ab]/\([^[:space:]]*\).*,\1,p' "$pf" | while IFS= read -r rel; do
+            d=$(dirname "$rel")
+            while [ "$d" != "." ] && ! { [ -f "$d/Makefile" ] && grep -q -e 'package\.mk' -e 'BuildPackage' "$d/Makefile"; }; do d=$(dirname "$d"); done
+            [ -f "$d/Makefile" ] && grep -q -e 'package\.mk' -e 'BuildPackage' "$d/Makefile" || continue
+            echo "$d"
+        done | sort -u | while IFS= read -r d; do
+            # the package's file name carries its own prefix, not PKG_NAME
+            rm -f bin/packages/*/*/*"$(basename "$d")"[-_]*.apk bin/packages/*/*/*"$(basename "$d")"[-_]*.ipk 2>/dev/null || true
+            printf '%s/clean\n' "$d" >> "$cleans"
+            echo "== invalidated (tree patch) $d =="
+        done
+    done
+
+    # One pass for every goal collected. A fresh tree has nothing to clean, and
+    # make reports that without failing the build.
+    if [ -s "$cleans" ]; then
+        echo "== cleaning $(sort -u "$cleans" | wc -l | tr -d ' ') invalidated package(s) in one make pass =="
+        # shellcheck disable=SC2046  # one goal per line, no spaces in a package path
+        make $(sort -u "$cleans") >/dev/null 2>&1 || true
+    fi
+    rm -f "$cleans"
 fi
 
 # 2b. Out-of-feed packages: single-package repos (Makefile at the repo root) that
@@ -725,16 +758,23 @@ if [ "$rc" = 0 ]; then
             echo "build mode: ${CLEAN:-incremental}"
             # `describe --dirty` alone said "v25.12.5-dirty" for every build, because this script
             # replaces the tracked feeds.conf.default with the repo's pinned list. State what differs
-            # from the tag: that one expected file is "clean"; anything else is listed.
+            # from the tag: the expected files are "clean"; anything else is listed.
             ow_tag=$(git -C "$TREE" describe --tags --always 2>/dev/null || echo unknown)
-            # Expected differences: feeds.conf.default (the pinned list) and the two base-files
-            # templates this script rewrites for the version label (no %C), restored later.
-            ow_dirty=$(git -C "$TREE" status --porcelain --untracked-files=no 2>/dev/null | awk '{print $2}' | grep -v -E '^(feeds\.conf\.default|package/base-files/files/etc/openwrt_release|package/base-files/files/usr/lib/os-release)$' | tr '\n' ' ')
+            # Expected differences: feeds.conf.default (the pinned list), the two base-files
+            # templates this script rewrites for the version label (no %C), restored later,
+            # and every file a patches/tree patch edits (they stay applied until the next
+            # `--reset` run). Anything else is listed.
+            tp_paths=$(sed -n 's,^+++ [ab]/\([^[:space:]]*\).*,\1,p' "$REPO"/patches/tree/*.patch 2>/dev/null | paste -sd'|' -)
+            ow_dirty=$(git -C "$TREE" status --porcelain --untracked-files=no 2>/dev/null | awk '{print $2}' | grep -v -E "^(feeds\.conf\.default|package/base-files/files/etc/openwrt_release|package/base-files/files/usr/lib/os-release)${tp_paths:+|$tp_paths}\$" | tr '\n' ' ')
             if [ -z "$ow_dirty" ]; then
-                echo "openwrt: $ow_tag (tracked files identical to the tag except the expected build edits: feeds.conf.default = the repo's pinned feed list, and the two base-files version-label templates)"
+                echo "openwrt: $ow_tag (tracked files identical to the tag except the expected build edits: feeds.conf.default = the repo's pinned feed list, the two base-files version-label templates, and the files patches/tree edits)"
             else
                 echo "openwrt: $ow_tag-dirty (modified tracked files: $ow_dirty)"
             fi
+            for pf in "$REPO"/patches/tree/*.patch; do
+                [ -e "$pf" ] || continue
+                echo "tree patch: $(basename "$pf")"
+            done
             for fd in feeds/*/; do
                 [ -d "$fd/.git" ] || continue
                 echo "feed $(basename "$fd"): $(git -C "$fd" rev-parse HEAD 2>/dev/null || echo unknown)"
