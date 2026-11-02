@@ -1712,6 +1712,10 @@ upstream feeds at build time, every one pinned to a commit.</p>
 <td>patches applied to the pinned feeds, with zero fuzz</td>
 </tr>
 <tr>
+<td><code>patches/tree/</code></td>
+<td>patches applied to files the OpenWrt tree carries itself (packages, build system), with zero fuzz</td>
+</tr>
+<tr>
 <td><code>tools/</code></td>
 <td>the build script and its helpers</td>
 </tr>
@@ -1795,17 +1799,23 @@ compiling. Pass it with <code>-e CW_CHECK_ONLY=1</code> to <code>docker run</cod
 catches almost every configuration mistake.</p>
 </div>
 <h2 id="what-the-build-script-guarantees">What the build script guarantees<a class="headerlink" href="#what-the-build-script-guarantees" title="Permanent link">&para;</a></h2>
-<p><code>tools/cw-release-build.sh</code> applies the overlay, the pinned feeds and the feed patches, then
-runs the mandatory post-defconfig fixups, and it <strong>fails</strong> rather than ship something stale:</p>
+<p><code>tools/cw-release-build.sh</code> applies the overlay, the pinned feeds and the patches (to the feeds
+and to the tree), then runs the mandatory post-defconfig fixups, and it <strong>fails</strong> rather than ship
+something stale:</p>
 <ul>
 <li>the OpenWrt tree must be exactly at <code>v25.12.5</code>;</li>
 <li>the version label in the seed and in the script must agree;</li>
 <li>every feed and every local package must match its pinned commit;</li>
-<li>a feed patch that no longer applies cleanly fails the build, because the upstream code changed;</li>
+<li>a feed or tree patch that no longer applies cleanly fails the build, because the upstream code
+  changed;</li>
 <li>every package the seed selects must survive <code>make defconfig</code>;</li>
 <li>init scripts must be executable and use procd correctly;</li>
 <li>the image must fit the flash layout (<code>UBI_PEBS ...</code> line) and the size gate;</li>
-<li>the kernel modules repository the image points at must have the vermagic of the built kernel.</li>
+<li>the kernel modules repository the image points at must have the vermagic of the built kernel;</li>
+<li>the finished release is verified before it is called OK (<code>tools/cw-check-image.sh</code>): the three
+  images present and non-empty, <code>sha256sums</code> matching the files on disk, the version label and
+  device in the config that was built, the provenance bundle complete, the manifest carrying the
+  selected packages, and the tree signing with the key the devices trust.</li>
 </ul>
 <h2 id="signing">Signing<a class="headerlink" href="#signing" title="Permanent link">&para;</a></h2>
 <table>
@@ -1823,12 +1833,20 @@ runs the mandatory post-defconfig fixups, and it <strong>fails</strong> rather t
 <td><code>tools/cw-sign-keys.sh --generate &lt;tree&gt;</code> creates <code>keys-release/</code>. <strong>Never commit it.</strong> The build uses it when present.</td>
 </tr>
 <tr>
-<td>apk feed key</td>
-<td>signs the optional <code>cw-opt</code> feed</td>
-<td>created by the build tree on first build (<code>private-key.pem</code>). <code>tools/cw-check-release-keys.sh</code> proves a tree uses the key the devices trust.</td>
+<td>apk key</td>
+<td>the key every image trusts and the one that signs the optional <code>cw-opt</code> feed</td>
+<td>one fixed pair: the public half is committed at <code>files/etc/apk/keys/public-key.pem</code> and ships in the overlay; the private half is the repository secret <code>APK_PRIVATE_KEY</code> (and <code>keys-release/private-key.pem</code> for a local release build), never committed. The build writes it to <code>&lt;tree&gt;/private-key.pem</code>, and <code>tools/cw-check-release-keys.sh</code> proves the two halves match.</td>
 </tr>
 </tbody>
 </table>
+<p>A tree with no key lets OpenWrt generate one during the build, so every image carried a different
+<code>/etc/apk/keys/public-key.pem</code> and a device could no longer verify the <code>cw-opt</code> feed built from the
+same source. The patch in <code>patches/tree/</code> removes a second build-to-build change: <code>apk mkpkg</code>
+stamps the build's own clock into every package, because a shallow clone has no per-package git
+history to take a date from, so <code>/lib/apk/db/installed</code> recorded a different checksum for every
+package in every image. Running <code>mkpkg</code> with a fixed epoch is the change upstream OpenWrt made; a
+package's own source date still sets its <code>SourceDateEpoch</code>, and rootfs timestamps are normalised as
+before, so nothing on the device changes.</p>
 <p>On GitHub Actions these keys come from the repository secrets <code>APK_PRIVATE_KEY</code>,
 <code>USIGN_KEY_BUILD</code> and <code>USIGN_KEY_BUILD_PUB</code>. Without them the images are unsigned and the
 <code>cw-opt</code> feed stays disabled.</p>
@@ -1838,6 +1856,9 @@ runs the mandatory post-defconfig fixups, and it <strong>fails</strong> rather t
   every patch in <code>patches/feeds/</code> still applies (the <code>check</code> workflow does this).</li>
 <li><strong>Re-port a patch:</strong> apply it to the new upstream by hand, regenerate it with <code>diff -u</code>, and
   keep the header that says what it changes and why.</li>
+<li><strong>Add a tree patch:</strong> put it in <code>patches/tree/</code>, with paths from the tree root (for example
+  <code>include/package-pack.mk</code>). <code>tools/cw-apply-feed-patches.sh</code> reverses the tree patches before
+  every <code>feeds update</code> and applies them again at the start of the build.</li>
 </ul>
 
 
