@@ -9,3 +9,9 @@ key-build.ucert
 # generated docs page
 docs/generated/
 site/
+
+root/
+
+tools/luci-qa.sh
+tools/luci-qa.js
+tools/luci-qa.README.md
