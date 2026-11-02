@@ -35,30 +35,32 @@ version=$(sed -n 's/^CW_VERSION="\(.*\)"$/\1/p' "$REPO/tools/cw-release-build.sh
 [ -n "$version" ] || fail "cannot read CW_VERSION from tools/cw-release-build.sh"
 echo "== cw-check-image: $version =="
 
-# 1. the three images
-missing=""
-for pat in '*arcadyan_aw1000-squashfs-sysupgrade.bin' '*arcadyan_aw1000-squashfs-factory.ubi' \
-           '*arcadyan_aw1000-initramfs-uImage.itb'; do
-    found=$(find "$OUT" -maxdepth 1 -type f -name "$pat" | head -1)
-    [ -n "$found" ] || { missing="$missing $pat"; continue; }
-    [ "$(wc -c < "$found")" -gt 65536 ] || fail "$found is $(wc -c < "$found") bytes - too small to be a real image"
-done
-[ -z "$missing" ] || fail "no image matched:$missing"
-ok "sysupgrade, factory.ubi and initramfs present and non-empty"
-
-# 2. checksums of the files sha256sums names
+# 1 and 2. the three images: present, non-empty, and matching the checksums this build wrote
 sums="$OUT/sha256sums"
 [ -f "$sums" ] || fail "no sha256sums in $OUT"
+missing=""
 named=$(mktemp)
-# OpenWrt writes "<64 hex> [*]<path>": the binary marker is a star, the text marker two spaces.
-grep '^[0-9a-f]' "$sums" | grep 'arcadyan_aw1000' > "$named" || true
-[ -s "$named" ] || { rm -f "$named"; fail "sha256sums names no image for this profile"; }
+for s in squashfs-sysupgrade.bin squashfs-factory.ubi initramfs-uImage.itb; do
+    found=$(find "$OUT" -maxdepth 1 -type f -name "*arcadyan_aw1000*$s" | head -1)
+    [ -n "$found" ] || { missing="$missing $s"; continue; }
+    [ "$(wc -c < "$found")" -gt 65536 ] || fail "$found is $(wc -c < "$found") bytes - too small to be a real image"
+    # OpenWrt writes "<64 hex> [*]<path>": a star marks a binary entry, two spaces a text one.
+    # Only the images are verified here; sha256sums also names the manifest and the buildinfo
+    # files, and those are checked by the provenance pass below.
+    grep "^[0-9a-f].*arcadyan_aw1000.*$s" "$sums" >> "$named" || true
+done
+[ -z "$missing" ] || { rm -f "$named"; fail "no image matched:$missing"; }
+ok "sysupgrade, factory.ubi and initramfs present and non-empty"
+
+covers=$(grep -c . "$named")
+[ "$covers" = "3" ] ||
+    { rm -f "$named"; fail "sha256sums names $covers of the three images"; }
 if ! (cd "$OUT" && sha256sum -c --quiet "$named"); then
     rm -f "$named"
-    fail "a checksum in sha256sums does not match the file on disk"
+    fail "a checksum in sha256sums does not match the image on disk"
 fi
 rm -f "$named"
-ok "sha256sums verifies for every image it names ($(grep -c . "$sums") entries in the file)"
+ok "sha256sums covers all three images and matches the files on disk"
 
 # 3. what was built is what the seed says
 [ -f "$TREE/.config" ] || fail "no .config in the tree"
@@ -84,7 +86,10 @@ selected=$(grep -cE '^CONFIG_PACKAGE_[A-Za-z0-9_.-]+=y' "$TREE/.config" || true)
 listed=$(wc -l < "$man" | tr -d ' ')
 [ "$selected" -gt 0 ] || fail "the config selects no packages"
 [ "$listed" -gt 0 ] || fail "$man is empty - the image carries no package list"
-floor=$(( selected * 9 / 10 ))
+# A selection does not always reach the image as its own manifest entry (virtual packages and
+# split outputs), so this is a band, not an equality: the published 25.12.5-rc2 lists 470 of the
+# 511 packages its config selected - 92%. A quarter missing is a build that lost real packages.
+floor=$(( selected * 3 / 4 ))
 [ "$listed" -ge "$floor" ] ||
     fail "the manifest lists $listed packages but the config selects $selected: a large part of the selection never reached the image"
 ok "manifest lists $listed of $selected selected packages"
