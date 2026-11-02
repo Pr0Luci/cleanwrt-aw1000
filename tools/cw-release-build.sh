@@ -564,10 +564,20 @@ rc=0
 make -j"$(nproc)" || rc=$?
 echo "-- world rc=$rc --"
 if [ "$rc" -ne 0 ]; then
-    # The parallel run hides the real error ("re-run with -j1 V=s"). Everything already built is
-    # reused, so a verbose single-job pass is quick and prints the cause into the build log.
-    echo "== world failed: verbose single-job pass for the cause =="
-    make -j1 V=s 2>&1 | tail -n 120 || true
+    # The parallel run hides the real error ("re-run with -j1 V=s"). OpenWrt writes one log per
+    # package under output/logs/, so the newest ones are printed here: the cause reaches the build
+    # log in seconds and a second build is never needed just to find out what broke.
+    for lg in $(find output/logs -type f -name '*.log' -printf '%T@ %p\n' 2>/dev/null |
+                 sort -rn | head -3 | cut -d' ' -f2-); do
+        echo "== $lg (last 40 lines) =="
+        tail -n 40 "$lg" || true
+    done
+    # Everything already built is reused, so a verbose single-job pass is quick and prints the
+    # cause itself when no package log carried it.
+    if [ -z "$(find output/logs -type f -name '*.log' 2>/dev/null)" ]; then
+        echo "== world failed: no package log to read, verbose single-job pass for the cause =="
+        make -j1 V=s 2>&1 | tail -n 120 || true
+    fi
 fi
 
 # 6b. Opt-in artifacts for the cw-opt binary feed: qBittorrent is
