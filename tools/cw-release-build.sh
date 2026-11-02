@@ -1,5 +1,5 @@
 #!/bin/sh
-# cw-release-build.sh - reproducible CleanWRT release build from this repo.
+# cw-release-build.sh - CleanWRT release build from version-controlled inputs.
 #
 # Builds the release image from version-controlled inputs only: the seed
 # configs/arcadyan_aw1000.seed, the files/ overlay, feeds.conf.default (every feed
