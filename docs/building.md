@@ -84,7 +84,11 @@ something stale:
 - every package the seed selects must survive `make defconfig`;
 - init scripts must be executable and use procd correctly;
 - the image must fit the flash layout (`UBI_PEBS ...` line) and the size gate;
-- the kernel modules repository the image points at must have the vermagic of the built kernel.
+- the kernel modules repository the image points at must have the vermagic of the built kernel;
+- the finished release is verified before it is called OK (`tools/cw-check-image.sh`): the three
+  images present and non-empty, `sha256sums` matching the files on disk, the version label and
+  device in the config that was built, the provenance bundle complete, the manifest carrying the
+  selected packages, and the tree signing with the key the devices trust.
 
 ## Signing
 

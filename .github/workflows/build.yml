@@ -143,7 +143,15 @@ jobs:
           cp -r "$OUT/cw-release-provenance" dist/provenance
           tar -C dist -czf dist/provenance.tar.gz provenance && rm -rf dist/provenance
           ls -l dist
-          ls dist | grep -q 'sysupgrade.bin$'
+          # every image the release page promises must actually be in dist/
+          for pat in '*arcadyan_aw1000-squashfs-sysupgrade.bin' \
+                     '*arcadyan_aw1000-squashfs-factory.ubi' \
+                     '*arcadyan_aw1000-initramfs-uImage.itb'; do
+              compgen -G "dist/$pat" > /dev/null || { echo "ERROR: no file matches $pat" >&2; exit 1; }
+          done
+          # The three image hashes in the log: two runs of one commit can be compared from the
+          # summary alone, with nothing downloaded.
+          sha256sum dist/*.bin dist/*.ubi dist/*.itb
 
       - name: Optional cw-opt feed
         if: success() && inputs.opt_artifacts

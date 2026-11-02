@@ -780,7 +780,14 @@ if [ "$rc" = 0 ]; then
                 echo "feed $(basename "$fd"): $(git -C "$fd" rev-parse HEAD 2>/dev/null || echo unknown)"
             done
         } > "$PROV/provenance.txt"
-        ( cd "$OUT" && sha256sum ./*.bin ./cw-release-provenance/* > sha256sums.cw )
+        ( cd "$OUT" && sha256sum ./*.bin ./*.ubi ./*.itb ./cw-release-provenance/* > sha256sums.cw ) ||
+            { echo "ERROR: sha256sums.cw is incomplete - one of the three images or the provenance files is missing" >&2; rc=1; }
+        # The release is verified before it is called OK: the three images present, their
+        # checksums, the config that produced them, the completeness of the provenance
+        # bundle, the manifest against the selection, and the feed key devices trust.
+        if [ "$rc" = 0 ]; then
+            sh "$REPO/tools/cw-check-image.sh" "$TREE" "$REPO" || rc=1
+        fi
         if [ "$rc" = 0 ]; then echo "IMAGE_OK $BIN"; else echo "IMAGE_BUILT_WITH_PRIOR_ERRORS $BIN"; fi
         sha256sum "$BIN"
         echo "PROVENANCE $PROV (sha256sums.cw next to the image)"
