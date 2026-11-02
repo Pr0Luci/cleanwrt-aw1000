@@ -123,7 +123,9 @@ jobs:
       - name: Compiler cache statistics
         if: always()
         run: |
-          [ -x /mnt/cw/openwrt/staging_dir/host/bin/ccache ] && CCACHE_DIR=/mnt/cw/openwrt/.ccache /mnt/cw/openwrt/staging_dir/host/bin/ccache -s || true
+          if [ -x /mnt/cw/openwrt/staging_dir/host/bin/ccache ]; then
+            CCACHE_DIR=/mnt/cw/openwrt/.ccache /mnt/cw/openwrt/staging_dir/host/bin/ccache -s
+          fi
           du -sh /mnt/cw/openwrt/dl /mnt/cw/openwrt/.ccache 2>/dev/null || true
           df -h /mnt
 
