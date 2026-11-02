@@ -1,0 +1,24 @@
+ndisc6: a mirror for the release file
+
+The upstream host answers HTTP 410 Gone for ndisc6-1.0.2.tar.bz2, so
+`make download` fails for this package and a release build aborts before it compiles
+anything. The mirror carries the identical file: its MD5 equals the PKG_MD5SUM this
+Makefile already declares (50cb4c19606cf6ff2b7388e71832f579), checked 2026-11-02. The
+mirror comes first because the original host no longer serves the file; it stays in
+the list, and OpenWrt tries each URL in turn with the declared hash deciding what is
+accepted.
+
+diff --git a/application/ndisc6/Makefile b/application/ndisc6/Makefile
+index 2e81c0d..379e9d7 100644
+--- a/application/ndisc6/Makefile
++++ b/application/ndisc6/Makefile
+@@ -12,7 +12,8 @@ PKG_VERSION:=1.0.2
+ PKG_RELEASE:=1
+ 
+ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+-PKG_SOURCE_URL:=http://www.remlab.net/files/ndisc6
++PKG_SOURCE_URL:=https://sources.buildroot.net \
++	http://www.remlab.net/files/ndisc6
+ PKG_MD5SUM:=50cb4c19606cf6ff2b7388e71832f579
+ 
+ PKG_INSTALL:=1
