@@ -2,7 +2,7 @@
 # cw-publish-feed.sh - build and verify the CleanWRT apk feed (cw-opt).
 #
 # The feed at https://pr0luci.github.io/cleanwrt-aw1000/feed/ carries what the official
-# OpenWrt 25.12.5 repositories do not: the apks built from our feeds (qmodem,
+# OpenWrt 25.12.5 repositories do not: the apks built from the feeds pinned here (qmodem,
 # passwall*, 3ginfo, diskman, cwfeed, openclash) plus the community-feed outputs of
 # the official `packages` feed that the opt-set closure needs.
 #

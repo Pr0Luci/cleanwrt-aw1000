@@ -1,5 +1,5 @@
 name: Test report
-description: Tell us how an image worked on your router, good or bad
+description: Describe how an image worked on your router, good or bad
 labels: [report]
 body:
   - type: markdown

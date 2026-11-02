@@ -690,7 +690,7 @@ if [ "$rc" = 0 ]; then
     SH_LIST=$(find build_dir -path '*luci-app-3ginfo-lite*' -path '*root/usr/share/3ginfo-lite/3ginfo.sh' 2>/dev/null || true)
     [ -n "$SH_LIST" ] || { echo "ERROR: built 3ginfo.sh not found in build_dir" >&2; rc=1; }
     for f in $SH_LIST; do
-        # 'CEREG_STAT=' is introduced by our patch ONLY - upstream already
+        # 'CEREG_STAT=' is introduced by this patch ONLY - upstream already
         # contains the word CEREG (TAC extraction), so grepping for that would
         # false-pass on a stale unpatched copy.
         grep -q 'CEREG_STAT=' "$f" || { echo "ERROR: $f is NOT patched (no CEREG_STAT= handler) - stale build state" >&2; rc=1; }
