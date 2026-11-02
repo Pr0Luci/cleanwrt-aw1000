@@ -1,9 +1,16 @@
 name: check
 
+# Every gate that can fail a release build, in the minutes before a release build. The heavy
+# pass runs once per pull request: the feeds, the patches, the pins, defconfig and the seed
+# checks are the same command whether or not the sources are re-downloaded, so nothing here
+# costs an OpenWrt tree twice.
+
 on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    - cron: "17 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -19,18 +26,33 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: Workflow files
+        run: |
+          set -eu
+          # A workflow only reports its own mistakes when it runs - usually in the middle of a
+          # release. actionlint reads every trigger, input, context and expression here instead.
+          ver=1.7.7
+          curl -sSfL "https://github.com/rhysd/actionlint/releases/download/v${ver}/actionlint_${ver}_linux_amd64.tar.gz" |
+            tar xz -C "$RUNNER_TEMP" actionlint
+          # no path argument: actionlint finds the workflow files itself and reads a directory
+          # as a file otherwise. The runner's shellcheck is used for the scripts inside them.
+          "$RUNNER_TEMP/actionlint" -no-color
+
       - name: Shell syntax
         run: |
           set -eu
-          for f in $(grep -rlE '^#!.*(sh|bash)' tools files); do
+          while IFS= read -r f; do
             case "$(head -1 "$f")" in *bash*) bash -n "$f" ;; *) sh -n "$f" ;; esac
-          done
+          done < <(grep -rlE '^#!.*(sh|bash)' tools files)
+
       - name: Version label agrees between seed and build script
         run: |
           seed=$(sed -n 's/^CONFIG_VERSION_NUMBER="\(.*\)"$/\1/p' configs/arcadyan_aw1000.seed)
           script=$(sed -n 's/^CW_VERSION="\(.*\)"$/\1/p' tools/cw-release-build.sh)
           echo "seed=$seed script=$script"
           [ -n "$seed" ] && [ "$seed" = "$script" ]
+
       - name: Pins resolve anonymously
         run: |
           set -eu
@@ -41,19 +63,93 @@ jobs:
             echo "pin ok: $name @ $sha"
           done
 
-  config:
+  tree:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The config pass always runs, so every pull request carries the same red mark when it
+      # breaks. Only the source download - the part that needs the whole feed tree - is done
+      # when something the image is built from actually changed.
+      - name: Does this change touch the sources?
+        id: chg
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          git fetch -q origin "${{ github.base_ref }}"
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(feeds\.conf\.default|configs/|patches/|feeds-src/|tools/cw-release-build\.sh|docker/)'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No source change in this pull request: the config pass runs, nothing is downloaded."
+          fi
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo mkdir -p /mnt/cw && sudo chown "$USER" /mnt/cw
+          df -h / /mnt
+
       - name: Builder image
         run: docker build -t cleanwrt-builder docker/
-      - name: OpenWrt v25.12.5
+
+      - name: OpenWrt tree at the pinned tag
         run: |
-          sudo mkdir -p /mnt/cw && sudo chown "$USER" /mnt/cw
-          git clone --depth 1 --branch v25.12.5 https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
+          tag=$(sed -n 's/^OPENWRT_TAG="\(.*\)"$/\1/p' tools/cw-release-build.sh)
+          echo "tag=$tag" >> "$GITHUB_STEP_SUMMARY"
+          git clone --depth 1 --branch "$tag" https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
+
       - name: Feeds, patches, pins, defconfig and seed checks (no compile)
         run: |
           docker run --rm -e CW_CHECK_ONLY=1 \
             -v /mnt/cw/openwrt:/build -v "$PWD":/cleanwrt \
             cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build
+
+      - name: Download all sources
+        if: steps.chg.outputs.run == 'true'
+        run: |
+          docker run --rm -v /mnt/cw/openwrt:/build cleanwrt-builder bash -c '
+            cd /build
+            make download -j4 2>&1 | tee download.log
+            if grep -E "failed to build|Download failed|No more mirrors|Hash mismatch" download.log; then
+              echo "A source file could not be downloaded."; exit 1
+            fi
+            find dl -type f -size 0 -print | grep . && { echo "Empty download found."; exit 1; }
+            echo "all sources present: $(ls dl | wc -l) files, $(du -sh dl | cut -f1)"
+          '
+
+  upstream:
+    # A report, never a failure: what moved upstream since the last pin. The nightly download
+    # pass in the tree job is what fails when something broke; this only says what changed.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: What moved upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          {
+            echo "## Upstream since the last pin"
+            echo
+            tag=$(sed -n 's/^OPENWRT_TAG="\(.*\)"$/\1/p' tools/cw-release-build.sh)
+            echo "- pinned OpenWrt tree: \`$tag\`"
+            latest=$(gh release list --repo openwrt/openwrt --limit 15 --exclude-drafts --exclude-pre-releases \
+                     --json tagName -q '[.[].tagName] | map(select(test("^v[0-9.]+$"))) | .[0] // "unknown"')
+            echo "- newest OpenWrt release: \`$latest\`"
+            [ "$latest" = "unknown" ] || [ "$latest" = "$tag" ] || echo "  **a newer stable release is out**"
+            echo
+            echo "| pin | pinned | branch head | moved |"
+            echo "|---|---|---|---|"
+            grep -vE '^[[:space:]]*(#|$)' configs/local-packages.pin | while read -r name url sha _; do
+              head_sha=$(git ls-remote "$url" HEAD 2>/dev/null | cut -f1)
+              if [ -z "$head_sha" ]; then echo "| $name | ${sha:0:8} | unreachable | ? |"; continue; fi
+              if [ "$head_sha" = "$sha" ]; then echo "| $name | ${sha:0:8} | ${head_sha:0:8} | no |";
+              else echo "| $name | ${sha:0:8} | ${head_sha:0:8} | **yes** |"; fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
