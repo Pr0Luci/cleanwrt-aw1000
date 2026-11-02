@@ -48,8 +48,8 @@ check QModem's licence first: <https://github.com/FUjr/QModem>.
 
 ## Patches to third-party code
 
-The patches in `patches/feeds/` modify third-party files at build time and stay under the licence
-of the file they modify:
+The patches in `patches/feeds/` and `patches/tree/` modify third-party files at build time and
+stay under the licence of the file they modify:
 
 - the QModem patch (the modem widgets on the overview page) stays under QModem's terms;
 - the 3ginfo-lite patches stay under GPL-3.0.

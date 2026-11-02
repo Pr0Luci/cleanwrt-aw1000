@@ -46,7 +46,9 @@ jobs:
         id: ver
         run: |
           ver=$(sed -n 's/^CW_VERSION="\(.*\)"$/\1/p' tools/cw-release-build.sh)
+          tag=$(sed -n 's/^OPENWRT_TAG="\(.*\)"$/\1/p' tools/cw-release-build.sh)
           echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
           case "$GITHUB_REF" in
             refs/tags/v*) [ "${GITHUB_REF#refs/tags/v}" = "$ver" ] || { echo "tag does not match CW_VERSION $ver"; exit 1; } ;;
           esac
@@ -61,8 +63,10 @@ jobs:
       - name: Builder image
         run: docker build -t cleanwrt-builder docker/
 
-      - name: OpenWrt v25.12.5
-        run: git clone --depth 1 --branch v25.12.5 https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
+      - name: OpenWrt tree at the pinned tag
+        run: |
+          tag=$(sed -n 's/^OPENWRT_TAG="\(.*\)"$/\1/p' tools/cw-release-build.sh)
+          git clone --depth 1 --branch "$tag" https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
 
       - name: Restore caches
         uses: actions/cache/restore@v4
@@ -70,10 +74,11 @@ jobs:
           path: |
             /mnt/cw/openwrt/dl
             /mnt/cw/openwrt/.ccache
-          key: cw-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
+          # The tree tag is part of the key: a compiler cache built against another OpenWrt
+          # release is not a cache for this one, and no cache is cheaper than a wrong one.
+          key: cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
           restore-keys: |
-            cw-${{ hashFiles('feeds.conf.default', 'configs/**') }}-
-            cw-
+            cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-
 
       - name: Signing keys (optional repository secrets)
         env:
@@ -118,7 +123,9 @@ jobs:
       - name: Compiler cache statistics
         if: always()
         run: |
-          [ -x /mnt/cw/openwrt/staging_dir/host/bin/ccache ] && CCACHE_DIR=/mnt/cw/openwrt/.ccache /mnt/cw/openwrt/staging_dir/host/bin/ccache -s || true
+          if [ -x /mnt/cw/openwrt/staging_dir/host/bin/ccache ]; then
+            CCACHE_DIR=/mnt/cw/openwrt/.ccache /mnt/cw/openwrt/staging_dir/host/bin/ccache -s
+          fi
           du -sh /mnt/cw/openwrt/dl /mnt/cw/openwrt/.ccache 2>/dev/null || true
           df -h /mnt
 
@@ -129,7 +136,7 @@ jobs:
           path: |
             /mnt/cw/openwrt/dl
             /mnt/cw/openwrt/.ccache
-          key: cw-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
+          key: cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
 
       - name: Collect release files
         if: success()
@@ -143,7 +150,15 @@ jobs:
           cp -r "$OUT/cw-release-provenance" dist/provenance
           tar -C dist -czf dist/provenance.tar.gz provenance && rm -rf dist/provenance
           ls -l dist
-          ls dist | grep -q 'sysupgrade.bin$'
+          # every image the release page promises must actually be in dist/
+          for pat in '*arcadyan_aw1000-squashfs-sysupgrade.bin' \
+                     '*arcadyan_aw1000-squashfs-factory.ubi' \
+                     '*arcadyan_aw1000-initramfs-uImage.itb'; do
+              compgen -G "dist/$pat" > /dev/null || { echo "ERROR: no file matches $pat" >&2; exit 1; }
+          done
+          # The three image hashes in the log: two runs of one commit can be compared from the
+          # summary alone, with nothing downloaded.
+          sha256sum dist/*.bin dist/*.ubi dist/*.itb
 
       - name: Optional cw-opt feed
         if: success() && inputs.opt_artifacts
@@ -163,7 +178,7 @@ jobs:
           pre=""
           case "$VERSION" in *-rc*) pre="--prerelease" ;; esac
           cat > notes.md <<NOTES
-          CleanWRT $VERSION for the Arcadyan AW1000 (OpenWrt 25.12.5, qualcommax/ipq807x).
+          CleanWRT $VERSION for the Arcadyan AW1000 (OpenWrt ${{ steps.ver.outputs.tag }}, qualcommax/ipq807x).
 
           Flash the \`*-squashfs-sysupgrade.bin\` with sysupgrade, see the README for the
           required expanded MTD layout. \`sha256sums.cw\` lists the checksums of the images and
