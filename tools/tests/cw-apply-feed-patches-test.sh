@@ -5,11 +5,13 @@
 #   usage: tools/tests/cw-apply-feed-patches-test.sh
 #
 # The tree here is built from two miniature git repositories: one feed of its own,
-# and one linked to the tree the way a src-link feed is. The patch used has one hunk
-# on a tracked file and one that creates a file, which is the shape that made an
-# incremental build stop: `./scripts/feeds update` puts the tracked file back at the
-# pinned commit but keeps the file the earlier pass created, and the create hunk then
-# meets a file already in place.
+# and one linked to the tree the way a src-link feed is. The feed's two patches are
+# the shapes that matter. The first rewrites a tracked file and creates a new one,
+# which is what stops a build on a tree an earlier build already used: a feed update
+# puts the tracked file back at the pinned commit but keeps the created file, so the
+# create hunk meets a file already in place. The second patch is stacked on the first
+# and reads lines only the first one writes, so a restore done between the two would
+# pull the ground out from under it.
 set -eu
 
 TESTS=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -33,14 +35,24 @@ git -C "$WORK/tree/feeds/demo" -c user.email=t@t -c user.name=t commit -q -m dem
 ln -s "$WORK/tree" "$WORK/tree/feeds/link"
 
 mkdir -p "$WORK/repo/patches/feeds/demo" "$WORK/repo/patches/feeds/link"
+DEMO="$WORK/tree/feeds/demo"
 
-# the feed patch: one hunk on a tracked file, one creating a file
-mkdir -p "$WORK/tree/feeds/demo/src"
-printf 'line one\nline two patched\nline three\n' > "$WORK/tree/feeds/demo/Makefile"
-echo created by the patch > "$WORK/tree/feeds/demo/src/new.c"
-git -C "$WORK/tree/feeds/demo" add Makefile src/new.c
-git -C "$WORK/tree/feeds/demo" diff --cached -M HEAD > "$WORK/repo/patches/feeds/demo/0001-demo.patch"
-git -C "$WORK/tree/feeds/demo" reset -q --hard
+# the first patch: one hunk on a tracked file, one creating a file
+mkdir -p "$DEMO/src"
+printf 'line one\nline two patched\nline three\n' > "$DEMO/Makefile"
+echo created by the patch > "$DEMO/src/new.c"
+git -C "$DEMO" add Makefile src/new.c
+git -C "$DEMO" diff --cached -M HEAD > "$WORK/repo/patches/feeds/demo/0001-demo.patch"
+pin=$(git -C "$DEMO" rev-parse HEAD)
+# committed, so the second patch can be written as the change from here on: stacked
+# patches each carry only their own hunk, the way a feed's patch chain is written
+git -C "$DEMO" -c user.email=t@t -c user.name=t commit -q -m one
+printf 'line one\nline two patched\nline three stacked\n' > "$DEMO/Makefile"
+printf 'created by the patch\nstacked on the created file\n' > "$DEMO/src/new.c"
+git -C "$DEMO" add Makefile src/new.c
+git -C "$DEMO" diff --cached -M HEAD > "$WORK/repo/patches/feeds/demo/0002-demo-stacked.patch"
+git -C "$DEMO" reset -q --hard "$pin"
+git -C "$DEMO" clean -qfd
 
 # the linked feed's patch works at the tree root, the way a src-link feed does
 printf 'top one changed\n' > "$WORK/tree/toplevel-file"
@@ -59,16 +71,25 @@ git -C "$WORK/tree/feeds/demo" checkout -q -- .
 grep -q '^line two$' "$WORK/tree/feeds/demo/Makefile" || { echo "test: the tracked file was not reset" >&2; exit 1; }
 
 sh "$SCRIPT" "$WORK/tree" "$WORK/repo" > "$WORK/first.out" 2>&1 || {
-    echo "test: the patch pass stopped on a file an earlier pass left behind" >&2
+    echo "test: the patch pass failed on a scratch tree set up as an incremental build leaves it" >&2
     sed 's/^/    /' "$WORK/first.out" >&2
     exit 1
 }
 grep -q 'applied feed patch: demo/0001-demo.patch' "$WORK/first.out" || {
-    echo "test: the feed patch is not reported applied" >&2; exit 1; }
+    echo "test: the feed's first patch is not reported applied" >&2; exit 1; }
+grep -q 'applied feed patch: demo/0002-demo-stacked.patch' "$WORK/first.out" || {
+    echo "test: the stacked patch is not reported applied - the feed was restored between its patches" >&2
+    sed 's/^/    /' "$WORK/first.out" >&2
+    exit 1
+}
 grep -q 'line two patched' "$WORK/tree/feeds/demo/Makefile" || {
     echo "test: the tracked file is not patched" >&2; exit 1; }
+grep -q 'line three stacked' "$DEMO/Makefile" || {
+    echo "test: the stacked patch did not reach the tracked file" >&2; exit 1; }
 [ -f "$WORK/tree/feeds/demo/src/new.c" ] || {
     echo "test: the file the patch creates is missing" >&2; exit 1; }
+grep -q 'stacked on the created file' "$DEMO/src/new.c" || {
+    echo "test: the stacked patch did not reach the created file" >&2; exit 1; }
 
 # a src-link feed is patched where it points, and the tree's own untracked file stays
 grep -q 'top one changed' "$WORK/tree/toplevel-file" || {
@@ -81,8 +102,10 @@ grep -q 'top one changed' "$WORK/tree/toplevel-file" || {
 # running the pass again must land in the same place
 sh "$SCRIPT" "$WORK/tree" "$WORK/repo" > "$WORK/second.out" 2>&1 || {
     echo "test: the second pass failed" >&2; sed 's/^/    /' "$WORK/second.out" >&2; exit 1; }
-grep -q 'line two patched' "$WORK/tree/feeds/demo/Makefile" || {
-    echo "test: the second pass lost the patch" >&2; exit 1; }
+grep -q 'line three stacked' "$DEMO/Makefile" || {
+    echo "test: the second pass lost the stack" >&2; exit 1; }
+grep -q 'stacked on the created file' "$DEMO/src/new.c" || {
+    echo "test: the second pass lost the stacked file" >&2; exit 1; }
 [ -f "$WORK/tree/rootmarker" ] || {
     echo "test: the second pass cleared the linked tree" >&2; exit 1; }
 

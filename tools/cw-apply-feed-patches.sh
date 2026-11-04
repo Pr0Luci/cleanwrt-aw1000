@@ -7,8 +7,9 @@
 #                                 filename order - for files the tree carries itself
 # If upstream changes the code around a hunk, a patch no longer applies and this
 # script FAILS, so a build can never silently ship stale or half-applied code.
-# Each feed is first restored to the commit it is checked out at, so what a patch
-# meets is always the pinned source and never an earlier build's leftover.
+# Each feed is restored to the commit it is checked out at once, before its first
+# patch, so that patch meets the pinned source and not an earlier build's leftover,
+# while the patches stacked behind it still read what came before them.
 # A patch that is already applied is detected and skipped (re-runnable).
 #
 # Usage:
@@ -117,6 +118,17 @@ else
     tree_patches | while IFS= read -r pf; do apply_tree_patch "$pf"; done
 fi
 
+restored=
+# restore_once <feed> <feed-dir>
+#   A feed is put back to its commit once, on the first of its patches. Its later
+#   patches are stacked on that one and must read what it left behind, so restoring
+#   per patch would wipe the ground from under them.
+restore_once() {
+    case " $restored " in *" $1 "*) return 0 ;; esac
+    restored="$restored $1"
+    restore_feed "$2"
+}
+
 for pf in "$REPO"/patches/feeds/*/*.patch; do
     [ -e "$pf" ] || continue
     feed=$(basename "$(dirname "$pf")")
@@ -125,12 +137,12 @@ for pf in "$REPO"/patches/feeds/*/*.patch; do
 
     if [ "$MODE" = reset ]; then
         # The feed may not exist yet on a first build - nothing to restore then.
-        restore_feed "$dir"
+        [ -d "$dir" ] && restore_once "$feed" "$dir"
         continue
     fi
 
     [ -d "$dir" ] || { echo "ERROR: feed '$feed' (needed by $name) is not in $TREE/feeds" >&2; exit 1; }
-    restore_feed "$dir"
+    restore_once "$feed" "$dir"
 
     if patch -p1 -R -F0 --dry-run -s -d "$dir" < "$pf" >/dev/null 2>&1; then
         echo "feed patch already applied: $name"
