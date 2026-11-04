@@ -1,0 +1,62 @@
+#!/bin/sh
+# The look a new router starts with.
+#
+# Footstrap keeps its settings in /etc/config/footstrap, a conffile of the theme
+# package, so this image ships no copy of that file: it writes the same values on
+# first boot instead, after the theme's own script has created the section.
+#
+# cw_look names the look applied here, and a router that already carries it is
+# left alone - the theme's page saves an admin's own look to the router, and that
+# choice outranks the image's default. The two background files are named by their
+# checksums, read off the files this image installs rather than written down here,
+# and a photo already on the router that is not one of those files is a second
+# reason to leave the settings be. If a later image changes the look, it changes
+# the name below and this runs once more.
+[ -f /etc/config/footstrap ] || exit 0
+
+look='rc2.1'
+[ "$(uci -q get footstrap.settings.cw_look)" = "$look" ] && exit 0
+
+bg=/etc/footstrap/login-bg
+pat=/etc/footstrap/pattern.svg
+bgs=$(md5sum "$bg" 2>/dev/null | cut -d' ' -f1)
+pats=$(md5sum "$pat" 2>/dev/null | cut -d' ' -f1)
+[ -n "$bgs" ] && [ -n "$pats" ] || exit 0
+
+cur=$(uci -q get footstrap.settings.login_bg)
+[ -z "$cur" ] || [ "$cur" = "$bgs" ] || exit 0
+
+uci batch <<EOF
+set footstrap.settings.layout='top'
+set footstrap.settings.darkmode='dark'
+set footstrap.settings.palette='footstrap'
+set footstrap.settings.wallpaper='file'
+set footstrap.settings.tint='0'
+set footstrap.settings.accent='0'
+set footstrap.settings.good='0'
+set footstrap.settings.warn='0'
+set footstrap.settings.danger='0'
+set footstrap.settings.card='0'
+set footstrap.settings.control='0'
+set footstrap.settings.bar='0'
+set footstrap.settings.line='0'
+set footstrap.settings.rounding='12'
+set footstrap.settings.autocollapse='off'
+set footstrap.settings.tint_strength='100'
+set footstrap.settings.density='normal'
+set footstrap.settings.photo_dim='50'
+set footstrap.settings.pattern_size='440'
+set footstrap.settings.pattern_strength='20'
+set footstrap.settings.pattern_ink='theme'
+set footstrap.settings.content_width='1280'
+set footstrap.settings.card_opacity='0'
+set footstrap.settings.bar_opacity='0'
+set footstrap.settings.material='frosted'
+set footstrap.settings.blur='100'
+set footstrap.settings.login_bg='$bgs'
+set footstrap.settings.pattern='$pats'
+set footstrap.settings.cw_look='$look'
+EOF
+uci commit footstrap
+logger -t cw-firstboot "footstrap: image look applied ($look)"
+exit 0
