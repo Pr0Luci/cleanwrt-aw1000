@@ -62,6 +62,13 @@ These are modifications of QModem's code and stay under QModem's terms, exactly 
 published here, which is the source of the modified files. **AWvoice contains none of this code** - the
 two programs meet over ubus and a unix socket.
 
+**QMI driver patch.** `patches/feeds/qmodem/0010-qmi-wwan-nss-path-behind-its-own-guard.patch` restores one
+preprocessor guard in `driver/quectel_QMI_WWAN/src/qmi_wwan_q.c`, so the Qualcomm NSS branch of that driver is
+taken only where the kernel configures `CONFIG_RMNET_DATA`. The branch reads a symbol no module in this tree
+exports, so without the guard the driver cannot be linked and the package cannot be built. It is the guard the
+driver version this pin replaces carried, and a QSDK kernel that does set the symbol still gets the accelerated
+path. Same terms as above: a modification of QModem's code, published here.
+
 ### The Footstrap theme patch
 
 `patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch` changes one line of
