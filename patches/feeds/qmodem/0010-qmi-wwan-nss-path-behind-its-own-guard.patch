@@ -1,0 +1,44 @@
+qmi_wwan_q: keep the NSS path behind the driver's own guard
+
+The Quectel USB QMI driver takes the Qualcomm NSS callbacks through a branch the feed
+enables by naming the SoC: CONFIG_PINCTRL_IPQ807x, CONFIG_PINCTRL_IPQ5018 and, at the
+pinned commit, CONFIG_PINCTRL_IPQ8074 - the one this board's kernel sets. Inside that
+branch the driver declares `extern struct rmnet_nss_cb *rmnet_nss_callbacks` and reads
+it at module init. That symbol belongs to the QSDK's rmnet_nss module, and this tree has
+no such module: the feed's own kmod-rmnet-nss stops at its first include,
+<qca-nss-drv/nss_api_if.h>. modpost then fails with "rmnet_nss_callbacks undefined" and
+the QMI driver - the one this image needs for the modem's QMAP/RawIP data path - cannot
+be packaged at all.
+
+The driver version this pin replaces carried a second guard on the same branch,
+#ifdef CONFIG_RMNET_DATA, and the vendor commented it out. Restoring it is this patch: a
+kernel without that symbol (any mainline kernel, this one included) builds the plain
+software path the driver already contains, and a QSDK kernel that does set it still gets
+the accelerated path.
+
+Applies to: https://github.com/FUjr/QModem.git
+            @ 0988085b887346ae9477ef2e77abe2f797bd2c4a (pinned in feeds.conf.default)
+Applied by: tools/cw-apply-feed-patches.sh (patch -p1, zero fuzz).
+Upstream status: a vendor choice; keep unless the tree gains an NSS driver.
+
+diff --git a/driver/quectel_QMI_WWAN/src/qmi_wwan_q.c b/driver/quectel_QMI_WWAN/src/qmi_wwan_q.c
+index 859dea8..f3cc4ef 100644
+--- a/driver/quectel_QMI_WWAN/src/qmi_wwan_q.c
++++ b/driver/quectel_QMI_WWAN/src/qmi_wwan_q.c
+@@ -71,14 +71,14 @@ struct rmnet_nss_cb {
+ };
+ static struct rmnet_nss_cb __read_mostly *nss_cb = NULL;
+ #if defined(CONFIG_PINCTRL_IPQ807x) || defined(CONFIG_PINCTRL_IPQ5018) || defined(CONFIG_PINCTRL_IPQ8074)
+-//#ifdef CONFIG_RMNET_DATA //spf12.x none, not effect for spf11.x
++#ifdef CONFIG_RMNET_DATA
+ #define CONFIG_QCA_NSS_DRV
+ /* define at qsdk/qca/src/linux-4.4/net/rmnet_data/rmnet_data_main.c */ //for spf11.x
+ /* define at qsdk/qca/src/datarmnet/core/rmnet_config.c */ //for spf12.x
+ /* set at qsdk/qca/src/data-kernel/drivers/rmnet-nss/rmnet_nss.c */
+ /* need add DEPENDS:= kmod-rmnet-core in feeds/makefile */
+ extern struct rmnet_nss_cb *rmnet_nss_callbacks __rcu __read_mostly;
+-//#endif
++#endif
+ #endif
+ 
+ /* This driver supports wwan (3G/LTE/?) devices using a vendor
