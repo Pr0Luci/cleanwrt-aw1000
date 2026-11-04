@@ -32,7 +32,7 @@ checksums and a provenance bundle.
 |---|---|
 | **AWvoice, a phone on the router** | Plug an ordinary desk phone into the RJ11 socket and make and take calls over your SIM. Caller id, call waiting, hold, a three-way join, recall of a held call, a call log, call recordings, an answering machine, speed dial, call blocking and alarm calls. No extra box, no PBX, no SIP account. |
 | **5G that just works** | QModem, auto-dial and auto-recovery, dual-stack IPv4/IPv6, SMS, TTL control, per-interface data usage, and a registration fix for data-only SIMs. |
-| **Apex, a modern interface** | Dark and light mode, a sidebar and a phone-friendly drawer, and card-style status widgets for system, modem, memory and storage. |
+| **A modern interface** | Footstrap: dark or light mode, a top bar or a sidebar, five palettes, an accent colour you choose, frosted surfaces, and a photo or pattern behind the pages. |
 | **LEDs that mean something** | The 5G LED shows SA or NSA, the signal LED shows quality, the internet LED runs a real connectivity check, and night mode switches them off at bedtime. |
 | **Tools, but off by default** | Passwall, Passwall 2, HomeProxy, WireGuard, OpenVPN, Tailscale, Cloudflare Tunnel, Adblock, AdGuard Home, Syncthing, qBittorrent, DLNA, file sharing and a printer server. Nothing listens until you tick **Enable**. |
 | **Careful defaults** | HTTPS for the admin UI, no hidden remote access, BBR congestion control, pinned LuCI so an `apk upgrade` cannot undo the build. |
@@ -149,7 +149,7 @@ package feed.
 | [cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000) | this repository: configuration, patches, overlay, workflows, documentation |
 | [AWvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice) | the phone port: kernel module, daemon and LuCI page |
 | [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | the front-panel LED daemon and its page |
-| [luci-theme-apex](https://github.com/Pr0Luci/luci-theme-apex) | the Apex theme |
+| [luci-theme-footstrap](https://github.com/VizzleTF/luci-theme-footstrap) | the web interface: the theme the image selects |
 
 ## Help and contributions
 

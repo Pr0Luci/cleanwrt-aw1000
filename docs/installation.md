@@ -81,7 +81,7 @@ ssh root@192.168.1.1 "sysupgrade -v /tmp/*-sysupgrade.bin"
 
 You can also upload the image in LuCI, under *System → Backup / Flash Firmware → Flash image…*.
 
-[![Backup / Flash Firmware page](assets/img/flash-dark.png)](assets/img/flash-dark.png)
+[![Backup / Flash Firmware page](assets/img/flash-dark.jpg)](assets/img/flash-dark.jpg)
 
 Before flashing from OpenWrt, check the layout:
 

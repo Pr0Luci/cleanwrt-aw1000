@@ -44,7 +44,7 @@ CleanWRT follows the stock OpenWrt first-login model.
 
 The root password is set under *System → Administration*:
 
-[![Router Password page](assets/img/password-dark.png)](assets/img/password-dark.png)
+[![Router Password page](assets/img/password-dark.jpg)](assets/img/password-dark.jpg)
 
 Upgrades with *keep settings* never overwrite a key you have set yourself.
 
@@ -52,7 +52,7 @@ The login page, in dark and light mode:
 
 | Dark | Light |
 |---|---|
-| ![Login, dark](assets/img/login-dark.png) | ![Login, light](assets/img/login-light.png) |
+| ![Login, dark](assets/img/login-dark.jpg) | ![Login, light](assets/img/login-light.jpg) |
 
 ## A short tour of LuCI
 

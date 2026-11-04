@@ -5,6 +5,33 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
+## 25.12.5-rc2.1
+
+- **AWvoice 1.1.3** (rc2 shipped 1.1.2). The phone port gains its **SIP side**. A switch on the new
+  SIP tab starts and stops the LAN SIP service this image now carries, so a soft phone on your own
+  network rings and dials through the SIM's line beside the handset on the RJ11 port; the tab shows
+  the accounts and passwords it uses and what it reports while a call is up. The page also carries a
+  **web phone** - the handset's audio in the browser - and a **code a phone can scan**, which writes
+  the account a soft phone fetches into a directory of its own. Wideband voice follows what the modem
+  answers, the caller-id message and the ring supervision were corrected, and the front end now
+  behaves the same in every mode.
+- **Six patches to that SIP service.** Three complete the transaction the cellular side opens: the
+  2xx ACK a UAC owes, the BYE from either side of a dialog with the in-dialog authentication an
+  in-dialog BYE needs, and the CANCEL of an unanswered LAN INVITE with its 487 recognised. One makes
+  the UCI section the record of the inbound credential, one sets the defaults the phone bridge needs,
+  and one migrates a configuration that kept the VoIP engine's socket ([AWvoice](awvoice.md)).
+- **The web interface is Footstrap**, an upstream Apache-2.0 LuCI theme pinned to one commit and
+  patched by nothing here. The theme that shipped before it is out of the image, with the five feed
+  patches written for it - four that drew card-style status widgets and one that read a CPU counter.
+  The stock Bootstrap theme stays as the fallback and Argon and Alpha ship so the three can be
+  compared. A new router starts at the look
+  `files/etc/uci-defaults/50-cw-footstrap-look` writes, with the photo and the pattern that go with
+  it ([theme](theme.md)).
+- `files/etc/uci-defaults/49-cw-awvoice-provision-port` opens the plain HTTP listener that serves the
+  scanned account file, on the LAN only, from a directory that holds nothing else.
+- The QModem feed pin moves to the commit that first carries that SIP service.
+- Terminal moves from the Tools menu to System, and Tools sits where its own order says.
+
 ## 25.12.5-rc2
 
 - **AWvoice 1.1.2** (rc1 shipped 1.0.0). The phone port gains **call recordings**: a call you
@@ -31,7 +58,7 @@ First release candidate.
   call blocking, hotline and alarm calls.
 - 5G stack: QModem, vendor QMI dialer, 3ginfo-lite with a registration fix for data-only SIMs,
   SMS, TTL, vnStat.
-- Apex theme with dark and light mode and card-style status widgets.
+- A dark interface theme with dark and light mode, a sidebar and card-style status widgets.
 - Front-panel LED daemon (power, Wi-Fi, 5G type, signal, internet) with a night mode.
 - Proxy and VPN tools installed and disabled: Passwall, Passwall 2, HomeProxy, WireGuard,
   OpenVPN, Tailscale, Cloudflare Tunnel.

@@ -9,9 +9,11 @@ description: "CleanWRT is GPL-2.0-only. The principal components and their licen
 
 The build configuration, patches and rootfs overlay in the
 [repository](https://github.com/Pr0Luci/cleanwrt-aw1000) (all repositories: [Repositories](repositories.md)) are licensed **GPL-2.0-only**. The LED
-app ([`luci-app-cw-led`](https://github.com/Pr0Luci/luci-app-cw-led)) and the Apex theme
-([`luci-theme-apex`](https://github.com/Pr0Luci/luci-theme-apex)) are GPL-2.0-only too; the
-theme bundles two fonts under the SIL Open Font License 1.1.
+app ([`luci-app-cw-led`](https://github.com/Pr0Luci/luci-app-cw-led)) is GPL-2.0-only too. The web
+interface is a third-party theme: [`luci-theme-footstrap`](https://github.com/VizzleTF/luci-theme-footstrap),
+Apache-2.0, pinned to one commit and unpatched, like the two alternatives that ship beside it
+([`luci-theme-argon`](https://github.com/jerrykuku/luci-theme-argon) and
+[`luci-theme-alpha`](https://github.com/derisamedia/luci-theme-alpha), both Apache-2.0).
 
 A CleanWRT image is an **aggregate** of many independently licensed programs. Each keeps its own
 licence and copyright; nothing here relicenses them.
@@ -28,7 +30,8 @@ licence and copyright; nothing here relicenses them.
 | Vendor QMI kernel modules (from QModem) | GPL |
 | ath11k firmware | Qualcomm Atheros firmware licence |
 | luci-app-diskman | AGPL-3.0 |
-| luci-app-cw-led, luci-theme-apex | GPL-2.0-only |
+| luci-app-cw-led | GPL-2.0-only |
+| luci-theme-footstrap, luci-theme-argon, luci-theme-alpha | Apache-2.0 |
 | AWvoice (kernel module, phone daemon, LuCI page) | GPL-2.0-only |
 | libubox / libubus / libuci (used by the AWvoice daemon) | ISC / LGPL-2.1 / LGPL-2.1, linked dynamically |
 

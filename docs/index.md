@@ -1,6 +1,6 @@
 ---
 title: "OpenWrt firmware for the Arcadyan AW1000 5G router"
-description: "CleanWRT is OpenWrt 25.12 firmware for the Arcadyan AW1000 (Telstra variant): an RJ11 phone port with VoLTE calls (AWvoice), a 5G modem stack and the Apex theme."
+description: "CleanWRT is OpenWrt 25.12 firmware for the Arcadyan AW1000 (Telstra variant): an RJ11 phone port with VoLTE calls (AWvoice), a 5G modem stack and the Footstrap interface."
 ---
 
 # CleanWRT: OpenWrt for the Arcadyan AW1000
@@ -68,15 +68,15 @@ router supported?" to a flashed, working router, and tell you how to get out if 
 
 === "Dark"
 
-    [![Status overview in dark mode](assets/img/overview-dark.png)](assets/img/overview-dark.png)
+    [![Status overview in dark mode](assets/img/overview-dark.jpg)](assets/img/overview-dark.jpg)
 
 === "Light"
 
-    [![Status overview in light mode](assets/img/overview-light.png)](assets/img/overview-light.png)
+    [![Status overview in light mode](assets/img/overview-light.jpg)](assets/img/overview-light.jpg)
 
 === "On a phone"
 
-    [![Status overview on a phone](assets/img/overview-mobile.png)](assets/img/overview-mobile.png){ width="300" }
+    [![Status overview on a phone](assets/img/overview-mobile.jpg)](assets/img/overview-mobile.jpg){ width="300" }
 
 !!! info "About the screenshots"
     The screenshots in this documentation were taken from a development preview of the interface
@@ -91,8 +91,8 @@ router supported?" to a flashed, working router, and tell you how to get out if 
   See [AWvoice](awvoice.md).
 - **A 5G stack that works out of the box:** QModem UI, auto-dial, dual-stack IPv4/IPv6 data,
   TTL control, SMS, a registration fix for data-only SIMs, per-interface vnStat accounting.
-- **A modern interface:** the [Apex theme](theme.md) with dark and light mode, a sidebar, a mobile
-  drawer and card-style status widgets.
+- **A modern interface:** the [Footstrap theme](theme.md) with dark and light mode, a top bar or a
+  sidebar, five palettes, an accent colour of your choice and a photo or pattern behind the pages.
 - **Real front-panel LEDs:** a small daemon that shows 5G type, signal quality and internet
   reachability, with a night mode. See [Front-panel LEDs](leds.md).
 - **Proxy and VPN tools:** Passwall, Passwall2, HomeProxy, WireGuard, OpenVPN, Tailscale and
@@ -127,7 +127,7 @@ before relying on it for anything important.
 ## Common questions
 
 ??? question "What is CleanWRT?"
-    CleanWRT is an independent build of OpenWrt 25.12.5 for the Arcadyan AW1000 5G router. On top of stock OpenWrt it adds a working RJ11 phone port (AWvoice), a 5G modem stack that dials and recovers by itself, the Apex theme, front-panel LED management and a set of apps that stay off until you enable them.
+    CleanWRT is an independent build of OpenWrt 25.12.5 for the Arcadyan AW1000 5G router. On top of stock OpenWrt it adds a working RJ11 phone port (AWvoice), a 5G modem stack that dials and recovers by itself, the Footstrap theme, front-panel LED management and a set of apps that stay off until you enable them.
 
 ??? question "Which routers does CleanWRT support?"
     Only the Arcadyan AW1000 (the Telstra variant) with the expanded flash layout. Never flash it on another router, because an image built for a different partition table can brick the device. See [Hardware](hardware.md) and [MTD layout](mtd-layout.md).

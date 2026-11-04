@@ -23,7 +23,7 @@ relicenses them.
 | ath11k firmware | Qualcomm Atheros firmware licence (`LICENSE.qca_firmware`) | OpenWrt package Makefile |
 | AWvoice (kernel module, phone daemon, LuCI page) | GPL-2.0-only | shipped with the release |
 | `luci-app-cw-led` (our LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
-| `luci-theme-apex` (our LuCI theme; bundled fonts are SIL OFL 1.1) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-theme-apex> |
+| `luci-theme-footstrap`, `luci-theme-argon`, `luci-theme-alpha` (the LuCI themes; Footstrap is the one the image selects) | Apache-2.0, each from its own upstream | pinned commits in `configs/local-packages.pin` |
 
 Every other package's licence is listed, per package, in the generated
 [licence manifest](#licence-manifest).
@@ -37,12 +37,6 @@ project is inconsistent, and the more restrictive text is the one reproduced her
 distributed **free of charge and is not sold**, but **you are responsible for your own use**: if you
 deploy this firmware in a commercial setting (a business, an ISP, a paid service), check QModem's
 `LICENSE` first. Source: <https://github.com/FUjr/QModem>.
-
-**Our patch to QModem.** `patches/feeds/qmodem/0001-status-modem-info-widgets-apex-theme.patch`
-modifies one QModem file (`luci/luci-app-qmodem/htdocs/luci-static/resources/view/status/include/11_modem.js`,
-the Status -> Modem Info card). It is a modification of QModem's code and stays under QModem's
-terms (the same text and restriction as above); the patch header states what was changed and the
-patch is published in this repository, which is the source for the modified file.
 
 **SIP service patches.** `patches/feeds/qmodem/0004-sip-inbound-answer-delivered.patch`,
 `0005-sip-dialog-bye-both-directions.patch` and `0006-sip-cancel-unanswered-lan-invite.patch` modify
