@@ -307,6 +307,17 @@ while read -r name url sha extra; do
     git -C "$src/repo" checkout -q --detach "$sha"
     got=$(git -C "$src/repo" rev-parse HEAD)
     [ "$got" = "$sha" ] || { echo "ERROR: package/$name is at $got, pin says $sha" >&2; exit 1; }
+    # The same rule as 2a, for a locally pinned package: patches/packages/<name>/*.patch
+    # go on the pinned commit before the package is installed, with zero fuzz, so an
+    # upstream change to a patched line stops the build instead of shipping a package that
+    # quietly lost the change. Applied to the clone and not to package/$name, because the
+    # paths a `git diff` of the upstream repository produces are the paths read here.
+    for pf in "$REPO"/patches/packages/"$name"/*.patch; do
+        [ -e "$pf" ] || continue
+        ( cd "$src/repo" && patch -p1 --fuzz=0 -i "$pf" ) \
+            || { echo "ERROR: $pf does not apply to $name @ $sha" >&2; exit 1; }
+        echo "== patched $name: $(basename "$pf") =="
+    done
     # Feed-compatible repos keep the package in a <name>/ subdirectory (a root
     # Makefile breaks the feeds indexer); legacy single-package repos have the
     # Makefile at the root. Install whichever layout the pinned commit has.

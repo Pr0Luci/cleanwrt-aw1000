@@ -62,6 +62,15 @@ These are modifications of QModem's code and stay under QModem's terms, exactly 
 published here, which is the source of the modified files. **AWvoice contains none of this code** - the
 two programs meet over ubus and a unix socket.
 
+### The Footstrap theme patch
+
+`patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch` changes one line of
+`luci-theme-footstrap/ucode/template/themes/footstrap/sysauth.ut` at the pinned commit, so the login page
+shows this project's logo instead of the router's hostname. It is a modification of Apache-2.0 code, stays
+under that licence, and is published here, which is the source of the modified file. The logo itself is
+`files/www/luci-static/cw-branding/login-logo.png` - this repository's own file, outside the theme's
+directory, so a theme update can neither overwrite it nor collide with the patch.
+
 ### 3ginfo-lite feed patches
 
 `patches/feeds/3ginfo/` modifies the upstream 3ginfo-lite package (© Cezary Jackiewicz,

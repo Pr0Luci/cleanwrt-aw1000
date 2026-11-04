@@ -9,8 +9,10 @@ CleanWRT ships with **Footstrap** as its web interface. It is an ordinary LuCI t
 upstream as
 [`luci-theme-footstrap`](https://github.com/VizzleTF/luci-theme-footstrap) (Apache-2.0), pinned to
 one commit in `configs/local-packages.pin`
-like every other out-of-feed package here. **CleanWRT applies no patch to it**: what you see is the
-theme as its own author publishes it, selected by
+like every other out-of-feed package here. **CleanWRT changes one line of it** -
+`patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch` puts the CleanWRT
+logo on the login page where the theme otherwise prints the router's hostname - and nothing else: what
+you see is the theme as its own author publishes it, selected by
 `files/etc/uci-defaults/96-cw-default-theme`
 on first boot.
 
@@ -24,7 +26,8 @@ on first boot.
 - **Frosted surfaces**: cards, controls and bars each take their own colour, material
   (flat, acrylic or frosted), opacity and a blur amount, with a corner rounding from 0 to 20 px.
 - A **wallpaper** behind the pages: an SVG pattern of your own, or a photo, with the pattern's size,
-  strength and ink and the photo's dimming all adjustable. The login page takes the same photo.
+  strength and ink and the photo's dimming all adjustable. The login page takes the same photo, and
+  carries the CleanWRT logo above the username.
 - **Density** (normal, compact, large) and a **content width** from 1280 to 3840 px.
 
 ## Screenshots
@@ -123,5 +126,8 @@ there. `/www/luci-static/footstrap/bg` and `.../fonts` are symlinks into that di
     installed in the image precisely so that this is always possible.
 
 ??? question "Does CleanWRT patch the theme?"
-    No. It pins the upstream commit and selects it; the only thing this repository adds to the look
-    is the first-boot script that sets the default settings and the two background files.
+    One line, for branding: the login page shows the CleanWRT logo instead of the router's hostname.
+    Everything else is the upstream package at its pinned commit. The logo is this repository's own
+    file (`files/www/luci-static/cw-branding/login-logo.png`), outside the theme's directory, so a
+    theme update can neither overwrite it nor collide with the patch. The look a new router starts
+    with is added by a first-boot script and two background files, not by a patch.

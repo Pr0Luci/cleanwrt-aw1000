@@ -1,0 +1,31 @@
+Login page: the brand is the image logo, not the router's name
+
+Footstrap prints the router's hostname where a login page usually carries its
+maker: `<p class="fs-login-host">` holds `boardinfo.hostname`, so a CleanWRT
+router shows the word "CleanWRT" - and shows whatever else an admin named the
+device, which is not a brand. This replaces that one line with the CleanWRT logo
+as an image, named in its `alt` text so the accessible name stays what the
+comment above the line asks for. The file it points at is not part of the theme:
+it is this repository's own overlay at `files/www/luci-static/cw-branding/login-logo.png`,
+outside the theme's directory, so a theme update cannot overwrite it and this
+patch cannot collide with it. The page's own heading (`Authorization Required`)
+is already clipped for sighted users and stays the single heading.
+
+Applies to: https://github.com/VizzleTF/luci-theme-footstrap.git
+            @ a1711eda02fefe87a12590bae9eaa80c373a4bd9 (pinned in configs/local-packages.pin)
+Applied by: tools/cw-release-build.sh, on the pinned commit before the package is
+            installed, with `patch -p1 --fuzz=0` - the build fails if upstream
+            changes this line; re-port it then.
+Upstream status: not submitted (CleanWRT-specific branding).
+
+--- a/luci-theme-footstrap/ucode/template/themes/footstrap/sysauth.ut
++++ b/luci-theme-footstrap/ucode/template/themes/footstrap/sysauth.ut
+@@ -38,7 +38,7 @@
+ 	 `Authorization Required` below stays the one heading (clipped by .fs-sr), or a screen reader
+ 	 hears the hostname as a section title.
+ 	-#}
+-	<p class="fs-login-host">{{ entityencode(striptags(boardinfo.hostname ?? 'OpenWrt'), true) }}</p>
++	<p class="fs-login-host"><img src="/luci-static/cw-branding/login-logo.png" alt="CleanWRT" width="260" height="192" /></p>
+ 	{#
+ 	 Two independent alerts: neither variable alone says which dispatcher branch rendered this.
+ 	 `fuser` is set in both branches, including the OTP step after a correct password; and
