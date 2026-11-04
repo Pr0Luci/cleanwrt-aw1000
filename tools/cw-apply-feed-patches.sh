@@ -7,6 +7,8 @@
 #                                 filename order - for files the tree carries itself
 # If upstream changes the code around a hunk, a patch no longer applies and this
 # script FAILS, so a build can never silently ship stale or half-applied code.
+# Each feed is first restored to the commit it is checked out at, so what a patch
+# meets is always the pinned source and never an earlier build's leftover.
 # A patch that is already applied is detected and skipped (re-runnable).
 #
 # Usage:
@@ -40,6 +42,32 @@ enforce_modes() {
         chmod "$mode" "$2/$path"
         echo "mode enforced: $path -> $mode"
     done
+}
+
+# restore_feed <feed-dir>
+#   Put a feed back to the commit it is checked out at: tracked files from git, and
+#   the files an earlier patch pass created removed. `./scripts/feeds update`
+#   restores tracked files but keeps untracked ones, so a patch whose hunks create a
+#   file can meet that file already in place and be read as upstream drift. The
+#   checked-out commit is the pin feeds.conf.default names; a pin that moved under a
+#   patch is still caught below, where every hunk must apply with zero fuzz.
+#   Only a directory that is a repository of its own is touched: a src-link feed
+#   points at the tree, and cleaning that would clear the tree.
+restore_feed() {
+    [ -d "$1/.git" ] || return 0
+    top=$(git -c "safe.directory=$1" -C "$1" rev-parse --show-toplevel 2>/dev/null) || return 0
+    [ "$top" = "$TREE" ] && return 0
+    # safe.directory names this feed alone: git run as root over a tree owned by the
+    # build user is refused outright by some git versions, and naming the directory
+    # makes the call work wherever this script runs.
+    if ! git -c "safe.directory=$1" -C "$1" checkout -q -- .; then
+        echo "ERROR: could not restore $1 to its checked-out commit." >&2
+        exit 1
+    fi
+    if ! git -c "safe.directory=$1" -C "$1" clean -qfd; then
+        echo "ERROR: could not clear $1 of files an earlier patch left behind." >&2
+        exit 1
+    fi
 }
 
 # Tree patches. Their paths start at the tree root, so they never collide with a
@@ -97,11 +125,12 @@ for pf in "$REPO"/patches/feeds/*/*.patch; do
 
     if [ "$MODE" = reset ]; then
         # The feed may not exist yet on a first build - nothing to restore then.
-        [ -d "$dir/.git" ] && git -C "$dir" checkout -q -- .
+        restore_feed "$dir"
         continue
     fi
 
     [ -d "$dir" ] || { echo "ERROR: feed '$feed' (needed by $name) is not in $TREE/feeds" >&2; exit 1; }
+    restore_feed "$dir"
 
     if patch -p1 -R -F0 --dry-run -s -d "$dir" < "$pf" >/dev/null 2>&1; then
         echo "feed patch already applied: $name"
