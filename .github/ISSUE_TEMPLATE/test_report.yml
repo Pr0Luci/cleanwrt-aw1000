@@ -34,7 +34,7 @@ body:
       label: What worked
       options:
         - label: Flash and first boot
-        - label: LuCI login and the Apex theme
+        - label: LuCI login and the Footstrap theme
         - label: 5G registration and data
         - label: Wi-Fi
         - label: Front-panel LEDs

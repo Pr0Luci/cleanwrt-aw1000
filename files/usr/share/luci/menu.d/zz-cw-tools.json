@@ -1,12 +1,12 @@
 {
 	"admin/tools": {
 		"title": "Tools",
-		"order": 60,
+		"order": 45,
 		"action": {
 			"type": "firstchild"
 		}
 	},
-	"admin/tools/ttyd": {
+	"admin/system/ttyd": {
 		"title": "Terminal",
 		"action": {
 			"type": "firstchild"
@@ -19,9 +19,9 @@
 				"ttyd": true
 			}
 		},
-		"order": 10
+		"order": 80
 	},
-	"admin/tools/ttyd/ttyd": {
+	"admin/system/ttyd/ttyd": {
 		"title": "Terminal",
 		"order": 1,
 		"action": {
@@ -29,7 +29,7 @@
 			"path": "ttyd/term"
 		}
 	},
-	"admin/tools/ttyd/config": {
+	"admin/system/ttyd/config": {
 		"title": "Config",
 		"order": 2,
 		"action": {

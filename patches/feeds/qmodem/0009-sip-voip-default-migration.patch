@@ -1,0 +1,51 @@
+qmodem_sipd: the voip_enabled the phone service needs is set on upgrade too
+
+voip_enabled=1 selects qmodem_voip_sip_wait, which execs the consumer only once a VoIP engine reports
+its media path ready.  With the media socket served by the phone service that answer does not arrive on
+an idle line: the frames it waits for flow only inside a call, and the call needs the very consumer this
+option holds back - nothing listens, and the direction never comes up.  The shipped config carries 0
+now, but /etc/config/qmodem_sip is a conffile, and reinstalling the package was seen to keep the local
+file and write the new default aside as qmodem_sip.apk-new, so an upgrade from a release that stored 1
+keeps 1.  Older web pages wrote 1 as well: the option read as absent showed as enabled, and every save
+wrote it back.
+
+Add the uci-defaults script that takes voip_enabled to 0 when, and only when, the media socket in the
+config is the phone service's own - a setup that keeps the VoIP engine's socket is left untouched.  The
+package installs its uci-defaults files by name, so the install line belongs to this change.
+
+diff --git a/application/qmodem_sipd/Makefile b/application/qmodem_sipd/Makefile
+index a8fe112..5f1234a 100644
+--- a/application/qmodem_sipd/Makefile
++++ b/application/qmodem_sipd/Makefile
+@@ -65,6 +65,7 @@ define Package/$(PKG_NAME)/install
+ 	$(INSTALL_BIN) ./files/etc/qmodem_voip/firewall.include $(1)/etc/qmodem_voip/
+ 	$(INSTALL_BIN) ./files/etc/uci-defaults/89-qmodem-sip-migrate $(1)/etc/uci-defaults/
+ 	$(INSTALL_BIN) ./files/etc/uci-defaults/90-qmodem-sip-firewall $(1)/etc/uci-defaults/
++	$(INSTALL_BIN) ./files/etc/uci-defaults/91-qmodem-sip-voip-off $(1)/etc/uci-defaults/
+ endef
+ 
+ $(eval $(call BuildPackage,$(PKG_NAME)))
+diff --git a/application/qmodem_sipd/files/etc/uci-defaults/91-qmodem-sip-voip-off b/application/qmodem_sipd/files/etc/uci-defaults/91-qmodem-sip-voip-off
+new file mode 100755
+index 0000000..af7e43b
+--- /dev/null
++++ b/application/qmodem_sipd/files/etc/uci-defaults/91-qmodem-sip-voip-off
+@@ -0,0 +1,18 @@
++#!/bin/sh
++# voip_enabled picks the program that runs: 1 is the wrapper that waits for a VoIP engine to report its
++# media path ready before exec'ing the consumer.  While the media socket is the one the phone service
++# serves, that answer never arrives on an idle line - the frames it waits for flow only inside a call,
++# and the call needs the very consumer this option holds back.  The shipped default is 0 now, but
++# /etc/config/qmodem_sip is a conffile, so an upgrade keeps whatever the older release left there.
++
++socket=$(uci -q get qmodem_sip.main.media_socket_path)
++[ "$socket" = "/var/run/awvoice-phoned/media.sock" ] || exit 0
++
++for direction in inbound outbound; do
++	[ "$(uci -q get "qmodem_sip.$direction.voip_enabled")" = 1 ] || continue
++	uci -q set "qmodem_sip.$direction.voip_enabled=0"
++done
++
++uci -q commit qmodem_sip || exit 1
++
++exit 0

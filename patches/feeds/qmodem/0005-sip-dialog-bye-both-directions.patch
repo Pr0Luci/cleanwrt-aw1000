@@ -1,0 +1,135 @@
+qmodem_sipd: the dialog is closed on both sides
+
+send_dialog_bye() built the BYE only from the registered (outbound) INVITE, so two
+teardowns were missing.  A call the cellular side originated had no dialog record to
+build a BYE from: when the cellular leg hung up, the consumer detached its media but
+sent nothing to the LAN, and the LAN phone stayed connected with a running timer.  A
+call the LAN originated left the consumer as the UAS of the dialog, which builds its
+BYE with its own tag on the From and the peer's tag on the To (RFC 3261 15.1.2), and
+no such request was ever formed.
+
+Remember the INVITE that opened the dialog by holding a second reference to it, take
+the peer's Contact, the peer's From, the local AOR and the tag placed on the 200
+while that response is still being built, and send the BYE as UAC or as UAS according
+to which side opened the dialog.  A BYE inside an established dialog proves itself by that
+identity (RFC 3261 12.2.2): answering it with 401 leaves the call up, because a
+common UA does not re-authenticate an in-dialog request, so the identity check now
+runs first and a matched dialog is not challenged.
+
+diff --git a/application/qmodem_sipd/src/sip_consumer.c b/application/qmodem_sipd/src/sip_consumer.c
+index 9fab60a5996089b4984135e040c5012492f30d38..5cb808152c1f85378c051b9ed05cead0e88a7bac 100644
+--- a/application/qmodem_sipd/src/sip_consumer.c
++++ b/application/qmodem_sipd/src/sip_consumer.c
+@@ -106,6 +106,10 @@ struct consumer {
+ 	pjsip_tx_data *outbound_invite;
+ 	pjsip_tx_data *inbound_invite;	/* the cellular-originated INVITE: its 200 is ACKed from this */
+ 	char dialog_contact[BINDING_SIZE];
++	char lan_contact[BINDING_SIZE];	/* the LAN peer's Contact from its INVITE: the BYE's target */
++	char lan_from[256];		/* the LAN peer's From URI: the BYE's To */
++	char local_aor[256];		/* the local AOR from the INVITE's To: the BYE's From */
++	char local_tag[32];		/* the tag placed on the 200: the BYE's From tag */
+ 	char outbound_server[256];
+ 	char outbound_server_uri[384];
+ 	char outbound_username[QMODEM_VOIP_SIP_USERNAME_SIZE];
+@@ -710,6 +714,26 @@ static void invite_call(pjsip_rx_data *request)
+ 		send_response(request, PJSIP_SC_SERVICE_UNAVAILABLE, PJ_FALSE, PJ_FALSE);
+ 		return;
+ 	}
++	{
++		pjsip_to_hdr *resp_to = PJSIP_MSG_TO_HDR(response->msg);
++		pjsip_from_hdr *req_from = PJSIP_MSG_FROM_HDR(request->msg_info.msg);
++		pjsip_to_hdr *req_to = PJSIP_MSG_TO_HDR(request->msg_info.msg);
++		pjsip_contact_hdr *req_contact = (pjsip_contact_hdr *)pjsip_msg_find_hdr(
++			request->msg_info.msg, PJSIP_H_CONTACT, NULL);
++
++		(void)snprintf(app.local_tag, sizeof(app.local_tag), "aw%08x", (unsigned)pj_rand());
++		pj_strdup2(response->pool, &resp_to->tag, app.local_tag);
++		app.lan_contact[0] = app.lan_from[0] = app.local_aor[0] = '\0';
++		if (req_contact)
++			(void)pjsip_uri_print(PJSIP_URI_IN_CONTACT_HDR, req_contact->uri,
++				app.lan_contact, sizeof(app.lan_contact) - 1);
++		if (req_from)
++			(void)pjsip_uri_print(PJSIP_URI_IN_FROMTO_HDR, req_from->uri,
++				app.lan_from, sizeof(app.lan_from) - 1);
++		if (req_to)
++			(void)pjsip_uri_print(PJSIP_URI_IN_FROMTO_HDR, req_to->uri,
++				app.local_aor, sizeof(app.local_aor) - 1);
++	}
+ 	if (app.pending_lan_response_addr.transport)
+ 		pjsip_transport_add_ref(app.pending_lan_response_addr.transport);
+ 	app.pending_lan_response = response;
+@@ -825,19 +849,45 @@ static void send_dialog_bye(void)
+ 	pj_str_t remote_tag;
+ 	unsigned next_cseq;
+ 
+-	if (!app.call.active || !app.call.established || !app.outbound_invite ||
+-	    !app.dialog_contact[0])
++	pjsip_tx_data *invite = app.outbound_invite ? app.outbound_invite : app.inbound_invite;
++
++	if (app.call.origin == QMODEM_VOIP_SIP_CALL_LAN) {
++		/* the LAN opened the dialog, so this endpoint is the UAS: the BYE goes out with the
++		 * local tag on the From and the peer's tag on the To, built from the dialog the
++		 * INVITE opened */
++		pjsip_tx_data *bye = NULL;
++		pj_str_t target_s, from_s, to_s, cid_s;
++
++		if (!app.call.active || !app.call.established || !app.lan_contact[0] || !app.local_aor[0])
++			return;
++		pjsip_method_set(&method, PJSIP_BYE_METHOD);
++		target_s = pj_str(app.lan_contact);
++		from_s = pj_str(app.local_aor);
++		to_s = pj_str(app.lan_from);
++		cid_s = pj_str(app.call.call_id);
++		if (pjsip_endpt_create_request(app.endpoint, &method, &target_s, &from_s, &to_s,
++			NULL, &cid_s, (int)app.call.cseq + 1, NULL, &bye) != PJ_SUCCESS || !bye)
++			return;
++		if (app.local_tag[0])
++			pj_strdup2(bye->pool, &PJSIP_MSG_FROM_HDR(bye->msg)->tag, app.local_tag);
++		if (app.call.remote_tag[0])
++			pj_strdup2(bye->pool, &PJSIP_MSG_TO_HDR(bye->msg)->tag, app.call.remote_tag);
++		if (pjsip_endpt_send_request(app.endpoint, bye, 30000, NULL, NULL) != PJ_SUCCESS)
++			syslog(LOG_WARNING, "qmodem_voip sip: cellular release BYE send failed");
++		return;
++	}
++	if (!app.call.active || !app.call.established || !invite || !app.dialog_contact[0])
+ 		return;
+ 	contact = (pjsip_contact_hdr *)pjsip_msg_find_hdr(
+-		app.outbound_invite->msg, PJSIP_H_CONTACT, NULL);
+-	call_id = PJSIP_MSG_CID_HDR(app.outbound_invite->msg);
+-	from = PJSIP_MSG_FROM_HDR(app.outbound_invite->msg);
+-	to = PJSIP_MSG_TO_HDR(app.outbound_invite->msg);
+-	cseq = PJSIP_MSG_CSEQ_HDR(app.outbound_invite->msg);
++		invite->msg, PJSIP_H_CONTACT, NULL);
++	call_id = PJSIP_MSG_CID_HDR(invite->msg);
++	from = PJSIP_MSG_FROM_HDR(invite->msg);
++	to = PJSIP_MSG_TO_HDR(invite->msg);
++	cseq = PJSIP_MSG_CSEQ_HDR(invite->msg);
+ 	if (!contact || !call_id || !from || !to || !cseq)
+ 		return;
+ 	pjsip_method_set(&method, PJSIP_BYE_METHOD);
+-	target = pjsip_parse_uri(app.outbound_invite->pool, app.dialog_contact,
++	target = pjsip_parse_uri(invite->pool, app.dialog_contact,
+ 		strlen(app.dialog_contact), 0);
+ 	if (!target)
+ 		return;
+@@ -1066,13 +1116,18 @@ static void end_call(pjsip_rx_data *request, int cancel)
+ 	 * it with 401 leaves the cellular leg active and the caller stuck waiting;
+ 	 * identity and Via-branch matching below still prevent unrelated calls from
+ 	 * being cancelled.  BYE remains Digest-authenticated. */
+-	if (!cancel && !trusted_outbound_request(request) && !authenticate(request))
+-		return;
+ 	if (request_identity(request, call_id, sizeof(call_id), remote_tag,
+ 		    sizeof(remote_tag), branch, sizeof(branch), &cseq) != 0) {
+ 		send_response(request, PJSIP_SC_BAD_REQUEST, PJ_FALSE, PJ_FALSE);
+ 		return;
+ 	}
++	/* A BYE on the established dialog is the peer ending its own call: the identity is the authentication.
++	 * Linphone does not answer a Digest challenge on an in-dialog BYE, so challenging it left the call up forever. */
++	if (!cancel && !trusted_outbound_request(request) && !authenticate(request)) {
++		if (!(app.call.active && app.call.established &&
++		      !strcmp(call_id, app.call.call_id) && !strcmp(remote_tag, app.call.remote_tag)))
++			return;
++	}
+ 	syslog(LOG_INFO,
+ 		"qmodem_voip sip: received %s call-id=%s tag=%s branch=%s cseq=%u stored-active=%u stored-origin=%u stored-tag=%s stored-branch=%s stored-cseq=%u established=%u",
+ 		cancel ? "CANCEL" : "BYE", call_id, remote_tag, branch, cseq,

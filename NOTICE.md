@@ -44,6 +44,30 @@ the Status -> Modem Info card). It is a modification of QModem's code and stays 
 terms (the same text and restriction as above); the patch header states what was changed and the
 patch is published in this repository, which is the source for the modified file.
 
+**SIP service patches.** `patches/feeds/qmodem/0004-sip-inbound-answer-delivered.patch`,
+`0005-sip-dialog-bye-both-directions.patch` and `0006-sip-cancel-unanswered-lan-invite.patch` modify
+one file of `qmodem-sipd` (`application/qmodem_sipd/src/sip_consumer.c`, GPL-2.0-or-later per its own
+Makefile) at the pinned commit: they complete the SIP transaction the cellular side opens - the 2xx
+ACK a UAC owes (RFC 3261 13.2.1), the BYE either side of the dialog (RFC 3261 15.1.2), an in-dialog
+BYE that authenticates by the dialog's own identity (RFC 3261 12.2.2), and the CANCEL of a pending
+LAN INVITE with its 487 recognised as the answer to that CANCEL (RFC 3261 9.2, RFC 6026 8).
+`0007-sip-inbound-credentials-from-uci.patch` calls the same file's own
+`qmodem_voip_sip_credentials_sync()` - defined in `sip_credentials.c` and called nowhere at the
+pinned commit - before the inbound credential is read at start and again on the reload signal, so
+the UCI section becomes the record and the credential file under `/var/run` becomes derived state;
+it adds that file and `libuci` to the consumer's link line in the package Makefile.
+`0008-sip-default-config-for-the-phone-bridge.patch` changes only the shipped
+`files/etc/config/qmodem_sip`: the media socket, the inbound direction enabled on the LAN, and
+`voip_enabled` off in both directions, so the consumer rather than the VoIP-engine wait wrapper is
+the program that starts. No password ships. That file is a configuration file of the package, so an
+upgrade keeps the router's own copy and writes the new default aside;
+`0009-sip-voip-default-migration.patch` adds the `uci-defaults` script that closes that gap - it takes
+`voip_enabled` to 0 when, and only when, the media socket in the config is the phone service's own, and
+leaves a setup that keeps the VoIP engine's socket untouched. Each header says what it changes and why.
+These are modifications of QModem's code and stay under QModem's terms, exactly as above; they are
+published here, which is the source of the modified files. **AWvoice contains none of this code** - the
+two programs meet over ubus and a unix socket.
+
 ### 3ginfo-lite feed patches
 
 `patches/feeds/3ginfo/` modifies the upstream 3ginfo-lite package (© Cezary Jackiewicz,

@@ -1,0 +1,95 @@
+qmodem_sipd: a LAN INVITE nobody answers is cancelled
+
+When the handset, the answering machine or the web page takes a call that the cellular
+network offered, the INVITE the consumer sent to the LAN is still pending.  A BYE
+would be wrong - no dialog was established - and doing nothing leaves the LAN ringing
+beside an answered call.  RFC 3261 9.2 gives the request: CANCEL it, and the 487 that
+follows is the INVITE's final response to a cancelled transaction (RFC 6026 8), not a
+failed call.
+
+The call-state event that says the call went active now carries who took it, and the
+consumer cancels when the answer did not come from its own LAN leg, and likewise when
+the call is released before the LAN answers.  While the CANCEL this side sent is outstanding a
+final response of 300 or above is consumed rather than handed to the reject path, so
+the 487 no longer rejects the cellular call that was answered elsewhere.
+
+diff --git a/application/qmodem_sipd/src/sip_consumer.c b/application/qmodem_sipd/src/sip_consumer.c
+index 5cb808152c1f85378c051b9ed05cead0e88a7bac..5bf3a64a229b66ba5a2079bfe78fd15c911b0b43 100644
+--- a/application/qmodem_sipd/src/sip_consumer.c
++++ b/application/qmodem_sipd/src/sip_consumer.c
+@@ -105,6 +105,7 @@ struct consumer {
+ 	int outbound_auth_initialized;
+ 	pjsip_tx_data *outbound_invite;
+ 	pjsip_tx_data *inbound_invite;	/* the cellular-originated INVITE: its 200 is ACKed from this */
++	int lan_cancelling;		/* the CANCEL this side sent is outstanding: the LAN's 487 answers it, not the call */
+ 	char dialog_contact[BINDING_SIZE];
+ 	char lan_contact[BINDING_SIZE];	/* the LAN peer's Contact from its INVITE: the BYE's target */
+ 	char lan_from[256];		/* the LAN peer's From URI: the BYE's To */
+@@ -836,6 +837,23 @@ static void remember_outbound_invite(pjsip_tx_data *request)
+ 		pjsip_tx_data_add_ref(request);
+ }
+ 
++/* A LAN INVITE that will never be answered is cancelled (RFC 3261 §9): the handset or the machine took the call,
++ * or the call ended before the LAN answered. A BYE would be wrong: no dialog was established. */
++static void cancel_lan_invite(void)
++{
++	pjsip_tx_data *cancel = NULL;
++
++	if (!app.inbound_invite || !app.call.active || app.call.established)
++		return;
++	app.lan_cancelling = 1;
++	if (pjsip_endpt_create_cancel(app.endpoint, app.inbound_invite, &cancel) == PJ_SUCCESS && cancel) {
++		if (pjsip_endpt_send_request_stateless(app.endpoint, cancel, NULL, NULL) != PJ_SUCCESS)
++			syslog(LOG_WARNING, "qmodem_voip sip: LAN INVITE cancel failed");
++	}
++	remember_inbound_invite(NULL);
++	qmodem_voip_sip_call_release(&app.call);
++}
++
+ static void send_dialog_bye(void)
+ {
+ 	pjsip_method method;
+@@ -1041,6 +1059,12 @@ static pj_bool_t on_response(pjsip_rx_data *response)
+ 	if (status == PJSIP_SC_UNAUTHORIZED ||
+ 	    status == PJSIP_SC_PROXY_AUTHENTICATION_REQUIRED)
+ 		return PJ_FALSE;
++	if (status >= 300 && app.lan_cancelling) {
++		/* RFC 3261 9.2: the UAC that sent CANCEL expects the INVITE's final response to be 487 (RFC 6026 8) and
++		 * treats the transaction as cancelled; it is not a failure of the call, which was taken elsewhere */
++		app.lan_cancelling = 0;
++		return PJ_FALSE;
++	}
+ 	if (status >= 200 && status < 300) {
+ 		pjsip_tx_data *ack = NULL;
+ 		/* A 2xx to an INVITE is ACKed by the UAC itself, and it is retransmitted until that ACK
+@@ -1778,7 +1802,8 @@ static void consumer_event(struct ubus_context *context,
+ 		{ .name = "state", .type = BLOBMSG_TYPE_STRING },
+ 		{ .name = "revision", .type = BLOBMSG_TYPE_UNSPEC },
+ 		{ .name = "remote_number", .type = BLOBMSG_TYPE_STRING },
+-		{ .name = "caller_id_withheld", .type = BLOBMSG_TYPE_UNSPEC }
++		{ .name = "caller_id_withheld", .type = BLOBMSG_TYPE_UNSPEC },
++		{ .name = "answer_owner", .type = BLOBMSG_TYPE_STRING }
+ 	};
+ 	struct blob_attr *values[ARRAY_SIZE(policy)] = { 0 };
+ 	(void)context;
+@@ -1806,6 +1831,9 @@ static void consumer_event(struct ubus_context *context,
+ 			app.media_attach_attempts = 0;
+ 			uloop_timeout_set(&app.media_attach_timeout, 0);
+ 		}
++		if (app.call.origin == QMODEM_VOIP_SIP_CALL_CELLULAR && values[5] &&
++		    strcmp(blobmsg_get_string(values[5]), "sip") != 0)
++			cancel_lan_invite();
+ 	} else if (strcmp(blobmsg_get_string(values[0]), "release") == 0) {
+ 		app.incoming_number[0] = '\0';
+ 		app.incoming_caller_id_withheld = 0;
+@@ -1821,7 +1849,10 @@ static void consumer_event(struct ubus_context *context,
+ 			app.pending_lan_response = NULL;
+ 			release_pending_lan_response();
+ 		}
++		if (!app.call.established)
++			cancel_lan_invite();	/* the LAN never answered: its INVITE is cancelled, not a BYE */
+ 		send_dialog_bye();
++		remember_inbound_invite(NULL);
+ 		stop_media();
+ 		qmodem_voip_sip_call_release(&app.call);
+ 		if (app.outbound)
