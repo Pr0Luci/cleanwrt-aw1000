@@ -46,6 +46,18 @@ jobs:
             case "$(head -1 "$f")" in *bash*) bash -n "$f" ;; *) sh -n "$f" ;; esac
           done < <(grep -rlE '^#!.*(sh|bash)' tools files)
 
+      - name: Tool tests
+        run: |
+          set -eu
+          # The build tools carry one guarantee each that a tree of this repository cannot show:
+          # what a feed looks like when an earlier build's patch leftovers are still in it. A
+          # release job always starts from a fresh tree, so only a scratch tree of miniature
+          # repositories can meet that state. These need no network and finish in seconds.
+          for t in tools/tests/*-test.sh; do
+            echo "== $t"
+            sh "$t"
+          done
+
       - name: Version label agrees between seed and build script
         run: |
           seed=$(sed -n 's/^CONFIG_VERSION_NUMBER="\(.*\)"$/\1/p' configs/arcadyan_aw1000.seed)
