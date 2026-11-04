@@ -79,9 +79,9 @@ router supported?" to a flashed, working router, and tell you how to get out if 
     [![Status overview on a phone](assets/img/overview-mobile.jpg)](assets/img/overview-mobile.jpg){ width="300" }
 
 !!! info "About the screenshots"
-    The screenshots in this documentation were taken from a development preview of the interface
-    (the same theme, pages and LED app as the firmware) running on a computer, with a simulated
-    modem. Values such as the kernel, memory and storage differ on a real router.
+    The screenshots in this documentation were taken from a real AW1000 running this firmware. The
+    numbers in them - uptime, memory, storage, signal - belong to the moment they were taken and
+    will differ on your router.
 
 ## What you get on top of stock OpenWrt
 

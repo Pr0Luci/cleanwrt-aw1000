@@ -29,9 +29,9 @@ what the panel shows without looking at the router.
     [![LED Management page on a phone](assets/img/leds-mobile.jpg)](assets/img/leds-mobile.jpg){ width="300" }
 
 !!! info "About the screenshots"
-    The screenshots in this documentation were taken from a development preview of the interface
-    (the same theme, pages and LED app as the firmware) running on a computer, with a simulated
-    modem. Values such as the kernel, memory and storage differ on a real router.
+    The screenshots in this documentation were taken from a real AW1000 running this firmware. The
+    numbers in them - uptime, memory, storage, signal - belong to the moment they were taken and
+    will differ on your router.
 
 ## What each LED shows
 
