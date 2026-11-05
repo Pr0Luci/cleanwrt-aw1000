@@ -22,7 +22,7 @@ relicenses them.
 | Vendor `qmi_wwan_{q,f,s}` kernel modules (from QModem) | GPL (`MODULE_LICENSE("GPL")`) | driver sources @ pinned commit |
 | ath11k firmware | Qualcomm Atheros firmware licence (`LICENSE.qca_firmware`) | OpenWrt package Makefile |
 | AWvoice (kernel module, phone daemon, LuCI page) | GPL-2.0-only | shipped with the release |
-| `luci-app-cw-led` (our LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
+| `luci-app-cw-led` (this project's LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
 | `luci-theme-footstrap`, `luci-theme-argon`, `luci-theme-alpha` and its `luci-app-alpha-config` (the LuCI themes; Footstrap is the one the image selects) | Apache-2.0, each from its own upstream | pinned commits in `configs/local-packages.pin` |
 
 Every other package's licence is listed, per package, in the generated
@@ -116,7 +116,7 @@ which are version-pinned so the same inputs always rebuild the same firmware:
    `configs/local-packages.pin`.
 
 The README describes how to rebuild. If any pinned source becomes unreachable, open an issue
-and we will provide it.
+and the source will be provided.
 
 ## Licence manifest
 
