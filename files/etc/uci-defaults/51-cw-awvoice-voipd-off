@@ -1,0 +1,35 @@
+#!/bin/sh
+# Take the vendor's VoIP engine off the boot path.
+#
+# qmodem-sipd pulls qmodem-voip in as a dependency, and its init script arrives in the image
+# enabled for boot, so that engine claims the ubus name qmodem_voip at every start. It comes up
+# disabled - qmodem_voip.main.enabled is off in its own conffile - and it refuses to enable
+# itself without an ADB channel to the modem, which this board's modem does not expose.
+# awvoice-phoned answers that same name itself when the page asks for a network phone, so an
+# engine that got there first is a soft phone that registers and then cannot make or take a
+# call: its own originate is answered as an unsupported media path.
+#
+# Nothing here touches the modem. The service this image runs for a network phone is
+# qmodem_voip_sipd, and the AWvoice page starts and stops that one; the engine stays off unless
+# an admin asks for it by hand.
+UNIT=/etc/init.d/qmodem_voip
+[ -x "$UNIT" ] || exit 0
+
+"$UNIT" stop >/dev/null 2>&1
+"$UNIT" disable >/dev/null 2>&1
+
+left=
+for link in /etc/rc.d/S??qmodem_voip; do
+	[ -e "$link" ] || continue
+	case "$link" in
+	*qmodem_voip_sipd) continue ;;
+	esac
+	left=$link
+done
+if [ -n "$left" ]; then
+	echo "cw-firstboot: $left is still enabled for boot" >&2
+	exit 1
+fi
+
+logger -t cw-firstboot "qmodem_voip: the vendor engine is off the boot path"
+exit 0
