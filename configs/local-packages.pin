@@ -58,6 +58,6 @@ luci-app-homeproxy https://github.com/immortalwrt/homeproxy.git 98a6ad9e71484528
 # exception in the phone book that rings through, and the *78, *79 and # codes
 # typed on the handset or the page to switch the window on, off or until the next
 # day. The three packages share one version, so they share one pin.
-kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 1b8a76eeb6d560f6f6475a9ef6eda6e040f2c02b
-awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 1b8a76eeb6d560f6f6475a9ef6eda6e040f2c02b
-luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 1b8a76eeb6d560f6f6475a9ef6eda6e040f2c02b
+kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git bc629081ee472092a36ace7b53fb76c51de4bf68
+awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git bc629081ee472092a36ace7b53fb76c51de4bf68
+luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git bc629081ee472092a36ace7b53fb76c51de4bf68
