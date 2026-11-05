@@ -24,8 +24,8 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
   changed by one line of it - the login page now carries the CleanWRT logo where the theme prints the
   router's hostname. The theme that shipped before it is out of the image, with the five feed
   patches written for it - four that drew card-style status widgets and one that read a CPU counter.
-  The stock Bootstrap theme stays as the fallback and Argon and Alpha ship so the three can be
-  compared. A new router starts at the look
+  The stock Bootstrap theme stays as the fallback and Argon ships beside it for comparison.
+  A new router starts at the look
   `files/etc/uci-defaults/50-cw-footstrap-look` writes, with the photo and the pattern that go with
   it ([theme](theme.md)).
 - `files/etc/uci-defaults/49-cw-awvoice-provision-port` opens the plain HTTP listener that serves the

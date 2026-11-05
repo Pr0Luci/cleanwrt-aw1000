@@ -43,7 +43,7 @@ switch.
 | SQM QoS | Network → SQM QoS | Off (set your speeds) | fix bufferbloat |
 | Web terminal (ttyd) | Tools → Terminal | On | a shell in the browser |
 | Footstrap theme | System → Footstrap | On | the default look ([theme](theme.md)) |
-| Argon, Alpha themes | System → System → Language and Style | installed, not selected | alternatives to compare ([theme](theme.md)) |
+| Argon theme | System → System → Language and Style | installed, not selected | an alternative to compare ([theme](theme.md)) |
 | LED Management | System → LED Management | On | front-panel LEDs ([LEDs](leds.md)) |
 | New-version notice | Status → Overview | On | tells you when a newer CleanWRT is published |
 

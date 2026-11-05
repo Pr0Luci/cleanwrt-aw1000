@@ -523,7 +523,7 @@ fi
 #    A package the seed does not select is SKIPPED, not failed (an experimental
 #    seed via CW_SEED may omit opt-in packages).
 for p in luci luci-mod-admin-full luci-theme-bootstrap luci-theme-footstrap luci-theme-argon \
-         luci-theme-alpha libiwinfo rpcd-mod-iwinfo \
+         libiwinfo rpcd-mod-iwinfo \
          luci-app-passwall2 luci-app-qmodem qmodem kmod-qmi_wwan_q qmodem-sipd \
          minidlna samba4-server syncthing \
          luci-app-qmodem-ttlfw4 luci-app-tailscale-community luci-app-cw-led \

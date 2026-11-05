@@ -160,11 +160,11 @@ CONFIG_PACKAGE_luci-base=y
 # installed as the fallback / user choice).
 CONFIG_PACKAGE_luci-theme-bootstrap=y
 # Themes, each its own package pinned in configs/local-packages.pin (all Apache-2.0):
-# Footstrap is the default; Argon and Alpha ship so they can be compared through
-# the theme selector in LuCI.
+# Footstrap is the default; Argon ships so the two can be compared through the theme
+# selector in LuCI. Alpha is out: its package depends on luci-app-alpha-config, which
+# this tree has no source for, so the theme cannot be installed at all.
 CONFIG_PACKAGE_luci-theme-footstrap=y
 CONFIG_PACKAGE_luci-theme-argon=y
-CONFIG_PACKAGE_luci-theme-alpha=y
 # Transitive deps of the luci-mod-* set that a minimal seed must name explicitly,
 # else `make defconfig` drops the whole admin UI (status/network -> admin-full):
 #   luci-mod-status  needs +libiwinfo +rpcd-mod-iwinfo

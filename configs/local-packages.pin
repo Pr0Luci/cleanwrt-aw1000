@@ -24,10 +24,6 @@ luci-theme-footstrap https://github.com/VizzleTF/luci-theme-footstrap.git a1711e
 # luci-theme-argon: Apache-2.0, ucode templates (the 25.12 theme mechanism).
 # Pinned at the commit tag v3.1.2 points to.
 luci-theme-argon https://github.com/jerrykuku/luci-theme-argon.git 7b77b44b8324ba4939144760ed3f09c1a1d1e833
-# luci-theme-alpha: Apache-2.0, still the luasrc (Lua templates) layout. Selected so
-# it can be checked on the device; if it does not render on 25.12 it comes back out.
-# Pinned at the newest published release tag 3.9.7-beta2.
-luci-theme-alpha https://github.com/derisamedia/luci-theme-alpha.git aed1071054ecc3fdb0cc2368c68197a906f9946a
 
 # luci-app-homeproxy: HomeProxy LuCI app (ImmortalWrt), another proxy app on the same
 # cores the image already ships (sing-box). Single-package repo with the Makefile at
