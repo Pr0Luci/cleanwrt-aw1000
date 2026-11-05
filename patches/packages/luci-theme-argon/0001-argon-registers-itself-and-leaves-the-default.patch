@@ -1,0 +1,30 @@
+First boot: the theme registers itself, the image chooses the default
+
+Argon's own first-boot script registers its theme entry and, in the same batch,
+writes `luci.main.mediaurlbase` — the design the web interface opens with. It does
+that without asking what is already set, so in an image that ships Argon beside
+another theme, Argon takes the default on every fresh install simply by being
+installed. This removes that one line and leaves the registration: the theme stays
+selectable at System -> Language and Style -> Design, an admin who chooses it keeps
+it through a later upgrade, and the default is this image's own choice, written by
+files/etc/uci-defaults/96-cw-default-theme after every package's script has run.
+Nothing else about the package changes.
+
+Applies to: https://github.com/jerrykuku/luci-theme-argon.git
+            @ 7b77b44b8324ba4939144760ed3f09c1a1d1e833 (pinned in configs/local-packages.pin)
+Applied by: tools/cw-release-build.sh, on the pinned commit before the package is
+            installed, with `patch -p1 --fuzz=0` - the build fails if upstream
+            changes these lines; re-port the patch then.
+Upstream status: not submitted (a firmware's default theme is its own choice).
+
+--- a/root/etc/uci-defaults/30_luci-theme-argon
++++ b/root/etc/uci-defaults/30_luci-theme-argon
+@@ -63,7 +63,6 @@
+ 	uci get luci.themes.Argon >/dev/null 2>&1 || \
+ 	uci batch <<-EOF
+ 		set luci.themes.Argon=/luci-static/argon
+-		set luci.main.mediaurlbase=/luci-static/argon
+ 		commit luci
+ 	EOF
+ fi
+

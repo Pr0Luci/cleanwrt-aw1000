@@ -69,7 +69,7 @@ exports, so without the guard the driver cannot be linked and the package cannot
 driver version this pin replaces carried, and a QSDK kernel that does set the symbol still gets the accelerated
 path. Same terms as above: a modification of QModem's code, published here.
 
-### The Footstrap theme patch
+### Theme patches
 
 `patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch` changes one line of
 `luci-theme-footstrap/ucode/template/themes/footstrap/sysauth.ut` at the pinned commit, so the login page
@@ -77,6 +77,13 @@ shows this project's logo instead of the router's hostname. It is a modification
 under that licence, and is published here, which is the source of the modified file. The logo itself is
 `files/www/luci-static/cw-branding/login-logo.png` - this repository's own file, outside the theme's
 directory, so a theme update can neither overwrite it nor collide with the patch.
+
+`patches/packages/luci-theme-argon/0001-argon-registers-itself-and-leaves-the-default.patch` removes one
+line of `luci-theme-argon/root/etc/uci-defaults/30_luci-theme-argon` at the pinned commit: the line that
+writes `luci.main.mediaurlbase`, the design the web interface opens with. Argon still registers itself as
+a selectable theme; which theme a new router starts on is this image's choice, made after every package's
+own first-boot script has run. Same terms as the patch above: a modification of Apache-2.0 code, published
+here.
 
 ### 3ginfo-lite feed patches
 
