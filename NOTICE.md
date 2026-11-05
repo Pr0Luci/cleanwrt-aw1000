@@ -23,7 +23,7 @@ relicenses them.
 | ath11k firmware | Qualcomm Atheros firmware licence (`LICENSE.qca_firmware`) | OpenWrt package Makefile |
 | AWvoice (kernel module, phone daemon, LuCI page) | GPL-2.0-only | shipped with the release |
 | `luci-app-cw-led` (our LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
-| `luci-theme-footstrap`, `luci-theme-argon` (the LuCI themes; Footstrap is the one the image selects) | Apache-2.0, each from its own upstream | pinned commits in `configs/local-packages.pin` |
+| `luci-theme-footstrap`, `luci-theme-argon`, `luci-theme-alpha` and its `luci-app-alpha-config` (the LuCI themes; Footstrap is the one the image selects) | Apache-2.0, each from its own upstream | pinned commits in `configs/local-packages.pin` |
 
 Every other package's licence is listed, per package, in the generated
 [licence manifest](#licence-manifest).

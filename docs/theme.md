@@ -92,9 +92,10 @@ Footstrap is selected on the first boot. To change it later:
 
 *System → System → Language and Style → Design*
 
-The stock Bootstrap theme stays installed as the fallback. **Argon** is in the image as well, its own
-package with its own licence and pin, so the two can be compared on the device. Nothing else about
-the firmware changes when you switch.
+The stock Bootstrap theme stays installed as the fallback. **Argon** and **Alpha** are in the image as
+well, each its own package with its own licence and pin, so the three can be compared on the device.
+Alpha is written for an older LuCI layout, so if choosing it leaves pages that do not look right, that
+is what you are seeing - nothing else about the firmware changes when you switch.
 
 ## Notes for developers
 
