@@ -93,7 +93,7 @@ cp "$REPO/feeds.conf.default" feeds.conf
 # commit pin: the vendored content is the repo itself).
 # It is inserted BEFORE the luci feed, not appended: names resolve first-match-wins
 # and the upstream luci feed has its own luci-app-adguardhome whose +adguardhome
-# dependency pulls the ~9 MiB Go binary into the image. Our vendored copy (with
+# dependency pulls the ~9 MiB Go binary into the image. The vendored copy (with
 # that dependency dropped) must win the name, or the image grows from 94 to 103 MiB.
 # The link target is a stable directory inside the tree, not the checkout. With a
 # fresh checkout every run has new file mtimes, and OpenWrt's ".prepared" stamp is
