@@ -321,24 +321,28 @@ while read -r name url sha extra; do
     # Feed-compatible repos keep the package in a <name>/ subdirectory (a root
     # Makefile breaks the feeds indexer); legacy single-package repos have the
     # Makefile at the root. Install whichever layout the pinned commit has.
+    vdate=$(git -C "$src/repo" show -s --format=%cd --date=short "$sha" | tr -d '-')
     if [ -f "$src/repo/$name/Makefile" ]; then
         cp -a "$src/repo/$name" "package/$name"
     elif [ -f "$src/repo/Makefile" ]; then
         cp -a "$src/repo" "package/$name"; rm -rf "package/$name/.git"
-        # Deterministic version for luci.mk apps without an upstream PKG_VERSION
-        # (homeproxy): with .git stripped, luci.mk's findrev falls back to file
-        # mtimes and the apk version would drift per build. Pin it to the date of the
-        # pinned commit (digits only): apk accepts only digit segments in the numeric
-        # part of a version, a short sha like 98a6ad9e is rejected at packaging.
-        grep -q '^PKG_VERSION' "package/$name/Makefile" || {
-            vdate=$(git -C "$src/repo" show -s --format=%cd --date=short "$sha" | tr -d '-')
-            sed -i "s|^\(PKG_NAME:=.*\)|&\nPKG_VERSION:=${vdate}|" "package/$name/Makefile"
-        }
     else
         echo "ERROR: pinned $name has no Makefile at <root> or <root>/$name/" >&2; exit 1
     fi
     rm -rf "$src"
     [ -f "package/$name/Makefile" ] || { echo "ERROR: package/$name/Makefile missing after install" >&2; exit 1; }
+    # Deterministic version for a luci.mk recipe that carries no PKG_VERSION of its own
+    # (homeproxy, and the Footstrap theme): the version comes from git, and the clone's .git
+    # is gone by now, so luci.mk's findrev falls back to file mtimes - the apk version would
+    # drift every build, or come out as zero. Give it the date of the pinned commit (digits
+    # only): apk accepts only digit segments in the numeric part of a version, and a short sha
+    # like 98a6ad9e is rejected at packaging. A version of 0 is not merely untidy - a device
+    # can never upgrade from it, and an image assembled beside an older copy of the same
+    # package installs the one with the larger number.
+    if ! grep -q '^PKG_VERSION' "package/$name/Makefile" &&
+       grep -q 'luci\.mk' "package/$name/Makefile"; then
+        sed -i "s|^\(PKG_NAME:=.*\)|&\nPKG_VERSION:=${vdate}|" "package/$name/Makefile"
+    fi
     # What an earlier build left of this package goes before anything is compiled.
     # OpenWrt decides whether to copy a package's sources into its build directory from a
     # stamp of its own, and that stamp does not notice a pin moving under it: the Makefile,
