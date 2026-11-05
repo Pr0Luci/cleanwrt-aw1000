@@ -278,7 +278,13 @@ CONFIG_PACKAGE_adguardhome=y
 CONFIG_PACKAGE_luci-app-qmodem=y
 CONFIG_PACKAGE_qmodem=y
 CONFIG_PACKAGE_qmodem_monitor=y
-CONFIG_PACKAGE_sms-forwarder=y
+# The feed declares its two SMS forwarders as alternatives (PKG_CONFLICTS in the older
+# recipe) and both install /etc/init.d/sms_forwarder, so carrying both makes the image
+# refuse to assemble: "trying to overwrite etc/init.d/sms_forwarder owned by
+# sms-forwarder-next". The QModem SMS page pulls the -next variant at this pin, so
+# -next is the one this image carries.
+CONFIG_PACKAGE_sms-forwarder-next=y
+# CONFIG_PACKAGE_sms-forwarder is not set
 CONFIG_PACKAGE_tom_modem=y
 CONFIG_PACKAGE_ubus-at-daemon=y
 # QMI-WWAN driver: use the VENDOR-patched drivers (qmodem's own default), NOT
