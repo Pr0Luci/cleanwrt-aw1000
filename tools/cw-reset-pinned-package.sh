@@ -63,5 +63,20 @@ for stale in "$TREE"/staging_dir/packages/*/"$NAME"-[0-9]*.apk; do
     rm -f "$stale"
 done
 
+# A feed that carries a package of this name shadows the pin, and the build does not say so.
+# `./scripts/feeds install -a` links every feed package into package/feeds/<feed>/, and two
+# recipes of one PKG_NAME are resolved by OpenWrt to one of them - so the pinned repository's
+# files are installed, verified, and then quietly never compiled, while the image ships the
+# feed's older copy under the same name and the same version-shaped label. This happened with
+# Footstrap: the theme reached upstream LuCI at a copy older than the pinned release, and the
+# device got that one. Only the link into the tree is removed; the feed's own directory stays,
+# so a later `./scripts/feeds update` sees the feed exactly as its pin has it.
+for shadow in "$TREE"/package/feeds/*/"$NAME" "$TREE"/package/feeds/*/"$NAME"-[0-9]*; do
+    [ -e "$shadow" ] || continue
+    removed=$((removed + 1))
+    echo "== shadowed by the pin: ${shadow#"$TREE"/}"
+    rm -rf "$shadow"
+done
+
 [ "$removed" = 0 ] && echo "== reset: $NAME had nothing to clear"
 exit 0

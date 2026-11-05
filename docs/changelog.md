@@ -22,7 +22,9 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
   and one migrates a configuration that kept the VoIP engine's socket ([AWvoice](awvoice.md)).
 - **The web interface is Footstrap**, an upstream Apache-2.0 LuCI theme pinned to one commit and
   changed by one line of it - the login page now carries the CleanWRT logo where the theme prints the
-  router's hostname. The theme that shipped before it is out of the image, with the five feed
+  router's hostname. The LuCI feed now carries a copy of this theme too, at an older commit and under
+  the same package name; the image ships the pinned one, and the build says on every run which
+  package it took out of the feed to do that. The theme that shipped before it is out of the image, with the five feed
   patches written for it - four that drew card-style status widgets and one that read a CPU counter.
   The stock Bootstrap theme stays as the fallback and Argon and Alpha ship beside it for comparison, with
   the one line of Argon's first-boot script that claimed the default removed - an installed theme is

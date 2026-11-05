@@ -36,6 +36,15 @@ mk "$WORK/tree/build_dir/target-any_musl/demo-extra-9.9/src/keepme2.c"
 mk "$WORK/tree/staging_dir/target-any_musl/pkginfo/demo-extra.provides"
 mk "$WORK/tree/staging_dir/packages/any/demo-extra-1.0.apk"
 
+# the shadow: a feed that carries a package of the same name, linked into the tree the way
+# `./scripts/feeds install -a` links it, with older content than the pin
+mk "$WORK/tree/feeds/luci/themes/demo/Makefile"
+mk "$WORK/tree/feeds/luci/themes/demo/htdocs/older.js"
+mk "$WORK/tree/feeds/luci/themes/demo-extra/Makefile"
+mkdir -p "$WORK/tree/package/feeds/luci"
+ln -s ../../../feeds/luci/themes/demo "$WORK/tree/package/feeds/luci/demo"
+ln -s ../../../feeds/luci/themes/demo-extra "$WORK/tree/package/feeds/luci/demo-extra"
+
 sh "$SCRIPT" "$WORK/tree" demo > "$WORK/first.out" 2>&1
 
 for gone in \
@@ -54,6 +63,16 @@ for kept in \
     [ -f "$WORK/tree/$kept" ] || {
         echo "FAIL: a neighbour package was cleared: $kept" >&2; exit 1; }
 done
+# the feed's link into the tree goes, so the pin is the only recipe of this name; the feed's
+# own directory stays, because a `./scripts/feeds update` is entitled to find the feed as pinned
+[ ! -e "$WORK/tree/package/feeds/luci/demo" ] || {
+    echo "FAIL: the feed still shadows the pinned package" >&2; exit 1; }
+[ -f "$WORK/tree/feeds/luci/themes/demo/Makefile" ] || {
+    echo "FAIL: the feed's own source was deleted instead of its link" >&2; exit 1; }
+[ -e "$WORK/tree/package/feeds/luci/demo-extra" ] || {
+    echo "FAIL: a neighbouring feed link was removed" >&2; exit 1; }
+grep -q 'shadowed by the pin' "$WORK/first.out" || {
+    echo "FAIL: the shadow went silently" >&2; exit 1; }
 grep -q 'demo' "$WORK/first.out" || {
     echo "FAIL: the tool said nothing about what it cleared" >&2; exit 1; }
 
