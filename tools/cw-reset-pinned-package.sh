@@ -13,8 +13,10 @@
 #
 # So the three places a finished package survives are cleared by name before the pin is
 # installed: the build directory, the package's own records in the staging area, and the
-# .apk that the image is assembled from. A name that never built anything matches nothing
-# and is not an error - that is the first build of a tree.
+# .apk that the image is assembled from - in the staging copy *and* in bin/packages, because
+# `make package/index` re-links an old apk from there back into the staging area, and the
+# image is then installed from the older version number. A name that never built anything
+# matches nothing and is not an error - that is the first build of a tree.
 #
 # Only the named package is touched. A version is a digit, so <name>-<digit...> belongs to
 # it and <name>-<letter...> belongs to another package that shares its prefix
@@ -57,7 +59,8 @@ for dir in "$TREE"/staging_dir/target-*/; do
     done
 done
 
-for stale in "$TREE"/staging_dir/packages/*/"$NAME"-[0-9]*.apk; do
+for stale in "$TREE"/staging_dir/packages/*/"$NAME"-[0-9]*.apk \
+             "$TREE"/bin/packages/*/*/"$NAME"-[0-9]*.apk; do
     [ -e "$stale" ] || continue
     report "$stale"
     rm -f "$stale"

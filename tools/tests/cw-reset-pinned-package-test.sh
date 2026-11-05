@@ -30,6 +30,11 @@ mk "$WORK/tree/build_dir/target-any_musl/demo/src/old.c"
 mk "$WORK/tree/build_dir/target-any_musl/demo-1.2/src/older.c"
 mk "$WORK/tree/staging_dir/target-any_musl/pkginfo/demo.provides"
 mk "$WORK/tree/staging_dir/packages/any/demo-1.2.apk"
+# the same package as an earlier build left it in the output tree: `make package/index`
+# re-links these into the staging area, so an old one here outrives a cleared staging copy
+mk "$WORK/tree/bin/packages/any/base/demo-1.1.apk"
+mk "$WORK/tree/bin/packages/any/luci/demo-1.0.apk"
+mk "$WORK/tree/bin/packages/any/luci/demo-extra-1.0.apk"
 # the neighbours: a package whose name starts with demo's, and its records and apk
 mk "$WORK/tree/build_dir/target-any_musl/demo-extra/src/keepme.c"
 mk "$WORK/tree/build_dir/target-any_musl/demo-extra-9.9/src/keepme2.c"
@@ -51,7 +56,9 @@ for gone in \
     "build_dir/target-any_musl/demo/src/old.c" \
     "build_dir/target-any_musl/demo-1.2/src/older.c" \
     "staging_dir/target-any_musl/pkginfo/demo.provides" \
-    "staging_dir/packages/any/demo-1.2.apk"; do
+    "staging_dir/packages/any/demo-1.2.apk" \
+    "bin/packages/any/base/demo-1.1.apk" \
+    "bin/packages/any/luci/demo-1.0.apk"; do
     [ ! -e "$WORK/tree/$gone" ] || {
         echo "FAIL: the named package's own state is still there: $gone" >&2; exit 1; }
 done
@@ -59,7 +66,8 @@ for kept in \
     "build_dir/target-any_musl/demo-extra/src/keepme.c" \
     "build_dir/target-any_musl/demo-extra-9.9/src/keepme2.c" \
     "staging_dir/target-any_musl/pkginfo/demo-extra.provides" \
-    "staging_dir/packages/any/demo-extra-1.0.apk"; do
+    "staging_dir/packages/any/demo-extra-1.0.apk" \
+    "bin/packages/any/luci/demo-extra-1.0.apk"; do
     [ -f "$WORK/tree/$kept" ] || {
         echo "FAIL: a neighbour package was cleared: $kept" >&2; exit 1; }
 done
