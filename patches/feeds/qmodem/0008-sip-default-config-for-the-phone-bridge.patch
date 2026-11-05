@@ -8,15 +8,17 @@ nothing at all.
 
 Point the socket at the phone service that serves it, enable the inbound direction on the LAN at
 5060 over udp_tcp, and take voip_enabled to 0 in both directions so the consumer is the program
-that runs. The password stays empty: the validator refuses a start until one is set, and no
-default secret ships. Nothing here enables the unit at boot, so a fresh router still comes up
+that runs. The inbound account is named `awvoice`, after this router's own phone service rather
+than after the modem, and it ships with a password because their validator refuses a start without
+one: that direction listens on the LAN alone, the same secret the Wi-Fi network is published with
+is used here so a router has one pair to remember, and the AWvoice page both shows the name and
+lets the password be changed. The outbound direction, which reaches a server outside the house,
+still ships no secret. Nothing here enables the unit at boot, so a fresh router still comes up
 with nothing listening on 5060.
 
-diff --git a/application/qmodem_sipd/files/etc/config/qmodem_sip b/application/qmodem_sipd/files/etc/config/qmodem_sip
-index f4b7a12..8ece0ac 100644
 --- a/application/qmodem_sipd/files/etc/config/qmodem_sip
 +++ b/application/qmodem_sipd/files/etc/config/qmodem_sip
-@@ -1,16 +1,19 @@
+@@ -1,16 +1,20 @@
  config sipd 'main'
 -	option media_socket_path '/var/run/qmodem_voip/media.sock'
 +	# the voice path this service writes frames into is the one the phone service owns and serves
@@ -30,16 +32,19 @@ index f4b7a12..8ece0ac 100644
  	option interface 'lan'
  	option listen_port '5060'
  	option transport 'udp_tcp'
- 	option username 'qmodem'
- 	option password ''
+-	option username 'qmodem'
+-	option password ''
 -	option voip_enabled '1'
++	# the account a soft phone signs in with: named for this router's own phone service, not for the modem
++	option username 'awvoice'
++	option password 'CleanWRT#40'
 +	# 1 selects the wrapper that waits for a VoIP engine to report its media path ready; that engine is
 +	# not part of this setup, so the wait never ends and no consumer comes up. 0 selects the consumer.
 +	option voip_enabled '0'
  	option sms_enabled '0'
  	option sms_modem ''
  
-@@ -25,6 +28,8 @@ config direction 'outbound'
+@@ -25,6 +29,8 @@
  	option password ''
  	option realm ''
  	option register_interval '300'
