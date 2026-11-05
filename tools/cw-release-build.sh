@@ -360,6 +360,11 @@ done < "$REPO/configs/local-packages.pin"
 cp "$SEED" .config
 rm -rf files
 cp -a "$REPO/files" files
+# Ownership is not recorded in git, but `cp -a` carries it. A checkout made by a builder that
+# is not uid 0 (a developer's container, a CI runner) would otherwise put that uid's files
+# into the rootfs, and every file on a device belongs to root - the scripts this folder adds
+# are read by the boot process as root and written back as root.
+chown -R --no-dereference 0:0 files
 # The user-visible version is exactly "<dist> <version>".
 # Stock base-files appends the version code to DISTRIB_DESCRIPTION and
 # OPENWRT_RELEASE; with an empty VERSION_CODE that is the OpenWrt revision, so drop
