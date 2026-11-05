@@ -53,7 +53,11 @@ luci-app-homeproxy https://github.com/immortalwrt/homeproxy.git 98a6ad9e71484528
 # code a phone scans: the phone daemon writes that file into a folder of its own,
 # keeps it only for the lifetime the page promises, and
 # files/etc/uci-defaults/49-cw-awvoice-provision-port opens the listener that
-# serves it. The three packages share one version, so they share one pin.
-kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git ac1f458462c9c07a7053efdbaf99b73e8c19b43c
-awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git ac1f458462c9c07a7053efdbaf99b73e8c19b43c
-luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git ac1f458462c9c07a7053efdbaf99b73e8c19b43c
+# serves it. On top of that, quiet hours: a window of the day the handset, the
+# answering machine and the network phones all hold off ringing, a per-contact
+# exception in the phone book that rings through, and the *78, *79 and # codes
+# typed on the handset or the page to switch the window on, off or until the next
+# day. The three packages share one version, so they share one pin.
+kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 38b656731e0ac46a9c64f4dca6a9133eb20037f2
+awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 38b656731e0ac46a9c64f4dca6a9133eb20037f2
+luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git 38b656731e0ac46a9c64f4dca6a9133eb20037f2

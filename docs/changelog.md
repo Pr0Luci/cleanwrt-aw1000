@@ -14,7 +14,11 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
   **web phone** - the handset's audio in the browser - and a **code a phone can scan**, which writes
   the account a soft phone fetches into a directory of its own. Wideband voice follows what the modem
   answers, the caller-id message and the ring supervision were corrected, and the front end now
-  behaves the same in every mode.
+  behaves the same in every mode. The same version also carries **quiet hours**: windows of the day
+  that hold the handset, the answering machine and the network phones off a ringing call, contacts
+  marked to ring through one, and the `*78`, `*79` and `#` codes on the handset and the page. The
+  vendor's VoIP engine is kept off the boot path (`files/etc/uci-defaults/51-cw-awvoice-voipd-off`)
+  so the phone daemon itself serves the SIP side.
 - **Six patches to that SIP service.** Three complete the transaction the cellular side opens: the
   2xx ACK a UAC owes, the BYE from either side of a dialog with the in-dialog authentication an
   in-dialog BYE needs, and the CANCEL of an unanswered LAN INVITE with its 487 recognised. One makes

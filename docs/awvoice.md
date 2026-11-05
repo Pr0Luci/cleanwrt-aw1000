@@ -121,7 +121,9 @@ the LED name) are in `/etc/config/awvoice`.
   network and the signal;
 - **calls:** the call log, with names from the phone book;
 - **phone book and speed dial;**
-- **rules:** call blocking, forwarding and alarm calls;
+- **rules:** call blocking, forwarding and alarm calls, and the quiet hours - the windows of the day
+  the handset, the answering machine and the network phones hold off ringing, the contacts marked to
+  ring through one, and the `*78`, `*79` and `#` codes typed on the handset or the page;
 - **settings:** caller id mode, hook-flash timing, tones, audio levels, call waiting, hotline and
   the line LED;
 - **SIP:** the switch (off: the handset on the RJ11 port; on: a soft phone on your own network joins
