@@ -20,7 +20,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
       build-essential clang lld flex bison g++ gawk gcc-multilib g++-multilib \
       gettext git libncurses-dev libssl-dev python3 python3-setuptools \
       python3-distutils rsync swig unzip zlib1g-dev file wget zstd texinfo \
-      curl ca-certificates jq xz-utils bison flex && \
+      curl ca-certificates jq xz-utils bison flex meson ninja-build pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
 # lld is here for one thing: the QModem voice daemon compiles a 32-bit ARM media
@@ -28,6 +28,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 # -shared`) and asks for it with -fuse-ld=lld. clang can name the linker but cannot
 # supply it, so without lld the whole package fails at that step. The package is a
 # dependency of the LAN SIP service, so the image has to be able to build it.
+
+# meson and ninja are here for the same reason: the host package manager of this
+# tree (apk-tools 3.0.5) is built with meson, and the image assembly step needs
+# that host tool to install packages into the rootfs. Without them the build fails
+# at the install stage, after every package has compiled.
 
 # Some OpenWrt host tools refuse to configure as root.
 ENV FORCE_UNSAFE_CONFIGURE=1
