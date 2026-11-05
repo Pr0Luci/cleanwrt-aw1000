@@ -339,6 +339,14 @@ while read -r name url sha extra; do
     fi
     rm -rf "$src"
     [ -f "package/$name/Makefile" ] || { echo "ERROR: package/$name/Makefile missing after install" >&2; exit 1; }
+    # What an earlier build left of this package goes before anything is compiled.
+    # OpenWrt decides whether to copy a package's sources into its build directory from a
+    # stamp of its own, and that stamp does not notice a pin moving under it: the Makefile,
+    # the version and the file list can all look unchanged while every file inside the
+    # package is now from a different commit. The tree then compiles what was there before,
+    # packages that, installs that into the image, and reports success throughout. A release
+    # run on a tree this script has used once before is how an old package reaches a device.
+    "$REPO/tools/cw-reset-pinned-package.sh" "$TREE" "$name"
     echo "== local package $name @ $sha =="
 done < "$REPO/configs/local-packages.pin"
 
