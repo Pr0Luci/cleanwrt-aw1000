@@ -81,7 +81,7 @@ details and ask for a private channel.
 | Opt-in apps | off, so nothing listens | each package's own default |
 | The provisioning listener | **open on port 8080, LAN only**, private-network filtered, directory listings off, document root holding one directory | `49-cw-awvoice-provision-port` |
 | The SIP listener | **closed** until the AWvoice page's switch starts it | the switch |
-| The browser audio port | opens only while a page session is live, bound to the LAN interface's address | `awvoice.main.web_iface` |
+| The browser audio port | opens with the phone line, bound to the LAN interface's address; a session on it needs a single-use token and only one page may hold it | `awvoice.main.web_iface` |
 | Package pins | rewritten on every boot so `apk upgrade` cannot replace patched LuCI packages | `96-cw-apk-world-pin` |
 | Attended-sysupgrade UI | removed from the menu; the newer-version check stays | `48-cw-strip-asu-ui` |
 
