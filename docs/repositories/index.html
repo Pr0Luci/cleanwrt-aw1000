@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="The CleanWRT firmware, AWvoice, the LED app and the Apex theme: what each repository is, how they are pinned together, and where to report issues.">
+        <meta name="description" content="The CleanWRT firmware, AWvoice, the LED app and the web interface: what each repository is, how they are pinned together, and where to report issues.">
       
       
       
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="Repositories - CleanWRT">
-<meta property="og:description" content="The CleanWRT firmware, AWvoice, the LED app and the Apex theme: what each repository is, how they are pinned together, and where to report issues.">
+<meta property="og:description" content="The CleanWRT firmware, AWvoice, the LED app and the web interface: what each repository is, how they are pinned together, and where to report issues.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/repositories/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,12 +64,12 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Repositories - CleanWRT">
-<meta name="twitter:description" content="The CleanWRT firmware, AWvoice, the LED app and the Apex theme: what each repository is, how they are pinned together, and where to report issues.">
+<meta name="twitter:description" content="The CleanWRT firmware, AWvoice, the LED app and the web interface: what each repository is, how they are pinned together, and where to report issues.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Repositories", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/repositories/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Repositories", "description": "The CleanWRT firmware, AWvoice, the LED app and the Apex theme: what each repository is, how they are pinned together, and where to report issues.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/repositories/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Repositories", "description": "The CleanWRT firmware, AWvoice, the LED app and the web interface: what each repository is, how they are pinned together, and where to report issues.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/repositories/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
 </head>
   
   
@@ -736,7 +736,7 @@
   <span class="md-ellipsis">
     
   
-    The Apex theme
+    The Footstrap theme
   
 
     
@@ -1608,16 +1608,16 @@
 <td><a href="../leds/">Front-panel LEDs</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/Pr0Luci/luci-theme-apex">luci-theme-apex</a></td>
-<td>the Apex LuCI theme</td>
-<td><a href="../theme/">The Apex theme</a></td>
+<td><a href="https://github.com/VizzleTF/luci-theme-footstrap">luci-theme-footstrap</a></td>
+<td>the LuCI theme the image selects (upstream, unpatched)</td>
+<td><a href="../theme/">The Footstrap theme</a></td>
 </tr>
 </tbody>
 </table>
 <h2 id="how-they-fit-together">How they fit together<a class="headerlink" href="#how-they-fit-together" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>cleanwrt-aw1000  (feeds.conf.default, configs/local-packages.pin, patches/)
    ├── pins  luci-app-cw-led      → LED daemon and page
-   ├── pins  luci-theme-apex      → default theme
+   ├── pins  luci-theme-footstrap → default theme
    ├── pins  AWvoice              → phone port
    └── pins  OpenWrt, LuCI, QModem, Passwall, 3ginfo-lite, ... (upstream feeds)
 </code></pre></div>

@@ -18,5 +18,5 @@
   <text x="106" y="130" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="#041815" text-anchor="middle">C</text>
   <text x="174" y="132" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="76" font-weight="700" fill="#ffffff">Clean<tspan fill="#2dd4bf">WRT</tspan></text>
   <text x="66" y="198" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#c9d4d8">OpenWrt for the Arcadyan AW1000 5G router</text>
-  <text x="66" y="238" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" fill="#2dd4bf">AWvoice phone port  ·  5G  ·  Apex theme  ·  open build</text>
+  <text x="66" y="238" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" fill="#2dd4bf">AWvoice phone port  ·  5G  ·  Footstrap  ·  open build</text>
 </svg>
