@@ -147,8 +147,16 @@ jobs:
           find "$OUT" -maxdepth 1 -type f \
             \( -name '*arcadyan_aw1000*' -o -name '*.manifest' -o -name 'profiles.json' \
                -o -name 'sha256sums*' -o -name '*.buildinfo' \) -exec cp {} dist/ \;
-          cp -r "$OUT/cw-release-provenance" dist/provenance
-          tar -C dist -czf dist/provenance.tar.gz provenance && rm -rf dist/provenance
+          cp -r "$OUT/cw-release-provenance" dist/cw-release-provenance
+          tar -C dist -czf dist/provenance.tar.gz cw-release-provenance && rm -rf dist/cw-release-provenance
+          # sha256sums.cw names the paths inside the bundle. A bundle that unpacks under a
+          # different directory cannot be verified with it, so the two are proved to agree
+          # here, before anything reaches the release page.
+          chk=$(mktemp -d)
+          tar -xzf dist/provenance.tar.gz -C "$chk"
+          grep 'cw-release-provenance' dist/sha256sums.cw > "$chk/provenance-only.txt"
+          ( cd "$chk" && sha256sum -c provenance-only.txt ) || { echo "ERROR: sha256sums.cw does not match the provenance bundle" >&2; rm -rf "$chk"; exit 1; }
+          rm -rf "$chk"
           ls -l dist
           # every image the release page promises must actually be in dist/
           for pat in '*arcadyan_aw1000-squashfs-sysupgrade.bin' \
