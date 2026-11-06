@@ -2592,8 +2592,8 @@ session when you are done.</p>
 <tr>
 <td>7443</td>
 <td>TCP</td>
-<td>only while a browser phone session is running</td>
-<td>the web phone's encrypted audio stream, on the LAN address (<code>web_iface</code>), using the uhttpd certificate pair unless you point it at another</td>
+<td>while the phone line is up</td>
+<td>the web phone's encrypted audio stream, on the LAN address (<code>web_iface</code>), using the uhttpd certificate pair unless you point it at another. The listener opens when the service starts with a LAN address to bind, whichever side the SIP switch names; a <strong>session</strong> on it is the separate thing, and only one page may hold it</td>
 </tr>
 <tr>
 <td>5060</td>
