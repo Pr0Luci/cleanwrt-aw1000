@@ -1,6 +1,7 @@
 ---
 title: "What is included in CleanWRT"
 description: "Every app in CleanWRT for the Arcadyan AW1000, where to find it in LuCI, and whether it is on or off out of the box."
+updated: 2026-11-06
 ---
 
 # What is included
@@ -15,7 +16,7 @@ switch.
 
 | App | Where in LuCI | Out of the box | What it is for |
 |---|---|---|---|
-| AWvoice | Services → AWvoice(RJ11) | On | phone calls on the RJ11 port over the SIM ([AWvoice](awvoice.md)) |
+| AWvoice | Services → AWvoice(RJ11) | On | phone calls on the RJ11 port, in the browser, or from a soft phone ([the phone port](awvoice.md)) |
 | QModem (+ SMS, TTL) | Modem | On | 5G modem control, SMS, TTL tools |
 | 3ginfo-lite | Modem → 3gInfo-lite | On | SIM and signal details |
 | sms-forwarder | part of QModem | On | forwards received SMS |
@@ -28,11 +29,11 @@ switch.
 | Tailscale | Services → Tailscale | needs your login | mesh VPN |
 | Cloudflare Zero Trust Tunnel | Services → Cloudflare Zero Trust Tunnel | Off | publish a service without a public IP |
 | Adblock | Services → Adblock | Off | DNS ad blocking |
-| Watchcat | Tools → Watchcat | no rule (add one) | reboot or restart an interface when the connection is lost |
+| Watchcat | Tools → Watchcat | **no rule at all**, deliberately | reboot or restart an interface when the connection is lost. The package default would reboot a router on its own; this image ships it empty |
 | AdGuard Home | Services → AdGuard Home | Off | DNS filtering with its own dashboard ([web apps](features/web-apps.md)) |
 | Disk Manager | Services → Disk Manager | On | partition and format USB drives |
 | HDD Idle | Tools → HDD Idle | Off | spin down a USB hard disk |
-| Network Shares (Samba) | Network → Filesystem Share | Off (no guest access) | Windows / macOS / Linux file sharing |
+| Network Shares (Samba) | Network → Filesystem Share | the daemon starts; the share allows no guest access | Windows / macOS / Linux file sharing, one share of `/mnt` |
 | miniDLNA | Services → miniDLNA | Off | media server for TVs and players |
 | Syncthing | Services → Syncthing | Off | folder sync with your phone and PC ([web apps](features/web-apps.md)) |
 | qBittorrent | Services → qBittorrent | Off | download client with its own web interface ([web apps](features/web-apps.md)) |
@@ -45,7 +46,8 @@ switch.
 | Footstrap theme | System → Footstrap | On | the default look ([theme](theme.md)) |
 | Argon, Alpha themes | System → System → Language and Style | installed, not selected | alternatives to compare ([theme](theme.md)) |
 | LED Management | System → LED Management | On | front-panel LEDs ([LEDs](leds.md)) |
-| New-version notice | Status → Overview | On | tells you when a newer CleanWRT is published |
+| New-version notice | Status → Overview | On | tells you when a newer CleanWRT is published ([releases](releases.md#the-new-version-notice)) |
+| Quiet hours, recordings, the answering machine | inside AWvoice → Rules and Phone settings | all **off** until you write them | [quiet hours](awvoice/quiet-hours.md), [recordings and the machine](awvoice/recordings-and-machine.md) |
 
 ## Core and system
 
@@ -63,6 +65,13 @@ switch.
 
 `bash`, `htop`, `nano`, `jq`, `curl`, `openssl-util`, `openssh-sftp-server`, `ethtool-full`,
 `mtr-json`, `iperf3`, `usbutils`, and `cw-diag` (see [Monitoring](features/monitoring.md)).
+
+## Where the defaults come from
+
+Every state in the **Out of the box** column is written by a package default or by one of the
+image's thirteen first-boot scripts, and both are listed in
+[first-boot defaults](reference/uci-defaults.md). The option values themselves are in
+[UCI options](reference/options.md).
 
 ## Need something else?
 

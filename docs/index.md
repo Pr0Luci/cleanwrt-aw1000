@@ -1,6 +1,7 @@
 ---
-title: "OpenWrt firmware for the Arcadyan AW1000 5G router"
-description: "CleanWRT is OpenWrt 25.12 firmware for the Arcadyan AW1000 (Telstra variant): an RJ11 phone port with VoLTE calls (AWvoice), a 5G modem stack and the Footstrap interface."
+title: "OpenWrt for the Arcadyan AW1000 5G router"
+description: "CleanWRT is an independent OpenWrt 25.12.5 build for the Arcadyan AW1000: a working RJ11 phone port, a 5G stack that recovers itself, LEDs and opt-in apps."
+updated: 2026-11-06
 ---
 
 # CleanWRT: OpenWrt for the Arcadyan AW1000
@@ -25,10 +26,11 @@ router supported?" to a flashed, working router, and tell you how to get out if 
 
     ---
 
-    Use a normal desk phone on the router's RJ11 socket and make calls over your SIM. No extra
-    box, no PBX, no SIP account.
+    Use a normal desk phone on the router's RJ11 socket and make calls over your SIM. No extra box,
+    no PBX, no SIP account. The router's own web page is a telephone too, and works with the socket
+    empty.
 
-    [:octicons-arrow-right-24: AWvoice](awvoice.md)
+    [:octicons-arrow-right-24: The phone port](awvoice.md)
 
 -   **Install it**
 
@@ -86,9 +88,10 @@ router supported?" to a flashed, working router, and tell you how to get out if 
 ## What you get on top of stock OpenWrt
 
 - **AWvoice, phone calls on the RJ11 port:** an ordinary desk phone makes and takes calls over the
-  SIM, with caller id, call waiting, hold, a three-way join, recall of a held call, a call log, call
-  recordings, an answering machine, speed dial, call blocking and alarm calls.
-  See [AWvoice](awvoice.md).
+  SIM, with caller id, call waiting, hold, recall of a held call, a call log, call recordings, an
+  answering machine, speed dial, call blocking and alarm calls. Three things can hold the line —
+  the handset, the browser page, and a soft phone on your own network — and the socket can be empty.
+  See [the phone port](awvoice.md), and its [quiet hours](awvoice/quiet-hours.md).
 - **A 5G stack that works out of the box:** QModem UI, auto-dial, dual-stack IPv4/IPv6 data,
   TTL control, SMS, a registration fix for data-only SIMs, per-interface vnStat accounting.
 - **A modern interface:** the [Footstrap theme](theme.md) with dark and light mode, a top bar or a
@@ -115,7 +118,10 @@ before relying on it for anything important.
 
 | I want to... | Go to |
 |---|---|
-| use a phone on the router | [AWvoice](awvoice.md) |
+| use a phone on the router | [the phone port](awvoice.md) |
+| make calls with nothing in the RJ11 socket | [the web phone](awvoice/web-phone.md) |
+| know what the image writes on first boot | [first-boot defaults](reference/uci-defaults.md) |
+| look up an option or a port | [UCI options](reference/options.md), [files and ports](reference/files-and-ports.md) |
 | download an image and check it | [Releases](releases.md) |
 | know if my router is supported | [Hardware](hardware.md) |
 | flash it | [Installation](installation.md) |

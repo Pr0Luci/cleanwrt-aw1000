@@ -77,8 +77,21 @@ nav:
       - UART guide: uart.md
       - First boot: first-boot.md
       - Recovery: recovery.md
+  - The phone port:
+      - AWvoice: awvoice.md
+      - The handset: awvoice/handset.md
+      - Calls and the call log: awvoice/calls.md
+      - Recordings and the answering machine: awvoice/recordings-and-machine.md
+      - The web phone: awvoice/web-phone.md
+      - Network phones and the SIP side: awvoice/network-phones.md
+      - Quiet hours: awvoice/quiet-hours.md
+      - Rules and the phone book: awvoice/rules-and-phonebook.md
+      - The page, control by control: awvoice/the-page-tour.md
+      - Health, tests and the log: awvoice/health-and-tests.md
+      - Troubleshooting: awvoice/troubleshooting.md
+      - Settings reference: awvoice/settings-reference.md
+      - How it works: awvoice/how-it-works.md
   - Using CleanWRT:
-      - AWvoice, the phone port: awvoice.md
       - The 5G modem: modem.md
       - Front-panel LEDs: leds.md
       - The Footstrap theme: theme.md
@@ -89,6 +102,12 @@ nav:
       - Monitoring: features/monitoring.md
       - USB storage and NAS: features/storage.md
       - Apps with their own web interface: features/web-apps.md
+  - Reference:
+      - First-boot defaults: reference/uci-defaults.md
+      - UCI options: reference/options.md
+      - Files, ports and paths: reference/files-and-ports.md
+      - The API and who may call it: reference/ubus-and-acl.md
+      - Glossary: reference/glossary.md
   - Packages:
       - What is included: included.md
       - Full package list: generated/packages.md
@@ -101,4 +120,5 @@ nav:
       - FAQ and troubleshooting: faq.md
       - Contributing: contributing.md
       - Licence and notices: licence.md
+      - What is new: what-is-new.md
       - Changelog: changelog.md

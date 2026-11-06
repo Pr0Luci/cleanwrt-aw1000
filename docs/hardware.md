@@ -1,6 +1,7 @@
 ---
-title: "Arcadyan AW1000 hardware: IPQ8072, 5G modem, RJ11 port"
-description: "Specification of the Arcadyan AW1000 5G router: Qualcomm IPQ8072, 1 GiB RAM and NAND, Quectel RG500Q-EA modem, ath11k Wi-Fi and the RJ11 phone port."
+title: "AW1000 hardware: chip, modem, RJ11, flash"
+description: "What is inside the Arcadyan AW1000 that CleanWRT uses: the IPQ8072, the Quectel RG500Q-EA, the RJ11 line chip, the flash layout and the variants."
+updated: 2026-11-06
 ---
 
 # Hardware

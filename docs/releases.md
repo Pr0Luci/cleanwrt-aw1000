@@ -1,6 +1,7 @@
 ---
 title: "Download CleanWRT for the Arcadyan AW1000"
 description: "Where to download CleanWRT images for the Arcadyan AW1000, what each file is, and how to verify the sha256 checksum before you flash."
+updated: 2026-11-06
 ---
 
 # Releases
@@ -57,7 +58,7 @@ Always check the checksum. A corrupted image is the most common cause of a bad f
     The filename must contain `arcadyan_aw1000`. Never flash an image built for another device
     or another flash layout.
 
-## Update notice in LuCI
+## Update notice in LuCI { #the-new-version-notice }
 
 The *Status → Overview* page can tell you when a newer CleanWRT is published. It reads a small
 file on the project site, so it needs internet access. You can switch it off any time with

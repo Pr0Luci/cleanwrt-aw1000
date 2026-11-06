@@ -1,6 +1,7 @@
 ---
 title: "Build OpenWrt for the AW1000 on GitHub Actions"
 description: "Build CleanWRT for the Arcadyan AW1000 from source on GitHub Actions or locally with Docker: pinned feeds, checks, signing and the repository layout."
+updated: 2026-11-06
 ---
 
 # Build from source
@@ -109,6 +110,53 @@ before, so nothing on the device changes.
 On GitHub Actions these keys come from the repository secrets `APK_PRIVATE_KEY`,
 `USIGN_KEY_BUILD` and `USIGN_KEY_BUILD_PUB`. Without them the images are unsigned and the
 `cw-opt` feed stays disabled.
+
+## What this build changes upstream { #what-this-build-changes-upstream }
+
+Every patch this repository applies to someone else's code, and what each one is for. They are
+applied with `patch -p1` at **zero fuzz**: a patch that does not apply cleanly fails the build rather
+than shipping a half-applied change.
+
+### The QModem feed
+
+| patch | what it changes |
+|---|---|
+| `0002-quectel-cm-ipv6-optional` | IPv6 gets its own retry ladder — 60 seconds, doubling, capped at 32 minutes — so a failed IPv6 setup no longer tears down the IPv4 call |
+| `0003-ndisc6-source-mirror` | the source mirror, because the original host answers 410 Gone |
+| `0004-sip-inbound-answer-delivered` | an inbound INVITE now carries a transaction-completion callback, so the LAN's 200 OK reaches the answer handler and the 2xx is ACKed as RFC 3261 requires. It also fixes a use-after-free that segfaulted the service |
+| `0005-sip-dialog-bye-both-directions` | the BYE is built as UAC or UAS depending on which side opened the dialog, and an in-dialog BYE is authenticated by the dialog's identity rather than challenged. A hang-up on the cellular side now tears the LAN leg down |
+| `0006-sip-cancel-unanswered-lan-invite` | a LAN INVITE that the handset, the machine or the page took is CANCELed, and the resulting 487 is consumed as the CANCEL's answer instead of being read as a failed call |
+| `0007-sip-inbound-credentials-from-uci` | `/etc/config/qmodem_sip` becomes the record of the inbound credential, and the runtime file under `/var/run` is derived from it at start and on reload |
+| `0008-sip-default-config-for-the-phone-bridge` | the defaults this router needs: the media socket pointed at the phone daemon, the inbound direction on, the account named `awvoice`, the password shared with the Wi-Fi key, and the vendor engine's own path switched off |
+| `0009-sip-voip-default-migration` | a first-boot script that migrates a configuration that still pointed at the vendor engine — and only when the media socket is the phone daemon's, so a hand-configured router is left alone |
+| `0010-qmi-wwan-nss-path-behind-its-own-guard` | restores the vendor-deleted `CONFIG_RMNET_DATA` guard. Without it `modpost` fails on a symbol this tree does not carry and the driver cannot be packaged at all |
+
+### The LuCI feed
+
+| patch | what it changes |
+|---|---|
+| `0001-status-firmware-version-drop-luci-suffix` | the *Firmware Version* row shows the release description alone. A detached-HEAD feed was stamping "LuCI (HEAD detached at …)" into a user-facing page |
+| `0006-p910nd-menu-title-printer-server` | the menu title, from `p910nd - Printer server` to `Printer server` |
+| `0007-upgrade-check-cdn-no-asu` | the newer-version notice: the wording says CleanWRT, the links point at this project's releases rather than the OpenWrt CDN, and the version feed is `pr0luci.github.io/cleanwrt-aw1000/.versions.json` |
+| `0008-p910nd-mdns-type-label` | the option label reads `mDNS type` |
+| `0009-filemanager-default-width` | the file manager's default width, 400 to 800 |
+
+### Other feeds, and the OpenWrt tree itself
+
+| patch | what it changes |
+|---|---|
+| `3ginfo/0002-3ginfo-executable-mode` | `3ginfo.sh` gains its executable bit, because LuCI `fs.exec`s it directly and a fresh boot could fail before the chmod script ran |
+| `3ginfo/0003-3ginfo-menu-title` | the menu title becomes `3gInfo-lite` |
+| `diskman/0001-disk-manager-menu-rename-services-move` | Disk Manager moves from the System menu to Services, with its title and every internal link |
+| `passwall_packages/0001-dns2socks-naiveproxy-sources` | two upstream release assets that no longer exist: dns2socks carries its source in the package, naiveproxy points at a prebuilt version |
+| `tree/0001-apk-package-timestamps-zero` | `apk mkpkg` runs with a fixed epoch, so two builds of one commit produce identical images |
+
+### Themes
+
+| patch | what it changes |
+|---|---|
+| `packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo` | one line: the login page shows the CleanWRT logo where the theme prints the router's hostname. The image file lives outside the theme's own directory, so a theme update can neither overwrite it nor collide with the patch |
+| `packages/luci-theme-argon/0001-argon-registers-itself-and-leaves-the-default` | deletes the line in Argon's first-boot script that made it the default design. An installed theme is offered, not selected |
 
 ## Changing a patch or moving a pin
 

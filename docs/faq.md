@@ -1,6 +1,7 @@
 ---
 title: "Arcadyan AW1000 OpenWrt FAQ and troubleshooting"
 description: "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT."
+updated: 2026-11-06
 ---
 
 # FAQ and troubleshooting
@@ -16,6 +17,18 @@ description: "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port,
 - **Images are unsigned** unless the project's image-signing key is configured for the release.
 - **The `cw-opt` package feed is not active yet.**
 - The modem's own firmware is separate and is not provided by this project.
+- **The phone line is on as installed**, because a phone that does not ring is the failure people
+  notice first. Everything else that makes noise — recordings, the answering machine, quiet hours,
+  the network phone side — is off until you switch it on.
+- **The three-way join is off as installed.** It is its own switch, `conference`, in
+  *Phone settings → Features*.
+- **The browser phone needs HTTPS and one certificate acceptance.** A browser takes no microphone
+  from a page it does not trust, and the audio arrives on a second port.
+- **Quiet hours and alarm calls trust the clock.** With an untrusted clock no schedule is honoured;
+  a quiet asked for by hand with `*78` needs no clock at all.
+- **The loopback test call is not offered by this build.** The card is there, disabled, and says so.
+- **The outbound SIP direction ships with no server, no realm and no password.** The direction that
+  reaches outside your house starts empty.
 
 ## Questions
 
@@ -26,7 +39,30 @@ description: "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port,
 
 ??? question "Can I use a normal phone on the AW1000's RJ11 port?"
     Yes, with AWvoice, which is part of CleanWRT: an ordinary analogue phone makes and takes calls
-    over the SIM.
+    over the SIM. See [the handset](awvoice/handset.md).
+
+??? question "Does the phone work with nothing plugged into the RJ11 socket?"
+    Yes. The AWvoice page is a telephone — keypad, call rail, flash key, microphone — and a soft
+    phone on your own network can join the same line. See [the web phone](awvoice/web-phone.md) and
+    [network phones](awvoice/network-phones.md).
+
+??? question "Can I record calls, and where do the files go?"
+    If you switch recording on. Each answered call is kept on the router as a stereo WAV in
+    `/etc/awvoice/recordings/`, with a size budget that removes the oldest, and it is played from
+    that call's card in the log. Nothing leaves the router, and no file name carries a number. Check
+    what recording rules apply where you live. See
+    [recordings and the machine](awvoice/recordings-and-machine.md).
+
+??? question "Can the phone stay quiet at night?"
+    Yes: up to eight windows, each silent, sent to the answering machine, or rejecting the caller,
+    with numbers that ring through regardless and `*78` / `*79` from the handset or the page. See
+    [quiet hours](awvoice/quiet-hours.md).
+
+??? question "Why does the browser page not give me a microphone?"
+    Two reasons and both are the browser's rule, not a fault: the page must be open over HTTPS, and
+    the audio stream arrives on its own port whose certificate your browser has not seen. The page
+    has one button for that step, and it stays out of the way afterwards. See
+    [the web phone](awvoice/web-phone.md#the-certificate-step-once).
 
 ??? question "Does the AW1000 do VoLTE voice calls on OpenWrt?"
     Yes, with AWvoice. The 5G modem carries the call over VoLTE, so you need a SIM and an operator

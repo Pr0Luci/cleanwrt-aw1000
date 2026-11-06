@@ -1,6 +1,7 @@
 ---
-title: "Footstrap: the LuCI theme CleanWRT ships"
-description: "Footstrap is the default LuCI theme of CleanWRT: dark and light mode, a top or sidebar layout, palettes, an accent colour, frosted surfaces, and a wallpaper or pattern behind the pages. Screenshots and details."
+title: "Footstrap: the CleanWRT LuCI theme"
+description: "The default web interface of CleanWRT: dark and light modes, top bar or sidebar, five palettes, an accent colour, frosted surfaces and a wallpaper."
+updated: 2026-11-06
 ---
 
 # The Footstrap theme
