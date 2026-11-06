@@ -82,7 +82,7 @@ Nothing below is open unless the row says it is on by default.
 | 80 | TCP | yes, as a redirect | plain HTTP, moved to HTTPS by `uhttpd.main.redirect_https` |
 | 443 | TCP | **yes** | LuCI over HTTPS with a self-signed certificate created on the router |
 | 8080 | TCP | **yes, LAN only** | the plain HTTP listener that serves a scanned provisioning file, from a directory that holds nothing else, with directory listings off and the private-network filter on |
-| 7443 | TCP | only while a browser phone session is running | the web phone's encrypted audio stream, on the LAN address (`web_iface`), using the uhttpd certificate pair unless you point it at another |
+| 7443 | TCP | while the phone line is up | the web phone's encrypted audio stream, on the LAN address (`web_iface`), using the uhttpd certificate pair unless you point it at another. The listener opens when the service starts with a LAN address to bind, whichever side the SIP switch names; a **session** on it is the separate thing, and only one page may hold it |
 | 5060 | UDP and TCP | **no** — only after the AWvoice SIP switch is turned on | the network phone's inbound SIP listener, on the LAN interface |
 | 40000–40031 | UDP | with the SIP side on | the RTP range the SIP service uses for media |
 | 53, 67 | UDP | yes | DNS and DHCP on the LAN, as in stock OpenWrt |
