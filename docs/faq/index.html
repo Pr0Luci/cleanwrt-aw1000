@@ -68,9 +68,9 @@
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "FAQ and troubleshooting", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "FAQ and troubleshooting", "description": "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does OpenWrt run on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. CleanWRT is OpenWrt 25.12.5 built for the AW1000 (qualcommax/ipq807x), with the 5G modem, Wi-Fi, the front-panel LEDs and the RJ11 phone port working. It needs the expanded flash layout, see the MTD layout page."}}, {"@type": "Question", "name": "Can I use a normal phone on the AW1000's RJ11 port?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with AWvoice, which is part of CleanWRT: an ordinary analogue phone makes and takes calls over the SIM."}}, {"@type": "Question", "name": "Does the AW1000 do VoLTE voice calls on OpenWrt?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with AWvoice. The 5G modem carries the call over VoLTE, so you need a SIM and an operator that provide VoLTE."}}, {"@type": "Question", "name": "Why does the browser say the connection is not secure?", "acceptedAnswer": {"@type": "Answer", "text": "LuCI uses a self-signed certificate created on your router at first boot. The connection is encrypted, but no public authority signed the certificate. See Security."}}, {"@type": "Question", "name": "I cannot log in after flashing.", "acceptedAnswer": {"@type": "Answer", "text": "The first login is over Ethernet with no password, at http://192.168.1.1. Connect a computer to a LAN port and set its address to 192.168.1.x if it does not get one. If it still fails, use failsafe mode."}}, {"@type": "Question", "name": "Can I flash it on my router if it is not an AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "No. Never flash an image built for another device. It can brick the router."}}, {"@type": "Question", "name": "sysupgrade says the image is not valid.", "acceptedAnswer": {"@type": "Answer", "text": "Check the file name (arcadyanaw1000), re-download the image and check its checksum. If you flash a community build that has no metadata, you would need -F; do not force an image you did not verify."}}, {"@type": "Question", "name": "The 5G modem does not register.", "acceptedAnswer": {"@type": "Answer", "text": "Open Modem → QModem and Modem → 3gInfo-lite and check the SIM, the APN and the signal. See The 5G modem. A modem firmware upgrade is only a last resort."}}, {"@type": "Question", "name": "The 5G and signal LEDs went dark.", "acceptedAnswer": {"@type": "Answer", "text": "The LED daemon cannot read the modem. Check that nothing holds the AT port open, and read logread -e cw-led. See Front-panel LEDs."}}, {"@type": "Question", "name": "Wi-Fi works but 'Internet' says unreachable.", "acceptedAnswer": {"@type": "Answer", "text": "Open the connectivity check settings in System → LED Management. The LED only mirrors the probe. Test the real connection from a computer too."}}, {"@type": "Question", "name": "Cloudflared shows a red error.", "acceptedAnswer": {"@type": "Answer", "text": "That is expected until you configure the tunnel token. See Remote access."}}, {"@type": "Question", "name": "I ran apk upgrade and the overview cards look different.", "acceptedAnswer": {"@type": "Answer", "text": "The LuCI packages are pinned for a reason (see Updating and pinning). Flash the release again to get back to its state. A factory reset does not restore replaced packages."}}, {"@type": "Question", "name": "Downloads are filling the router's flash.", "acceptedAnswer": {"@type": "Answer", "text": "Downloads default to the first USB drive. Plug a drive in before you start a download."}}, {"@type": "Question", "name": "Can I use it commercially?", "acceptedAnswer": {"@type": "Answer", "text": "The project is free of charge. The bundled QModem component prohibits commercial use. Check its licence before you deploy this firmware in a business, an ISP or a paid service."}}, {"@type": "Question", "name": "How do I go back to the stock firmware?", "acceptedAnswer": {"@type": "Answer", "text": "Restoring the stock firmware needs the stock image and a serial console. Keep a backup of the stock firmware before you flash."}}, {"@type": "Question", "name": "What is the default IP address and login of CleanWRT on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "The router answers at http://192.168.1.1 over Ethernet, with no root password at first. LuCI asks you to set one. Wi-Fi starts as CleanWRT-5G and CleanWRT-2.4G with the default key CleanWRT#40, so change it on the first login."}}, {"@type": "Question", "name": "Do I need a serial cable to install OpenWrt on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "For the first install from the stock firmware, yes: a 3.3 V USB-UART adapter and a TFTP server. If the router already runs OpenWrt, you can update with sysupgrade or from LuCI with no cable. See Installation."}}, {"@type": "Question", "name": "Where do I download the AW1000 firmware, and how do I verify it?", "acceptedAnswer": {"@type": "Answer", "text": "On the GitHub Releases page of the project. Check the file with sha256sum -c sha256sums.cw --ignore-missing before you flash, and make sure the file name contains arcadyanaw1000. See Releases."}}, {"@type": "Question", "name": "How do I recover an AW1000 that will not boot?", "acceptedAnswer": {"@type": "Answer", "text": "If the router boots but you cannot reach it, use failsafe mode over Ethernet. If it is stuck at the bootloader, use the serial console to boot an initramfs image over TFTP and flash again. See Recovery."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Help"}, {"@type": "ListItem", "position": 3, "name": "FAQ and troubleshooting", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "FAQ and troubleshooting", "description": "Answers about OpenWrt on the Arcadyan AW1000: the RJ11 phone port, VoLTE, the 5G modem, the flash layout, recovery and known limits of CleanWRT.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does OpenWrt run on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. CleanWRT is OpenWrt 25.12.5 built for the AW1000 (qualcommax/ipq807x), with the 5G modem, Wi-Fi, the front-panel LEDs and the RJ11 phone port working. It needs the expanded flash layout, see the MTD layout page."}}, {"@type": "Question", "name": "Can I use a normal phone on the AW1000's RJ11 port?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with AWvoice, which is part of CleanWRT: an ordinary analogue phone makes and takes calls over the SIM. See the handset."}}, {"@type": "Question", "name": "Does the phone work with nothing plugged into the RJ11 socket?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The AWvoice page is a telephone — keypad, call rail, flash key, microphone — and a soft phone on your own network can join the same line. See the web phone and network phones."}}, {"@type": "Question", "name": "Can I record calls, and where do the files go?", "acceptedAnswer": {"@type": "Answer", "text": "If you switch recording on. Each answered call is kept on the router as a stereo WAV in /etc/awvoice/recordings/, with a size budget that removes the oldest, and it is played from that call's card in the log. Nothing leaves the router, and no file name carries a number. Check what recording rules apply where you live. See recordings and the machine."}}, {"@type": "Question", "name": "Can the phone stay quiet at night?", "acceptedAnswer": {"@type": "Answer", "text": "Yes: up to eight windows, each silent, sent to the answering machine, or rejecting the caller, with numbers that ring through regardless and 78 / 79 from the handset or the page. See quiet hours."}}, {"@type": "Question", "name": "Why does the browser page not give me a microphone?", "acceptedAnswer": {"@type": "Answer", "text": "Two reasons and both are the browser's rule, not a fault: the page must be open over HTTPS, and the audio stream arrives on its own port whose certificate your browser has not seen. The page has one button for that step, and it stays out of the way afterwards. See the web phone."}}, {"@type": "Question", "name": "Does the AW1000 do VoLTE voice calls on OpenWrt?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with AWvoice. The 5G modem carries the call over VoLTE, so you need a SIM and an operator that provide VoLTE."}}, {"@type": "Question", "name": "Why does the browser say the connection is not secure?", "acceptedAnswer": {"@type": "Answer", "text": "LuCI uses a self-signed certificate created on your router at first boot. The connection is encrypted, but no public authority signed the certificate. See Security."}}, {"@type": "Question", "name": "I cannot log in after flashing.", "acceptedAnswer": {"@type": "Answer", "text": "The first login is over Ethernet with no password, at http://192.168.1.1. Connect a computer to a LAN port and set its address to 192.168.1.x if it does not get one. If it still fails, use failsafe mode."}}, {"@type": "Question", "name": "Can I flash it on my router if it is not an AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "No. Never flash an image built for another device. It can brick the router."}}, {"@type": "Question", "name": "sysupgrade says the image is not valid.", "acceptedAnswer": {"@type": "Answer", "text": "Check the file name (arcadyanaw1000), re-download the image and check its checksum. If you flash a community build that has no metadata, you would need -F; do not force an image you did not verify."}}, {"@type": "Question", "name": "The 5G modem does not register.", "acceptedAnswer": {"@type": "Answer", "text": "Open Modem → QModem and Modem → 3gInfo-lite and check the SIM, the APN and the signal. See The 5G modem. A modem firmware upgrade is only a last resort."}}, {"@type": "Question", "name": "The 5G and signal LEDs went dark.", "acceptedAnswer": {"@type": "Answer", "text": "The LED daemon cannot read the modem. Check that nothing holds the AT port open, and read logread -e cw-led. See Front-panel LEDs."}}, {"@type": "Question", "name": "Wi-Fi works but 'Internet' says unreachable.", "acceptedAnswer": {"@type": "Answer", "text": "Open the connectivity check settings in System → LED Management. The LED only mirrors the probe. Test the real connection from a computer too."}}, {"@type": "Question", "name": "Cloudflared shows a red error.", "acceptedAnswer": {"@type": "Answer", "text": "That is expected until you configure the tunnel token. See Remote access."}}, {"@type": "Question", "name": "I ran apk upgrade and the overview cards look different.", "acceptedAnswer": {"@type": "Answer", "text": "The LuCI packages are pinned for a reason (see Updating and pinning). Flash the release again to get back to its state. A factory reset does not restore replaced packages."}}, {"@type": "Question", "name": "Downloads are filling the router's flash.", "acceptedAnswer": {"@type": "Answer", "text": "Downloads default to the first USB drive. Plug a drive in before you start a download."}}, {"@type": "Question", "name": "Can I use it commercially?", "acceptedAnswer": {"@type": "Answer", "text": "The project is free of charge. The bundled QModem component prohibits commercial use. Check its licence before you deploy this firmware in a business, an ISP or a paid service."}}, {"@type": "Question", "name": "How do I go back to the stock firmware?", "acceptedAnswer": {"@type": "Answer", "text": "Restoring the stock firmware needs the stock image and a serial console. Keep a backup of the stock firmware before you flash."}}, {"@type": "Question", "name": "What is the default IP address and login of CleanWRT on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "The router answers at http://192.168.1.1 over Ethernet, with no root password at first. LuCI asks you to set one. Wi-Fi starts as CleanWRT-5G and CleanWRT-2.4G with the default key CleanWRT#40, so change it on the first login."}}, {"@type": "Question", "name": "Do I need a serial cable to install OpenWrt on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "For the first install from the stock firmware, yes: a 3.3 V USB-UART adapter and a TFTP server. If the router already runs OpenWrt, you can update with sysupgrade or from LuCI with no cable. See Installation."}}, {"@type": "Question", "name": "Where do I download the AW1000 firmware, and how do I verify it?", "acceptedAnswer": {"@type": "Answer", "text": "On the GitHub Releases page of the project. Check the file with sha256sum -c sha256sums.cw --ignore-missing before you flash, and make sure the file name contains arcadyanaw1000. See Releases."}}, {"@type": "Question", "name": "How do I recover an AW1000 that will not boot?", "acceptedAnswer": {"@type": "Answer", "text": "If the router boots but you cannot reach it, use failsafe mode over Ethernet. If it is stuck at the bootloader, use the serial console to boot an initramfs image over TFTP and flash again. See Recovery."}}]}</script>
 </head>
   
   
@@ -594,6 +594,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -617,7 +621,7 @@
   <span class="md-ellipsis">
     
   
-    Using CleanWRT
+    The phone port
   
 
     
@@ -633,7 +637,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Using CleanWRT
+    The phone port
   
 
           </label>
@@ -653,7 +657,7 @@
   <span class="md-ellipsis">
     
   
-    AWvoice, the phone port
+    AWvoice
   
 
     
@@ -666,6 +670,423 @@
   
 
               
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Using CleanWRT
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Using CleanWRT
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -971,6 +1392,8 @@
       
         
       
+        
+      
     
     
     
@@ -984,10 +1407,219 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1005,8 +1637,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1161,10 +1793,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1182,8 +1814,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1275,6 +1907,8 @@
       
         
       
+        
+      
     
     
     
@@ -1288,10 +1922,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1309,8 +1943,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1491,6 +2125,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../changelog/" class="md-nav__link">
         
   
@@ -1615,6 +2277,18 @@
 <li><strong>Images are unsigned</strong> unless the project's image-signing key is configured for the release.</li>
 <li><strong>The <code>cw-opt</code> package feed is not active yet.</strong></li>
 <li>The modem's own firmware is separate and is not provided by this project.</li>
+<li><strong>The phone line is on as installed</strong>, because a phone that does not ring is the failure people
+  notice first. Everything else that makes noise — recordings, the answering machine, quiet hours,
+  the network phone side — is off until you switch it on.</li>
+<li><strong>The three-way join is off as installed.</strong> It is its own switch, <code>conference</code>, in
+  <em>Phone settings → Features</em>.</li>
+<li><strong>The browser phone needs HTTPS and one certificate acceptance.</strong> A browser takes no microphone
+  from a page it does not trust, and the audio arrives on a second port.</li>
+<li><strong>Quiet hours and alarm calls trust the clock.</strong> With an untrusted clock no schedule is honoured;
+  a quiet asked for by hand with <code>*78</code> needs no clock at all.</li>
+<li><strong>The loopback test call is not offered by this build.</strong> The card is there, disabled, and says so.</li>
+<li><strong>The outbound SIP direction ships with no server, no realm and no password.</strong> The direction that
+  reaches outside your house starts empty.</li>
 </ul>
 <h2 id="questions">Questions<a class="headerlink" href="#questions" title="Permanent link">&para;</a></h2>
 <details class="question">
@@ -1626,7 +2300,34 @@ see the MTD layout page.</p>
 <details class="question">
 <summary>Can I use a normal phone on the AW1000's RJ11 port?</summary>
 <p>Yes, with AWvoice, which is part of CleanWRT: an ordinary analogue phone makes and takes calls
-over the SIM.</p>
+over the SIM. See <a href="../awvoice/handset/">the handset</a>.</p>
+</details>
+<details class="question">
+<summary>Does the phone work with nothing plugged into the RJ11 socket?</summary>
+<p>Yes. The AWvoice page is a telephone — keypad, call rail, flash key, microphone — and a soft
+phone on your own network can join the same line. See <a href="../awvoice/web-phone/">the web phone</a> and
+<a href="../awvoice/network-phones/">network phones</a>.</p>
+</details>
+<details class="question">
+<summary>Can I record calls, and where do the files go?</summary>
+<p>If you switch recording on. Each answered call is kept on the router as a stereo WAV in
+<code>/etc/awvoice/recordings/</code>, with a size budget that removes the oldest, and it is played from
+that call's card in the log. Nothing leaves the router, and no file name carries a number. Check
+what recording rules apply where you live. See
+<a href="../awvoice/recordings-and-machine/">recordings and the machine</a>.</p>
+</details>
+<details class="question">
+<summary>Can the phone stay quiet at night?</summary>
+<p>Yes: up to eight windows, each silent, sent to the answering machine, or rejecting the caller,
+with numbers that ring through regardless and <code>*78</code> / <code>*79</code> from the handset or the page. See
+<a href="../awvoice/quiet-hours/">quiet hours</a>.</p>
+</details>
+<details class="question">
+<summary>Why does the browser page not give me a microphone?</summary>
+<p>Two reasons and both are the browser's rule, not a fault: the page must be open over HTTPS, and
+the audio stream arrives on its own port whose certificate your browser has not seen. The page
+has one button for that step, and it stays out of the way afterwards. See
+<a href="../awvoice/web-phone/#the-certificate-step-once">the web phone</a>.</p>
 </details>
 <details class="question">
 <summary>Does the AW1000 do VoLTE voice calls on OpenWrt?</summary>

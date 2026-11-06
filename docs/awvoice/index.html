@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.">
+        <meta name="description" content="AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line over your SIM. Calls from a desk phone, the browser page, or a soft phone on your LAN.">
       
       
       
@@ -16,7 +16,7 @@
         <link rel="prev" href="../recovery/">
       
       
-        <link rel="next" href="../modem/">
+        <link rel="next" href="handset/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>AW1000 RJ11 phone port: VoLTE calls with AWvoice - CleanWRT</title>
+        <title>AWvoice: an RJ11 phone port on the AW1000 - CleanWRT</title>
       
     
     
@@ -55,22 +55,21 @@
     
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
-<meta property="og:title" content="AWvoice, the phone port - CleanWRT">
-<meta property="og:description" content="AWvoice turns the Arcadyan AW1000&#x27;s RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.">
+<meta property="og:title" content="AWvoice - CleanWRT">
+<meta property="og:description" content="AWvoice turns the Arcadyan AW1000&#x27;s RJ11 socket into a phone line over your SIM. Calls from a desk phone, the browser page, or a soft phone on your LAN.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AWvoice, the phone port - CleanWRT">
-<meta name="twitter:description" content="AWvoice turns the Arcadyan AW1000&#x27;s RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.">
+<meta name="twitter:title" content="AWvoice - CleanWRT">
+<meta name="twitter:description" content="AWvoice turns the Arcadyan AW1000&#x27;s RJ11 socket into a phone line over your SIM. Calls from a desk phone, the browser page, or a soft phone on your LAN.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "AWvoice, the phone port", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "AWvoice, the phone port", "description": "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I make phone calls on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Install CleanWRT, which includes AWvoice, plug an ordinary analogue desk phone into the RJ11 socket, enable the phone service and lift the handset. Calls go out over the router's 5G modem with your SIM's number."}}, {"@type": "Question", "name": "Which phones work on the RJ11 port?", "acceptedAnswer": {"@type": "Answer", "text": "An ordinary analogue (tone dial) phone with an RJ11 plug. A handset with a display also shows the caller id."}}, {"@type": "Question", "name": "Does AWvoice need Asterisk, SIP or a second phone number?", "acceptedAnswer": {"@type": "Answer", "text": "No. There is no PBX and no SIP account. The cellular network is the exchange and the SIM's number is the line's number. The router ships with nothing speaking SIP at all. The page's SIP switch is for a different case, and it is optional: turning it on lets a soft phone on your own network ring and dial through this router. It asks for no provider account and no second number, and turning it off closes the port again."}}, {"@type": "Question", "name": "Does the AW1000 need VoLTE for voice calls?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The call is carried by the modem over VoLTE, so you need a SIM and an operator that provide VoLTE. The modem must also be in PCM slave mode, which AWvoice checks and reports."}}, {"@type": "Question", "name": "Can I use it for emergency calls?", "acceptedAnswer": {"@type": "Answer", "text": "No. The line works only while the router has power, the modem is registered for VoLTE and the operator carries the call, and there is no battery backup. Keep a mobile phone at hand."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "The phone port"}, {"@type": "ListItem", "position": 3, "name": "AWvoice", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "AWvoice", "description": "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line over your SIM. Calls from a desk phone, the browser page, or a soft phone on your LAN.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
 </head>
   
   
@@ -90,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000" class="md-skip">
+        <a href="#awvoice-a-phone-line-on-the-router" class="md-skip">
           Skip to content
         </a>
       
@@ -125,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AW1000 RJ11 phone port: VoLTE calls with AWvoice
+              AWvoice: an RJ11 phone port on the AW1000
             
           </span>
         </div>
@@ -596,6 +595,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -619,7 +622,7 @@
   <span class="md-ellipsis">
     
   
-    Using CleanWRT
+    The phone port
   
 
     
@@ -635,7 +638,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Using CleanWRT
+    The phone port
   
 
           </label>
@@ -664,7 +667,7 @@
   <span class="md-ellipsis">
     
   
-    AWvoice, the phone port
+    AWvoice
   
 
     
@@ -682,7 +685,7 @@
   <span class="md-ellipsis">
     
   
-    AWvoice, the phone port
+    AWvoice
   
 
     
@@ -719,10 +722,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#hook-flash-codes" class="md-nav__link">
+  <a href="#what-is-on-when-the-router-boots" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hook flash codes
+        What is on when the router boots
       
     </span>
   </a>
@@ -730,10 +733,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recall" class="md-nav__link">
+  <a href="#start-here" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recall
+        Start here
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The page
       
     </span>
   </a>
@@ -752,10 +766,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#safety" class="md-nav__link">
+  <a href="#if-something-is-wrong" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Safety
+        If something is wrong
       
     </span>
   </a>
@@ -763,65 +777,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-you-need" class="md-nav__link">
+  <a href="#reference" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What you need
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#turn-it-on" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Turn it on
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-web-page" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The web page
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#frequently-asked-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frequently asked questions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#known-limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Known limits
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#source-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Source code
+        Reference
       
     </span>
   </a>
@@ -836,6 +795,423 @@
   
 
               
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Using CleanWRT
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Using CleanWRT
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -1141,6 +1517,8 @@
       
         
       
+        
+      
     
     
     
@@ -1154,10 +1532,219 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1175,8 +1762,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1331,10 +1918,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1352,8 +1939,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1443,6 +2030,8 @@
       
         
       
+        
+      
     
     
     
@@ -1456,10 +2045,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1477,8 +2066,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1579,6 +2168,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../changelog/" class="md-nav__link">
         
   
@@ -1645,10 +2262,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#hook-flash-codes" class="md-nav__link">
+  <a href="#what-is-on-when-the-router-boots" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hook flash codes
+        What is on when the router boots
       
     </span>
   </a>
@@ -1656,10 +2273,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recall" class="md-nav__link">
+  <a href="#start-here" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recall
+        Start here
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The page
       
     </span>
   </a>
@@ -1678,10 +2306,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#safety" class="md-nav__link">
+  <a href="#if-something-is-wrong" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Safety
+        If something is wrong
       
     </span>
   </a>
@@ -1689,65 +2317,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-you-need" class="md-nav__link">
+  <a href="#reference" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What you need
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#turn-it-on" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Turn it on
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-web-page" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The web page
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#frequently-asked-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frequently asked questions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#known-limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Known limits
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#source-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Source code
+        Reference
       
     </span>
   </a>
@@ -1779,246 +2352,349 @@
   
 
 
-<h1 id="awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000">AWvoice: an RJ11 phone port with VoLTE calls on the AW1000<a class="headerlink" href="#awvoice-an-rj11-phone-port-with-volte-calls-on-the-aw1000" title="Permanent link">&para;</a></h1>
-<p><strong>AWvoice</strong> turns the AW1000's RJ11 socket into a working phone line. Plug an ordinary desk
-phone into the router and make and take calls over the SIM card, with no extra box, no PBX and no
-SIP account. It is the headline feature of CleanWRT, and it ships with the <code>25.12.5-R1</code>
-release, in the same way QModem is the 5G modem app.</p>
-<div class="admonition info">
-<p class="admonition-title">This page follows the current release</p>
-<p>The page describes <code>25.12.5-R1</code>. What changed in the earlier candidates is in the
-<a href="../changelog/">changelog</a>, so a router still on one of them can read the page that fits it.</p>
+<h1 id="awvoice-a-phone-line-on-the-router">AWvoice: a phone line on the router<a class="headerlink" href="#awvoice-a-phone-line-on-the-router" title="Permanent link">&para;</a></h1>
+<p><strong>AWvoice</strong> turns the AW1000's RJ11 socket into a working telephone line. The call is carried by
+the router's 5G modem over VoLTE, so your SIM's number is the line's number: no PBX, no Asterisk,
+no SIP provider, no second number.</p>
+<p>Three things can hold that line, and none of them needs the others:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what it is</th>
+<th>what it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A handset</strong></td>
+<td>an ordinary analogue phone on the RJ11 socket</td>
+<td>lifts, dials, rings, shows caller id on its own display</td>
+</tr>
+<tr>
+<td><strong>The web page</strong></td>
+<td>the router's own LuCI page</td>
+<td>a keypad, a call rail, a microphone and a speaker: the browser <em>is</em> the phone</td>
+</tr>
+<tr>
+<td><strong>A network phone</strong></td>
+<td>a soft phone on your own LAN</td>
+<td>registers to the router and rings and dials through the same SIM line</td>
+</tr>
+</tbody>
+</table>
+<p>The socket can be empty. With nothing plugged into it, the web page and a soft phone both make and
+take calls, which is what makes the router usable as a phone without buying a handset for it.</p>
+<div class="admonition danger">
+<p class="admonition-title">Read this before you connect anything</p>
+<ul>
+<li>About <strong>46 V DC</strong> sits on the RJ11 contacts, and up to about <strong>100 V while a call rings</strong>.
+  Do not touch the contacts, and do not wire the socket into anything but a telephone.</li>
+<li><strong>This is not equipment for emergency calls.</strong> The line exists only while the router has
+  power, the modem is registered for VoLTE and your operator carries the call. There is no
+  certification and no battery backup. Keep a phone that works independently for emergencies.</li>
+<li>Nothing on this router blocks an emergency number, and a dialled emergency number is never
+  replaced by a speed-dial entry. That is a property of the design, not a guarantee of service.</li>
+</ul>
 </div>
 <h2 id="what-it-does">What it does<a class="headerlink" href="#what-it-does" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th></th>
+<th>calls</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Calls</strong></td>
-<td>incoming and outgoing calls with clear speech both ways</td>
+<td>Dial tone, ring, answer, hang up, clear speech both ways</td>
+<td><a href="handset/">the handset</a>, <a href="web-phone/">the web page</a></td>
 </tr>
 <tr>
-<td><strong>Tones</strong></td>
-<td>dial tone, ringing tone, busy and congestion tones</td>
+<td>All of it with nothing in the RJ11 socket</td>
+<td><a href="web-phone/">the web page</a></td>
 </tr>
 <tr>
-<td><strong>In a call</strong></td>
-<td>DTMF, caller id on the handset display (FSK, Bellcore or ETSI, or the DTMF variant, sent before or after the first ring), hook flash</td>
+<td>Hook flash, call waiting, hold, swap, three-way join</td>
+<td><a href="handset/">the handset</a></td>
 </tr>
 <tr>
-<td><strong>Call waiting</strong></td>
-<td>a second call is announced during a call; hold it, swap between the two, or refuse it</td>
+<td>Held-call recall: put the handset down, the phone rings it back</td>
+<td><a href="handset/#recall">the handset</a></td>
 </tr>
 <tr>
-<td><strong>Three-way join</strong></td>
-<td>join two calls into one conversation: <strong>hook flash, then 3</strong> (can be switched off in Settings)</td>
+<td>Caller id on the handset's display — FSK (Bellcore or ETSI) or DTMF, before or after the first ring</td>
+<td><a href="handset/#caller-id">the handset</a></td>
 </tr>
 <tr>
-<td><strong>Recall</strong></td>
-<td>put the handset down with a call on hold and the phone <strong>rings back</strong>; lift it to take the call back</td>
+<td>Calling-line restriction, network service codes, hotline</td>
+<td><a href="handset/#the-numbers-you-do-not-show">the handset</a></td>
 </tr>
 <tr>
-<td><strong>Call log</strong></td>
-<td>incoming, outgoing and missed calls, with the names from your phone book</td>
+<td>Progress tones, or the network's own ringback</td>
+<td><a href="handset/#tones">the handset</a></td>
 </tr>
 <tr>
-<td><strong>Call recordings</strong></td>
-<td>calls you answer are kept as stereo WAV files, the caller and the handset on separate channels; play, save or delete the recording from the call's card (off by default, with a size budget that removes the oldest)</td>
+<td>HD voice at 16 kHz, following what the modem reports</td>
+<td><a href="how-it-works/#hd-voice-is-a-wish-and-the-modem-decides">how it works</a></td>
 </tr>
 <tr>
-<td><strong>Answering machine</strong></td>
-<td>after a delay you set, an unanswered call hears your greeting and leaves a message: play, save or delete it from the call's card. Off until a greeting is on the router; picking up the handset takes the call over and keeps the part of the message already recorded</td>
-</tr>
-<tr>
-<td><strong>Phone book</strong></td>
-<td>contacts with speed dial</td>
-</tr>
-<tr>
-<td><strong>Call blocking</strong></td>
-<td>by direction (incoming or outgoing), by number or by prefix</td>
-</tr>
-<tr>
-<td><strong>Hotline</strong></td>
-<td>dial a number automatically when the handset is lifted</td>
-</tr>
-<tr>
-<td><strong>Calling-line restriction</strong></td>
-<td>hide your number, and the network's service codes</td>
-</tr>
-<tr>
-<td><strong>Phone LED</strong></td>
-<td>solid while the line is ready, a fast blink while a call rings, a slow blink while the handset is off hook (the rates can be set)</td>
-</tr>
-<tr>
-<td><strong>Alarm calls</strong></td>
-<td>wake-up calls at a time you choose</td>
-</tr>
-<tr>
-<td><strong>Line test</strong></td>
-<td>check the line from the web page</td>
-</tr>
-<tr>
-<td><strong>A web page</strong></td>
-<td><em>Services → AWvoice(RJ11)</em> with live status, calls, rules, settings, health and tests</td>
+<td>Emergency numbers</td>
+<td>never blocked by anything here</td>
 </tr>
 </tbody>
 </table>
-<h2 id="hook-flash-codes">Hook flash codes<a class="headerlink" href="#hook-flash-codes" title="Permanent link">&para;</a></h2>
-<p>During a call, press the handset's <strong>flash</strong> (R) key, then one digit. These are the standard
-network codes:</p>
 <table>
 <thead>
 <tr>
-<th>After the flash press</th>
-<th>What happens</th>
+<th>around the call</th>
+<th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>1</strong></td>
-<td>end the current call and take the other one (the waiting or the held call)</td>
+<td>Call log with search, filters and CSV export</td>
+<td><a href="calls/">calls</a></td>
 </tr>
 <tr>
-<td><strong>2</strong></td>
-<td>put the current call on hold and take the other one; with two calls it swaps them, and with one held call it takes that call back</td>
+<td>Call recordings: stereo, the caller and the handset on separate channels, opt-in</td>
+<td><a href="recordings-and-machine/#call-recordings">recordings and the machine</a></td>
 </tr>
 <tr>
-<td><strong>0</strong></td>
-<td>refuse the waiting call, or release the held call</td>
+<td>Answering machine: your greeting, then a message, linked from the call's own card</td>
+<td><a href="recordings-and-machine/#the-answering-machine">recordings and the machine</a></td>
 </tr>
 <tr>
-<td><strong>3</strong></td>
-<td><strong>join</strong> the two calls into a three-way conversation (needs two calls, and <em>three-way calling</em> switched on in Settings)</td>
+<td>Quiet hours: windows when the phone must not ring, and who rings through them</td>
+<td><a href="quiet-hours/">quiet hours</a></td>
+</tr>
+<tr>
+<td>Phone book with speed dial, and contacts that ring through quiet hours</td>
+<td><a href="rules-and-phonebook/">rules and the phone book</a></td>
+</tr>
+<tr>
+<td>Call blocking by direction, number or prefix</td>
+<td><a href="rules-and-phonebook/#call-blocking">rules and the phone book</a></td>
+</tr>
+<tr>
+<td>Alarm calls that dial or ring at a time you set</td>
+<td><a href="rules-and-phonebook/#alarm-calls">rules and the phone book</a></td>
+</tr>
+<tr>
+<td>The front-panel phone LED: solid, fast blink, slow blink</td>
+<td><a href="handset/#the-phone-led">the handset</a></td>
 </tr>
 </tbody>
 </table>
-<p>Set the flash key's timing in Settings, if your handset's flash key is longer or shorter than the
-default.</p>
-<h2 id="recall">Recall<a class="headerlink" href="#recall" title="Permanent link">&para;</a></h2>
-<p>If you hang up while a call is on hold, the call is not lost. The phone <strong>rings back</strong> until you lift
-the handset, which takes the call back, or the other side ends it.</p>
-<h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
-<p>The call itself is carried by the router's <strong>5G modem</strong> (VoLTE), which AWvoice controls over its AT
-port. The router drives the line-interface chip of the RJ11 port and bridges the audio in the
-kernel, so the phone behaves like a normal one. There is no Asterisk and no PBX: the cellular
-network is the exchange, and the SIM's own number is the line's number.</p>
-<p>While the page's <strong>SIP switch is off</strong> — which is how the router ships — nothing on it speaks SIP:
-no port is open and nothing registers. Turning that switch on adds a <strong>network phone</strong>: a soft phone
-on your own network (a laptop or a phone running a SIP app) can then ring and dial through the same
-line, beside the handset on the RJ11 port, and the router starts and stops the service that does it
-as you move the switch. No provider account and no second number are involved either way — the
-SIM's line carries every call.</p>
-<p>AWvoice has three parts: a kernel module for the line chip (GPL-2.0-only), the phone daemon, and
-the LuCI page.</p>
-<p>A watchdog in the kernel puts the line chip back in reset whenever the phone service stops, so the
-line is never left ringing.</p>
-<h2 id="safety">Safety<a class="headerlink" href="#safety" title="Permanent link">&para;</a></h2>
-<div class="admonition danger">
-<p class="admonition-title">Read this before you use it</p>
-<ul>
-<li>About <strong>46 V DC</strong> is present on the RJ11 contacts, and up to about <strong>100 V while the phone is
-  ringing</strong>. Do not touch the contacts.</li>
-<li><strong>Not for emergency use.</strong> The line works only while the router has power, the modem is
-  registered for VoLTE and the operator carries the call. There is no emergency-call
-  certification and no battery backup. Keep a mobile phone at hand for emergencies.</li>
-<li>The block list never blocks your country's national emergency numbers, and a dialled
-  emergency number is never replaced by a speed-dial entry.</li>
-</ul>
-</div>
-<h2 id="what-you-need">What you need<a class="headerlink" href="#what-you-need" title="Permanent link">&para;</a></h2>
-<ul>
-<li>A SIM and an operator that provide <strong>VoLTE</strong> (voice over LTE).</li>
-<li>The modem in <strong>PCM slave mode</strong>. AWvoice warns in the log if it is not, and does not change
-  it by itself.</li>
-<li>Nothing else for the line chip: its <strong>board file ships with AWvoice</strong> and is installed on the
-  first start.</li>
-<li>An ordinary <strong>analogue phone</strong> with an RJ11 plug.</li>
-</ul>
-<p>AWvoice reads the modem's audio mode and its VoLTE (IMS) state and shows them on the Health area
-of the page. It does not change them itself.</p>
-<h2 id="turn-it-on">Turn it on<a class="headerlink" href="#turn-it-on" title="Permanent link">&para;</a></h2>
-<p>AWvoice is installed with CleanWRT but the phone service starts only when you enable it, so the
-line is never left ringing by accident:</p>
+<table>
+<thead>
+<tr>
+<th>the network side, off until you turn it on</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A soft phone on your own LAN, beside the handset</td>
+<td><a href="network-phones/">network phones</a></td>
+</tr>
+<tr>
+<td>A code a phone scans to set itself up</td>
+<td><a href="network-phones/#the-code-a-phone-scans">network phones</a></td>
+</tr>
+<tr>
+<td>The browser as a telephone, over an encrypted LAN stream</td>
+<td><a href="web-phone/">the web page</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-is-on-when-the-router-boots">What is on when the router boots<a class="headerlink" href="#what-is-on-when-the-router-boots" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The phone line</td>
+<td><strong>on</strong>. <code>awvoice.main.enabled</code> ships as <code>1</code>, so the service starts at boot and the line is ready</td>
+</tr>
+<tr>
+<td>The web page</td>
+<td>available as soon as LuCI is; it needs no separate switch</td>
+</tr>
+<tr>
+<td>The browser's microphone and speaker</td>
+<td>off until you press the page's audio button, once per browser</td>
+</tr>
+<tr>
+<td>The network phone side</td>
+<td><strong>off</strong>. Nothing speaks SIP and no SIP port is open until you switch it on</td>
+</tr>
+<tr>
+<td>Call recordings</td>
+<td><strong>off</strong></td>
+</tr>
+<tr>
+<td>The answering machine</td>
+<td><strong>off</strong>, although a greeting ships with the package so it works the moment you switch it on</td>
+</tr>
+<tr>
+<td>Quiet hours</td>
+<td>off until you write a window; with no window the phone rings at every hour</td>
+</tr>
+</tbody>
+</table>
+<h2 id="start-here">Start here<a class="headerlink" href="#start-here" title="Permanent link">&para;</a></h2>
+<p>The packages are already in CleanWRT, so there is nothing to install. Plug an ordinary analogue
+phone with an RJ11 plug into the socket, and lift the handset: you should hear a dial tone.</p>
+<p>If the line was switched off at some point, switch it back on:</p>
 <div class="highlight"><pre><span></span><code>uci<span class="w"> </span><span class="nb">set</span><span class="w"> </span>awvoice.main.enabled<span class="o">=</span><span class="m">1</span>
 uci<span class="w"> </span>commit<span class="w"> </span>awvoice
-/etc/init.d/awvoice<span class="w"> </span>start
+/etc/init.d/awvoice<span class="w"> </span>restart
 </code></pre></div>
-<p>The defaults fit the AW1000. The settings the page does not show (the modem's AT interface number,
-the LED name) are in <code>/etc/config/awvoice</code>.</p>
-<h2 id="the-web-page">The web page<a class="headerlink" href="#the-web-page" title="Permanent link">&para;</a></h2>
-<p><em>Services → AWvoice(RJ11)</em> is one page for everything:</p>
-<ul>
-<li><strong>live status:</strong> the line (idle, off hook, ringing, in a call), the current call, the voice
-  network and the signal;</li>
-<li><strong>calls:</strong> the call log, with names from the phone book;</li>
-<li><strong>phone book and speed dial;</strong></li>
-<li><strong>rules:</strong> call blocking, forwarding and alarm calls, and the quiet hours - the windows of the day
-  the handset, the answering machine and the network phones hold off ringing, the contacts marked to
-  ring through one, and the <code>*78</code>, <code>*79</code> and <code>#</code> codes typed on the handset or the page;</li>
-<li><strong>settings:</strong> caller id mode, hook-flash timing, tones, audio levels, call waiting, hotline and
-  the line LED;</li>
-<li><strong>SIP:</strong> the switch (off: the handset on the RJ11 port; on: a soft phone on your own network joins
-  it, and the service that answers it starts and stops with the switch), the account names and
-  passwords it uses on your LAN, and what it reports while a call is up;</li>
-<li><strong>health and tests:</strong> the AT port, the line, the modem, counters and the log, with ring, line and
-  loopback tests.</li>
-</ul>
-<h2 id="frequently-asked-questions">Frequently asked questions<a class="headerlink" href="#frequently-asked-questions" title="Permanent link">&para;</a></h2>
-<details class="question">
-<summary>How do I make phone calls on the Arcadyan AW1000?</summary>
-<p>Install CleanWRT, which includes AWvoice, plug an ordinary analogue desk phone into the RJ11
-socket, enable the phone service and lift the handset. Calls go out over the router's 5G modem
-with your SIM's number.</p>
-</details>
-<details class="question">
-<summary>Which phones work on the RJ11 port?</summary>
-<p>An ordinary analogue (tone dial) phone with an RJ11 plug. A handset with a display also shows
-the caller id.</p>
-</details>
-<details class="question">
-<summary>Does AWvoice need Asterisk, SIP or a second phone number?</summary>
-<p>No. There is no PBX and no SIP account. The cellular network is the exchange and the SIM's
-number is the line's number. The router ships with nothing speaking SIP at all. The page's SIP
-switch is for a different case, and it is optional: turning it on lets a soft phone on your own
-network ring and dial through this router. It asks for no provider account and no second
-number, and turning it off closes the port again.</p>
-</details>
-<details class="question">
-<summary>Does the AW1000 need VoLTE for voice calls?</summary>
-<p>Yes. The call is carried by the modem over VoLTE, so you need a SIM and an operator that
-provide VoLTE. The modem must also be in PCM slave mode, which AWvoice checks and reports.</p>
-</details>
-<details class="question">
-<summary>Can I use it for emergency calls?</summary>
-<p>No. The line works only while the router has power, the modem is registered for VoLTE and the
-operator carries the call, and there is no battery backup. Keep a mobile phone at hand.</p>
-</details>
-<h2 id="known-limits">Known limits<a class="headerlink" href="#known-limits" title="Permanent link">&para;</a></h2>
-<ul>
-<li>With <strong>SIP on</strong>, a soft phone rings and talks only when the SIP service hands its audio to the
-  socket AWvoice listens on. The service arrives with its own place for that socket, so on a fresh
-  router the two do not meet until the AWvoice page's SIP card sets it — no audio is not a broken
-  call, it is this setting.</li>
-<li>Hide my number (CLIR) and call forwarding can be refused by the operator's network when the
-  phone registers (<code>+CME ERROR: 30</code>). The page hides both while that is the case.</li>
-<li>Giving up a second call while it still rings ends every call: the modem cannot release a
-  ringing leg on its own.</li>
-<li>The modem's IMS registration may not come up after a cold boot, rarely. The page then shows
-  "Not registered", and a modem restart clears it.</li>
-<li>Alarm calls trust the router's clock, which must be set. A wrong but plausible clock rings them
-  at the wrong time.</li>
-<li><strong>Not for emergency calls</strong>, see the safety box.</li>
-</ul>
-<h2 id="source-code">Source code<a class="headerlink" href="#source-code" title="Permanent link">&para;</a></h2>
-<p>AWvoice is developed in its own repository,
-<a href="https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice">Pr0Luci/openwrt-aw1000-voice-awvoice</a>,
-which has the standard feed layout (see <a href="../building/">Build from source</a>). All three parts are
-GPL-2.0-only; see <a href="../licence/">Licence and notices</a>.</p>
+<p>Then, in any order you like:</p>
+<ol>
+<li>Open <strong>Services → AWvoice(RJ11)</strong> and read the <a href="the-page-tour/">page tour</a> beside the
+   real thing.</li>
+<li>Make a call from the page's keypad with the <a href="web-phone/">handset unplugged</a>, to see
+   that the line does not depend on the socket.</li>
+<li>Decide what should happen to a call you do not answer:
+   <a href="recordings-and-machine/#the-answering-machine">the answering machine</a> or
+   <a href="quiet-hours/">quiet hours</a>. Joining two calls into one conversation is a separate
+   switch, and it is <strong>off</strong> as installed.</li>
+<li>If a soft phone on your own network should ring too, turn on the
+   <a href="network-phones/">SIP side</a> — and read what it opens before you do.</li>
+</ol>
+<p>What you need for the line itself: a SIM and an operator that provide <strong>VoLTE</strong>, and the modem in
+<strong>PCM slave mode</strong>. AWvoice reads both, reports them on the <a href="health-and-tests/">Health tab</a>,
+and never changes the modem's audio mode by itself. The line chip's board file ships with the
+package and is installed on the first start, so there is nothing to prepare.</p>
+<h2 id="the-page">The page<a class="headerlink" href="#the-page" title="Permanent link">&para;</a></h2>
+<p>One LuCI page at <strong>Services → AWvoice(RJ11)</strong>, seven tabs. It reads the daemon over <code>ubus</code> and
+writes the same <code>/etc/config/awvoice</code> file the shell does, so the page and <code>uci</code> never disagree.</p>
+<p><a href="../assets/img/awvoice/overview-web-phone.png"><img alt="The Overview tab: the line state, the call card, the keypad and the call rail" src="../assets/img/awvoice/overview-web-phone.png" /></a></p>
+<table>
+<thead>
+<tr>
+<th>tab</th>
+<th>what lives there</th>
+<th>the page that explains it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overview</strong></td>
+<td>the line's state, the current call, and the browser phone with its keypad and call rail</td>
+<td><a href="web-phone/">the web page</a></td>
+</tr>
+<tr>
+<td><strong>Calls</strong></td>
+<td>the call log, and each call's own recording or message</td>
+<td><a href="calls/">calls</a></td>
+</tr>
+<tr>
+<td><strong>Rules</strong></td>
+<td>four panes: the phone book, call blocking, alarm calls, quiet hours</td>
+<td><a href="quiet-hours/">quiet hours</a>, <a href="rules-and-phonebook/">rules</a></td>
+</tr>
+<tr>
+<td><strong>Phone settings</strong></td>
+<td>the line's behaviour, the tones, the levels, the recording and answering-machine cards</td>
+<td><a href="handset/">the handset</a>, <a href="recordings-and-machine/">recordings and the machine</a></td>
+</tr>
+<tr>
+<td><strong>SIP</strong></td>
+<td>whether a phone on your own network may join the line, and the account it signs in with</td>
+<td><a href="network-phones/">network phones</a></td>
+</tr>
+<tr>
+<td><strong>Health</strong></td>
+<td>what the hardware actually reported: rates, guards, storage, the last call's outcome</td>
+<td><a href="health-and-tests/">health and tests</a></td>
+</tr>
+<tr>
+<td><strong>Test tools</strong></td>
+<td>the ring test, the line test, and the loopback call test, which this build does not offer yet</td>
+<td><a href="health-and-tests/#the-tests">health and tests</a></td>
+</tr>
+</tbody>
+</table>
+<p>Every control's label, what it writes and when it is disabled is listed in
+<a href="the-page-tour/">the page tour</a>.</p>
+<h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
+<p>Three packages, and the line logic in one daemon:</p>
+<table>
+<thead>
+<tr>
+<th>package</th>
+<th>what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kmod-awvoice-fxs</code></td>
+<td>the kernel module: the line chip's register bus, the PCM block, the audio bridge between the modem and the chip, the capture tap that feeds the recordings, the playback ring that carries a greeting and the page's voice to the caller, and the hardware ring watchdog. GPL-2.0-only</td>
+</tr>
+<tr>
+<td><code>awvoice-phoned</code></td>
+<td>the phone daemon: the hook, the tones, dialling, ringing, caller id, the call log, the recordings, the machine, quiet hours, the page's audio stream, the front end a network phone speaks through, and the <code>ubus</code> service <code>awvoice</code></td>
+</tr>
+<tr>
+<td><code>luci-app-awvoice</code></td>
+<td>the LuCI page</td>
+</tr>
+</tbody>
+</table>
+<p>The short version of the design: a <strong>watchdog</strong>, not a promise — if the phone service ever stops,
+the kernel puts the chip back into reset within milliseconds, so the line cannot be left ringing.
+Everything else follows from a <strong>20 ms frame</strong> that is the unit everywhere, from the kernel bridge
+to the browser stream to the recording file.</p>
+<p>The long version, including the front-end socket, the HD-voice negotiation and the board file, is
+in <a href="how-it-works/">how it works</a>.</p>
+<h2 id="if-something-is-wrong">If something is wrong<a class="headerlink" href="#if-something-is-wrong" title="Permanent link">&para;</a></h2>
+<p>Start with <a href="troubleshooting/">troubleshooting</a>: no dial tone, one-way audio, no caller
+id, a machine that will not answer, a soft phone that registers but never rings, a browser page
+with no sound. Each symptom has one check that decides it.</p>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every option, its values and its shipped default</td>
+<td><a href="settings-reference/">settings reference</a>, and the whole image's options in <a href="../reference/options/">UCI options</a></td>
+</tr>
+<tr>
+<td>Every file, port, socket and <code>ubus</code> method</td>
+<td><a href="../reference/files-and-ports/">files and ports</a>, <a href="../reference/ubus-and-acl/">the API and who may call it</a></td>
+</tr>
+<tr>
+<td>What was measured on a real router</td>
+<td><a href="health-and-tests/#what-has-been-measured-on-a-router">health and tests</a></td>
+</tr>
+<tr>
+<td>What changed in each release</td>
+<td><a href="../changelog/">changelog</a></td>
+</tr>
+<tr>
+<td>The source, its licence and the packages</td>
+<td><a href="../repositories/">repositories</a>, <a href="../licence/">licence</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">About the screenshots</p>
+<p>These were taken from a real AW1000 running this firmware. The numbers in them — uptime,
+signal, call times, the caller ids in the log — belong to the moment they were taken and will
+differ on your router.</p>
+</div>
 
 
 
@@ -2074,13 +2750,13 @@ GPL-2.0-only; see <a href="../licence/">Licence and notices</a>.</p>
         
         
           
-          <a href="../modem/" class="md-footer__link md-footer__link--next" aria-label="Next: The 5G modem">
+          <a href="handset/" class="md-footer__link md-footer__link--next" aria-label="Next: The handset">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                The 5G modem
+                The handset
               </div>
             </div>
             <div class="md-footer__button md-icon">

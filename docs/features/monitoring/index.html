@@ -68,8 +68,9 @@
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Monitoring", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/monitoring/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Monitoring", "description": "vnStat data usage, live bandwidth per host, Adblock, Watchcat, SQM and the cw-diag diagnostic tool on CleanWRT for the Arcadyan AW1000.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/monitoring/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "Monitoring", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/monitoring/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Monitoring", "description": "vnStat data usage, live bandwidth per host, Adblock, Watchcat, SQM and the cw-diag diagnostic tool on CleanWRT for the Arcadyan AW1000.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/monitoring/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT reboot the router when 5G drops?", "acceptedAnswer": {"@type": "Answer", "text": "Not as shipped. OpenWrt's Watchcat is the tool that would, and its package default is exactly that rule; this image installs Watchcat with no rule configured, so nothing reboots until you write one."}}, {"@type": "Question", "name": "How do I collect a diagnostic report from the router?", "acceptedAnswer": {"@type": "Answer", "text": "cw-diag full. It redacts SIM identifiers, public addresses and Wi-Fi keys, which is what makes it safe to attach to a report."}}, {"@type": "Question", "name": "Can I block ads on the whole network?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with Adblock or AdGuard Home — one of them, not both. Both are installed; both are off. See apps with their own web interface."}}]}</script>
 </head>
   
   
@@ -566,14 +567,463 @@
       
   
   
-    
-  
   
   
     
     
       
         
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The phone port
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The phone port
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWvoice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
       
         
       
@@ -608,10 +1058,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -629,8 +1079,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -639,34 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../awvoice/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AWvoice, the phone port
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -974,6 +1396,50 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1063,6 +1529,8 @@
       
         
       
+        
+      
     
     
     
@@ -1076,10 +1544,219 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1097,8 +1774,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1253,10 +1930,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1274,8 +1951,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1365,6 +2042,8 @@
       
         
       
+        
+      
     
     
     
@@ -1378,10 +2057,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1399,8 +2078,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1481,6 +2160,34 @@
     
   
     Licence and notices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
   
 
     
@@ -1599,6 +2306,50 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1668,6 +2419,105 @@ fight bufferbloat. BBR congestion control is already on, which suits cellular li
 </code></pre></div>
 <p>The output goes to <code>/var/log/cw-diag-&lt;subsystem&gt;-&lt;time&gt;.log</code>. SIM identifiers, public IPs and
 Wi-Fi keys are redacted. Also installed: <code>htop</code>, <code>mtr</code>, <code>iperf3</code>, <code>ethtool</code>, <code>usbutils</code>.</p>
+<h2 id="out-of-the-box">Out of the box<a class="headerlink" href="#out-of-the-box" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>tool</th>
+<th>state</th>
+<th>where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vnStat 2</td>
+<td><strong>on</strong></td>
+<td><em>Statistics → vnStat</em>. Daily and monthly totals per interface</td>
+</tr>
+<tr>
+<td>Bandwidth Monitor (nlbwmon)</td>
+<td><strong>on</strong></td>
+<td><em>Tools → Bandwidth Monitor</em>. Traffic per device</td>
+</tr>
+<tr>
+<td>Adblock</td>
+<td><strong>off</strong></td>
+<td><em>Services → Adblock</em>. Its init script is enabled but exits at once while <code>adb_enabled='0'</code>, so the checkbox on the page is the only switch</td>
+</tr>
+<tr>
+<td>Watchcat</td>
+<td><strong>no rule at all</strong></td>
+<td><em>Tools → Watchcat</em>. Deliberate: the package default is an active "ping, reboot after 6 failures" rule, and this image ships the file with the sections removed</td>
+</tr>
+<tr>
+<td>SQM QoS</td>
+<td><strong>off</strong></td>
+<td><em>Network → SQM QoS</em></td>
+</tr>
+<tr>
+<td><code>irqbalance</code></td>
+<td><strong>on</strong></td>
+<td>no page. Interrupts spread over the four cores</td>
+</tr>
+<tr>
+<td>packet steering</td>
+<td><strong>on</strong></td>
+<td><code>network.globals.packet_steering='1'</code>, written by <code>97-cw-net-tuning</code></td>
+</tr>
+<tr>
+<td><code>cw-diag</code></td>
+<td>always available</td>
+<td>a shell command, below</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-is-listening">What is listening<a class="headerlink" href="#what-is-listening" title="Permanent link">&para;</a></h2>
+<p>Nothing on this page opens a port by itself. Adblock binds the DNS port only when enabled, and
+bandwidth monitoring and vnStat read netlink and the interface counters rather than listening.</p>
+<h2 id="when-it-does-not-work">When it does not work<a class="headerlink" href="#when-it-does-not-work" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>symptom</th>
+<th>what it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vnStat shows no history</td>
+<td>the database is in <code>/var/lib/vnstat</code>, which is on flash. A keep-settings upgrade keeps it; a clean install does not</td>
+</tr>
+<tr>
+<td>The ad-block list never loads</td>
+<td>the feeds are fetched at start. <code>logread -e adblock</code> says whether the download failed or the checkbox is off</td>
+</tr>
+<tr>
+<td>The router rebooted itself</td>
+<td>it did not, unless you added a Watchcat rule. This image ships Watchcat with <strong>no rule</strong> precisely so that cannot happen by default</td>
+</tr>
+<tr>
+<td>Bandwidth Monitor shows nothing for the modem interface</td>
+<td>it counts per interface. The modem's data interface is <code>wwan0</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions-people-ask">Questions people ask<a class="headerlink" href="#questions-people-ask" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Does CleanWRT reboot the router when 5G drops?</summary>
+<p>Not as shipped. OpenWrt's Watchcat is the tool that would, and its package default is exactly
+that rule; this image installs Watchcat with <strong>no rule configured</strong>, so nothing reboots until you
+write one.</p>
+</details>
+<details class="question">
+<summary>How do I collect a diagnostic report from the router?</summary>
+<p><code>cw-diag full</code>. It redacts SIM identifiers, public addresses and Wi-Fi keys, which is what makes
+it safe to attach to a report.</p>
+</details>
+<details class="question">
+<summary>Can I block ads on the whole network?</summary>
+<p>Yes, with Adblock or AdGuard Home — one of them, not both. Both are installed; both are off.
+See <a href="../web-apps/">apps with their own web interface</a>.</p>
+</details>
 
 
 

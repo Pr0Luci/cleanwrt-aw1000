@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="What every front-panel LED of the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality, internet check, night mode and settings.">
+        <meta name="description" content="What each LED on the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality from RSRP, the internet probe, night mode and every setting.">
       
       
       
@@ -27,7 +27,7 @@
     
     
       
-        <title>Arcadyan AW1000 LEDs: 5G, signal and night mode - CleanWRT</title>
+        <title>AW1000 front-panel LEDs explained - CleanWRT</title>
       
     
     
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="Front-panel LEDs - CleanWRT">
-<meta property="og:description" content="What every front-panel LED of the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality, internet check, night mode and settings.">
+<meta property="og:description" content="What each LED on the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality from RSRP, the internet probe, night mode and every setting.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,13 +64,13 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Front-panel LEDs - CleanWRT">
-<meta name="twitter:description" content="What every front-panel LED of the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality, internet check, night mode and settings.">
+<meta name="twitter:description" content="What each LED on the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality from RSRP, the internet probe, night mode and every setting.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Front-panel LEDs", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Front-panel LEDs", "description": "What every front-panel LED of the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality, internet check, night mode and settings.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What do the front-panel LEDs of the Arcadyan AW1000 mean?", "acceptedAnswer": {"@type": "Answer", "text": "Power is always on. Wi-Fi is on while a radio is up. The 5G LED shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes."}}, {"@type": "Question", "name": "How do I turn off the AW1000 LEDs at night?", "acceptedAnswer": {"@type": "Answer", "text": "Enable night mode in System → LED Management. The default window is 22:30 to 06:00, and a window past midnight works. Remove an LED from the keep-on list to switch it off inside the window."}}, {"@type": "Question", "name": "Why is the 5G LED on my AW1000 off?", "acceptedAnswer": {"@type": "Answer", "text": "The 5G LED lights only for 5G. It is off on 4G, 3G, with no service, or when the type is unknown. If the signal LED is off too, the daemon probably cannot read the modem on its AT port."}}, {"@type": "Question", "name": "Why is the internet LED off when my internet works?", "acceptedAnswer": {"@type": "Answer", "text": "The LED mirrors a connectivity probe. If the probe address is blocked, it stays off. Change the probe URL in LED Management, or switch the check to the default-route mode."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "Front-panel LEDs", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Front-panel LEDs", "description": "What each LED on the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality from RSRP, the internet probe, night mode and every setting.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What do the front-panel LEDs of the Arcadyan AW1000 mean?", "acceptedAnswer": {"@type": "Answer", "text": "Power is always on. Wi-Fi is on while a radio is up. The 5G lamp shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes. Phone belongs to the phone service and is shown here read-only."}}, {"@type": "Question", "name": "How do I turn off the AW1000 LEDs at night?", "acceptedAnswer": {"@type": "Answer", "text": "Enable night mode in System → LED Management. The default window is 22:30 to 06:00 and a window past midnight works. Remove a lamp from the keep-on list to switch it off inside the window. The hardware cannot dim, so a lamp is either off or on."}}, {"@type": "Question", "name": "Why is the 5G LED on my AW1000 off?", "acceptedAnswer": {"@type": "Answer", "text": "It lights for 5G only: off on 4G, 3G, no service, or an unknown type. If the signal lamp is off too, the daemon probably cannot read the modem on its AT port — logread -e cw-led says which."}}, {"@type": "Question", "name": "Why is the internet LED off when my internet works?", "acceptedAnswer": {"@type": "Answer", "text": "The lamp mirrors a probe, not your traffic. If the probe address is blocked it stays off. Change the probe URL, or switch the check to the default-route mode."}}, {"@type": "Question", "name": "Does the LED daemon use the modem's data connection?", "acceptedAnswer": {"@type": "Answer", "text": "No. It reads the modem over an AT port with plain commands and writes lamps through sysfs. It stops working if that port is busy, which is why it is on a different port from QModem."}}]}</script>
 </head>
   
   
@@ -125,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Arcadyan AW1000 LEDs: 5G, signal and night mode
+              AW1000 front-panel LEDs explained
             
           </span>
         </div>
@@ -567,14 +567,463 @@
       
   
   
-    
-  
   
   
     
     
       
         
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The phone port
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The phone port
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWvoice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
       
         
       
@@ -609,10 +1058,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -630,8 +1079,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -640,34 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../awvoice/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AWvoice, the phone port
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -798,6 +1219,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#how-the-5g-type-is-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the 5G type is read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#how-the-internet-led-is-decided" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -836,10 +1268,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
+  <a href="#under-the-hood" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Troubleshooting
+        Under the hood
       
     </span>
   </a>
@@ -847,10 +1279,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#under-the-hood" class="md-nav__link">
+  <a href="#if-a-lamp-looks-wrong" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Under the hood
+        If a lamp looks wrong
       
     </span>
   </a>
@@ -1125,6 +1557,8 @@
       
         
       
+        
+      
     
     
     
@@ -1138,10 +1572,219 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1159,8 +1802,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1315,10 +1958,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1336,8 +1979,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1427,6 +2070,8 @@
       
         
       
+        
+      
     
     
     
@@ -1440,10 +2085,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1461,8 +2106,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1543,6 +2188,34 @@
     
   
     Licence and notices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
   
 
     
@@ -1652,6 +2325,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#how-the-5g-type-is-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the 5G type is read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#how-the-internet-led-is-decided" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1690,10 +2374,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
+  <a href="#under-the-hood" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Troubleshooting
+        Under the hood
       
     </span>
   </a>
@@ -1701,10 +2385,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#under-the-hood" class="md-nav__link">
+  <a href="#if-a-lamp-looks-wrong" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Under the hood
+        If a lamp looks wrong
       
     </span>
   </a>
@@ -1749,12 +2433,13 @@
 
 <h1 id="front-panel-leds">Front-panel LEDs<a class="headerlink" href="#front-panel-leds" title="Permanent link">&para;</a></h1>
 <p>CleanWRT replaces the stock <em>LED Configuration</em> page with <strong>LED Management</strong>
-(<em>System → LED Management</em>), backed by a small daemon, <code>cw-led-daemon</code>. The package is
-<a href="https://github.com/Pr0Luci/luci-app-cw-led"><code>luci-app-cw-led</code></a>.</p>
-<p>The LEDs on this board are on/off only (no dimming).</p>
+(<strong>System → LED Management</strong>), backed by one small daemon, <code>cw-led-daemon</code>. The package is
+<a href="https://github.com/Pr0Luci/luci-app-cw-led"><code>luci-app-cw-led</code></a>, pinned in this build to one commit.</p>
+<p>The LEDs on this board are <strong>on or off</strong>: there is no dimming anywhere in the hardware, so every
+state you see is a lit lamp, an unlit lamp, or a blink.</p>
 <h2 id="the-status-card">The status card<a class="headerlink" href="#the-status-card" title="Permanent link">&para;</a></h2>
-<p>The top of the page shows the live state of the LEDs, refreshed every few seconds, so you can see
-what the panel shows without looking at the router.</p>
+<p>The top of the page shows what the panel is doing right now, refreshed every five seconds, so you
+can watch the router's state without walking to it.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dark</label><label for="__tabbed_1_2">Light</label><label for="__tabbed_1_3">On a phone</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1768,11 +2453,13 @@ what the panel shows without looking at the router.</p>
 </div>
 </div>
 </div>
+<p>Two chips above the lamps say whether the daemon is running and whether the night window is open.
+Six tiles show the lamps. The sixth, <strong>Phone</strong>, is read-only: this app reports what the phone
+service owns but never writes it.</p>
 <div class="admonition info">
 <p class="admonition-title">About the screenshots</p>
-<p>The screenshots in this documentation were taken from a real AW1000 running this firmware. The
-numbers in them - uptime, memory, storage, signal - belong to the moment they were taken and
-will differ on your router.</p>
+<p>These were taken from a real AW1000 running this firmware. The states in them belong to the
+moment they were taken.</p>
 </div>
 <h2 id="what-each-led-shows">What each LED shows<a class="headerlink" href="#what-each-led-shows" title="Permanent link">&para;</a></h2>
 <table>
@@ -1789,35 +2476,37 @@ will differ on your router.</p>
 </tr>
 <tr>
 <td><strong>Wi-Fi</strong></td>
-<td>on while any radio is up. In <em>single interface</em> mode it blinks with traffic on one interface.</td>
+<td>on while any radio is up. In <em>Single interface</em> mode it blinks with traffic on the interface you choose</td>
 </tr>
 <tr>
 <td><strong>5G</strong></td>
-<td>5G type only: <strong>solid blue</strong> = 5G standalone (SA), <strong>solid green</strong> = 5G non-standalone (NSA), <strong>off</strong> for anything else (4G, 3G, no service, unknown). There is no red on this LED.</td>
+<td>the 5G type only: <strong>solid blue</strong> = 5G standalone (SA), <strong>solid green</strong> = 5G non-standalone (NSA), <strong>off</strong> for anything else — 4G, 3G, no service, unknown. There is no red on this lamp. While the very first modem read is still running it flashes red at 1 Hz</td>
 </tr>
 <tr>
 <td><strong>Signal</strong></td>
-<td><strong>green</strong> good, <strong>blue</strong> average, <strong>red</strong> poor; <strong>flashing red</strong> while the modem is connecting or the SIM has a fault; <strong>off</strong> when the service is unavailable.</td>
+<td><strong>green</strong> good, <strong>blue</strong> average, <strong>red</strong> poor; <strong>flashing red</strong> while the modem is searching or the SIM has a fault; <strong>off</strong> when the service is unavailable</td>
 </tr>
 <tr>
 <td><strong>Internet</strong></td>
-<td><strong>on</strong> while the connectivity check says the uplink really reaches the internet.</td>
+<td>on while the connectivity check says the uplink really reaches the internet</td>
+</tr>
+<tr>
+<td><strong>Phone</strong></td>
+<td>not this app's lamp. While <a href="../awvoice/">AWvoice</a> is running it is solid while the line is ready, blinks fast while a call rings and blinks slowly while the handset is off hook</td>
 </tr>
 </tbody>
 </table>
-<p>The phone LED is not controlled by this app: it belongs to <a href="../awvoice/">AWvoice</a>. When AWvoice is
-running it is solid while the line is ready, blinks fast while a call rings and blinks slowly while
-the handset is off hook.</p>
+<p>The WAN ethernet port's own lamp is left exactly as the kernel drives it.</p>
 <h3 id="how-signal-quality-is-decided">How signal quality is decided<a class="headerlink" href="#how-signal-quality-is-decided" title="Permanent link">&para;</a></h3>
-<p>The signal LED uses RSRP (in dBm), with CSQ as a fallback when RSRP is unavailable. The limits are
-settings:</p>
+<p>Signal uses RSRP in dBm, with CSQ as a fallback when RSRP does not come back. The four limits are
+settings.</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Excellent (green)</th>
-<th>Poor (red)</th>
-<th>Between (blue)</th>
+<th>excellent (green)</th>
+<th>poor (red)</th>
+<th>in between (blue)</th>
 </tr>
 </thead>
 <tbody>
@@ -1825,37 +2514,49 @@ settings:</p>
 <td>RSRP</td>
 <td>at or above <code>-95</code></td>
 <td>at or below <code>-110</code></td>
-<td>in between</td>
+<td>between the two</td>
 </tr>
 <tr>
 <td>CSQ</td>
 <td>at or above <code>20</code></td>
 <td>at or below <code>9</code></td>
-<td>in between</td>
+<td>between the two</td>
 </tr>
 </tbody>
 </table>
+<p>The page draws the scale (<code>−44</code> to <code>−140</code>) so you can see where your reading sits, and refuses a
+pair where the poor threshold is not below the excellent one.</p>
+<h3 id="how-the-5g-type-is-read">How the 5G type is read<a class="headerlink" href="#how-the-5g-type-is-read" title="Permanent link">&para;</a></h3>
+<p>One AT command answers the question: <code>AT+QENG="servingcell"</code>. A <code>NR5G-SA</code> line is standalone, a
+<code>NR5G-NSA</code> line is non-standalone, <code>LTE</code> or a 3G line is not 5G, and a reply that names no cell at
+all leaves the lamp off. <code>AT+CSQ</code> is asked only when the serving-cell reply carried no usable RSRP,
+and <code>AT+CEREG?</code> and <code>AT+CPIN?</code> only while the modem is not registered — fewer queries on a port
+other programs also use.</p>
 <h3 id="how-the-internet-led-is-decided">How the internet LED is decided<a class="headerlink" href="#how-the-internet-led-is-decided" title="Permanent link">&para;</a></h3>
 <p><a href="../assets/img/leds-dark-internet.jpg"><img alt="Internet LED settings" src="../assets/img/leds-dark-internet.jpg" /></a></p>
-<p><em>Active connectivity probe (HTTP 204)</em> is the default and the most accurate. The daemon asks a
-test address for an empty "204" answer; anything else (a captive portal page, a redirect, a
-timeout) means "no internet". It catches the case where the link is up but there is no real
-connectivity. Two other modes exist: <em>Default-route interface is up</em> (link state only) and <em>Ping
-a host</em>.</p>
+<p><em>Active connectivity probe (HTTP 204)</em> is the default and the most accurate: the daemon asks a test
+address for an empty <code>204</code> answer, and anything else — a captive-portal page, a redirect, a timeout
+— means there is no internet. That catches the case where the link is up but nothing is reachable,
+which a link-state check cannot see.</p>
 <ul>
-<li>One good probe turns the LED on quickly. It takes two failed probes in a row to turn it off,
-  so a single dropped probe does not flicker the LED.</li>
-<li>It follows the routing table and is not bound to one network device, so it works behind a
-  transparent proxy on the router.</li>
+<li>One good probe turns the lamp on at once. <strong>Two</strong> failed probes in a row are needed to turn it
+  off, so one dropped probe does not flicker it. Both numbers are settings.</li>
+<li>The probe follows the default route and is not bound to one device, so it still works behind a
+  transparent proxy on this router.</li>
+<li>The plain <code>http://</code> in the default addresses is deliberate: a captive portal answers an HTTPS
+  request with a certificate error and tells you nothing.</li>
+<li>On this device the internet lamp reflects the modem data path, not an ethernet WAN.</li>
 </ul>
+<p>The other two modes are <em>Default-route interface is up</em>, which is link state only, and <em>Ping a
+host</em>, which defaults to <code>1.1.1.1</code>.</p>
 <h2 id="night-mode">Night mode<a class="headerlink" href="#night-mode" title="Permanent link">&para;</a></h2>
-<p>Night mode switches chosen LEDs off between two times of day.</p>
+<p>Night mode switches the lamps you choose off between two times of day.</p>
 <p><a href="../assets/img/leds-dark-night.jpg"><img alt="Night mode and Wi-Fi LED settings" src="../assets/img/leds-dark-night.jpg" /></a></p>
 <table>
 <thead>
 <tr>
-<th>Setting</th>
-<th>Default</th>
+<th>setting</th>
+<th>default</th>
 </tr>
 </thead>
 <tbody>
@@ -1865,134 +2566,298 @@ a host</em>.</p>
 </tr>
 <tr>
 <td>Window</td>
-<td><code>22:30</code> to <code>06:00</code> (a window past midnight is supported)</td>
+<td><code>22:30</code> to <code>06:00</code>. A window that runs past midnight is normal, not an error</td>
 </tr>
 <tr>
 <td>Keep on during night</td>
-<td>all five LEDs are on the list, so nothing is dimmed until you remove entries</td>
+<td>all five daemon-owned lamps are on the list, so nothing goes dark until you remove one</td>
 </tr>
 </tbody>
 </table>
-<p>Remove an LED from <em>Keep on during night</em> to switch it off inside the window.</p>
+<p>The page draws the window as a timeline so you can see it, and hides the window controls entirely
+until night mode is enabled. Entering the window forces every non-exempt lamp off; leaving it
+re-reads the modem and re-probes at once, so the panel is current again the minute the window closes.</p>
+<div class="admonition note">
+<p class="admonition-title">The phone lamp is not in the night list</p>
+<p>Night mode here does not touch the phone lamp, and it is not bound to the theme's night behaviour
+either. A line that must stay silent at night is a
+<a href="../awvoice/quiet-hours/">quiet hours</a> question, which is answered on the phone's own page.</p>
+</div>
 <h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h2>
-<p>All settings are on the <em>LED Management</em> page and stored in <code>/etc/config/cw-led</code>.</p>
+<p>Everything is on the page and stored in <code>/etc/config/cw-led</code>.</p>
 <table>
 <thead>
 <tr>
-<th>Section</th>
-<th>Option</th>
-<th>Default</th>
-<th>Meaning</th>
+<th>section</th>
+<th>option</th>
+<th>on the page as</th>
+<th>default</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>General</td>
-<td>enabled</td>
-<td>on</td>
-<td>run the daemon</td>
+<td><code>enabled</code></td>
+<td>Enable LED daemon</td>
+<td><code>1</code></td>
+<td>run the daemon at all</td>
 </tr>
 <tr>
 <td>General</td>
-<td>poll_interval</td>
-<td>30</td>
-<td>seconds between modem polls</td>
+<td><code>poll_interval</code></td>
+<td>Modem poll interval (s)</td>
+<td><code>30</code></td>
+<td>seconds between modem polls. A slider from 10 to 300</td>
 </tr>
 <tr>
-<td>Modem</td>
-<td>port</td>
+<td>General</td>
+<td><code>tick</code></td>
+<td>—</td>
+<td><code>5</code></td>
+<td>the daemon's own clock in seconds. Everything timed in ticks is measured against it</td>
+</tr>
+<tr>
+<td>General</td>
+<td><code>log_heartbeat_min</code></td>
+<td>—</td>
+<td><code>0</code></td>
+<td>write a status line this often; <code>0</code> is silent</td>
+</tr>
+<tr>
+<td>Modem AT port</td>
+<td><code>port</code></td>
+<td>AT port device</td>
 <td><code>/dev/ttyUSB2</code></td>
-<td>AT port. If it does not answer, the daemon tries <code>ttyUSB3</code>, <code>ttyUSB1</code>, <code>ttyUSB0</code>.</td>
+<td>the AT port the daemon reads. If it does not answer, <code>ttyUSB3</code>, <code>ttyUSB1</code>, <code>ttyUSB0</code> are tried at runtime; the file is never rewritten</td>
 </tr>
 <tr>
-<td>Modem</td>
-<td>timeout</td>
-<td>3</td>
+<td>Modem AT port</td>
+<td><code>timeout</code></td>
 <td>AT response timeout (s)</td>
+<td><code>3</code></td>
+<td>how long one AT reply may take</td>
 </tr>
 <tr>
-<td>Modem</td>
-<td>fail_threshold</td>
-<td>3</td>
-<td>failed polls in a row before 5G and signal LEDs go off</td>
+<td>Modem AT port</td>
+<td><code>fail_threshold</code></td>
+<td>Failure threshold</td>
+<td><code>3</code></td>
+<td>failed polls in a row before the 5G and signal lamps go off</td>
 </tr>
 <tr>
-<td>Modem</td>
-<td>grace_max_ticks</td>
-<td>2</td>
-<td>polls to keep the last colour when a reply is cut short (0 = off)</td>
+<td>Modem AT port</td>
+<td><code>grace_max_ticks</code></td>
+<td>Contention grace (polls)</td>
+<td><code>2</code></td>
+<td>polls for which the last colour is held when a reply is cut short but the modem is provably serving. <code>0</code> blanks at once</td>
+</tr>
+<tr>
+<td>Night</td>
+<td><code>enabled</code>, <code>start</code>, <code>end</code>, <code>exempt</code></td>
+<td>Night mode</td>
+<td><code>0</code>, <code>22:30</code>, <code>06:00</code>, all five lamps</td>
+<td>see <a href="#night-mode">night mode</a></td>
+</tr>
+<tr>
+<td>Wi-Fi</td>
+<td><code>mode</code></td>
+<td>Mode</td>
+<td><code>auto</code></td>
+<td><code>auto</code> is daemon-driven from the radios, because the Wi-Fi driver here ignores the kernel's per-radio triggers. <code>netdev</code> puts the kernel's traffic trigger on one interface</td>
+</tr>
+<tr>
+<td>Wi-Fi</td>
+<td><code>device</code></td>
+<td>Wi-Fi interface</td>
+<td>unset = first found</td>
+<td>only shown in <code>netdev</code> mode</td>
+</tr>
+<tr>
+<td>Signal</td>
+<td><code>rsrp_excellent</code>, <code>rsrp_poor</code></td>
+<td>RSRP thresholds</td>
+<td><code>-95</code>, <code>-110</code></td>
+<td>the green and red limits</td>
+</tr>
+<tr>
+<td>Signal</td>
+<td><code>csq_excellent</code>, <code>csq_poor</code></td>
+<td>CSQ thresholds</td>
+<td><code>20</code>, <code>9</code></td>
+<td>the same, when RSRP is missing</td>
 </tr>
 <tr>
 <td>Internet</td>
-<td>mode</td>
-<td>http204</td>
+<td><code>mode</code></td>
+<td>Check mode</td>
+<td><code>http204</code></td>
 <td><code>http204</code>, <code>interface</code> or <code>ping</code></td>
 </tr>
 <tr>
 <td>Internet</td>
-<td>probe_url</td>
+<td><code>iface</code></td>
+<td>Interface</td>
+<td><code>auto</code></td>
+<td>which interface the check follows</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>ping_host</code></td>
+<td>Ping host</td>
+<td><code>1.1.1.1</code></td>
+<td>used by <code>ping</code> mode</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>probe_url</code></td>
+<td>Probe URL</td>
 <td><code>http://cp.cloudflare.com/generate_204</code></td>
-<td>test address, plain <code>http://</code> so captive portals are detected</td>
+<td>the address the probe asks</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>probe_url_fallback</code></td>
+<td>Fallback probe URL</td>
+<td><code>http://connectivitycheck.gstatic.com/generate_204</code></td>
+<td>asked when the first address is blocked</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>probe_every</code></td>
+<td>Probe interval (ticks)</td>
+<td><code>6</code></td>
+<td>one probe every six ticks — about 30 seconds at the defaults</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>ping_every</code></td>
+<td>—</td>
+<td><code>6</code></td>
+<td>the same, for <code>ping</code> mode</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>probe_timeout</code></td>
+<td>—</td>
+<td><code>3</code></td>
+<td>seconds before a probe counts as failed</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>probe_up_ok</code></td>
+<td>—</td>
+<td><code>1</code></td>
+<td>good probes needed to light the lamp</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>probe_down_fail</code></td>
+<td>—</td>
+<td><code>2</code></td>
+<td>failed probes needed to extinguish it</td>
+</tr>
+<tr>
+<td>Internet</td>
+<td><code>probe_ipv6</code></td>
+<td>—</td>
+<td><code>0</code></td>
+<td>probe over IPv6 as well</td>
 </tr>
 </tbody>
 </table>
-<p>Restart the service after editing the file by hand:</p>
-<div class="highlight"><pre><span></span><code>/etc/init.d/cw-led<span class="w"> </span>restart
+<p>The options marked <code>—</code> have no control on the page; they are set with <code>uci</code> and take effect on the
+daemon's next reload.</p>
+<p>Saving the page applies and reloads the daemon in one action. Editing the file by hand needs both
+steps:</p>
+<div class="highlight"><pre><span></span><code>uci<span class="w"> </span>commit<span class="w"> </span>cw-led
+/etc/init.d/cw-led<span class="w"> </span>reload
 </code></pre></div>
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h2 id="under-the-hood">Under the hood<a class="headerlink" href="#under-the-hood" title="Permanent link">&para;</a></h2>
+<p>The daemon is plain shell over the modem's AT port, so it needs no other app and no <code>ubus</code> service
+of its own. It holds a lock file while it talks on the port, and because a lock cannot bind
+software that does not know about it, the poll rate stays low by default.</p>
+<p>Writes go through sysfs and only when something changes. The daemon compares the live <code>trigger</code> and
+<code>brightness</code> rather than a cached copy, so a write from anywhere else — an old colour left behind by
+a crash, a state replay at boot — is corrected within one tick. When the daemon stops it restores
+the static triggers and parks the lamps it owned.</p>
+<p>The first-boot script for this package removes the kernel LED sections that the daemon owns from
+<code>/etc/config/system</code>, so the stock LED page and this daemon cannot both drive the same lamp.
+<code>green:power</code>, <code>green:wifi</code> and the WAN port lamp keep their kernel triggers, and <code>green:phone</code> is
+never read, written or parked by this app.</p>
+<h2 id="if-a-lamp-looks-wrong">If a lamp looks wrong<a class="headerlink" href="#if-a-lamp-looks-wrong" title="Permanent link">&para;</a></h2>
 <div class="admonition tip">
 <p class="admonition-title">Read the log</p>
-<p>Every change of the 5G or signal colour is logged with the modem state:
-<code>logread -e cw-led</code></p>
+<p>Every change of the 5G or signal colour is logged with the modem state behind it:</p>
+<div class="highlight"><pre><span></span><code>logread<span class="w"> </span>-e<span class="w"> </span>cw-led
+</code></pre></div>
 </div>
 <table>
 <thead>
 <tr>
-<th>Symptom</th>
-<th>Likely cause</th>
+<th>symptom</th>
+<th>what it means</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>5G and signal LEDs are off</td>
-<td>the modem is unreachable on the AT port. Check the port in the settings and that nothing else holds it open.</td>
+<td>5G and signal lamps are both off</td>
+<td>the modem is unreachable on its AT port. Check the port setting, and whether anything else holds it open</td>
 </tr>
 <tr>
-<td>LEDs flicker or go blank for a moment</td>
-<td>another program reads the same AT port. The default <code>ttyUSB2</code> is chosen so QModem (on <code>ttyUSB3</code>) does not share it.</td>
+<td>Lamps flicker or blank for a moment</td>
+<td>another program is reading the same port. The default <code>ttyUSB2</code> exists so QModem, on <code>ttyUSB3</code>, does not share it; the grace setting absorbs a cut-short reply</td>
 </tr>
 <tr>
-<td>Internet LED stays off though the internet works</td>
-<td>the probe address is blocked. Change <em>Probe URL</em> or switch to <em>Default-route interface is up</em>.</td>
+<td>Signal is off but the modem is registered</td>
+<td>the reply carried neither RSRP nor CSQ. The grace holds the last colour for two polls, then blanks it — that blank is honest, not a fault</td>
 </tr>
 <tr>
-<td>Wi-Fi LED off with the radios up</td>
-<td>in <em>single interface</em> mode the LED follows one interface only. Use <em>Auto</em>.</td>
+<td>5G lamp off on a 4G connection</td>
+<td>correct: the lamp shows 5G only. Nothing is wrong</td>
+</tr>
+<tr>
+<td>Internet lamp off though the internet works</td>
+<td>the probe address is blocked. Change <em>Probe URL</em>, or switch to <em>Default-route interface is up</em></td>
+</tr>
+<tr>
+<td>Wi-Fi lamp off with the radios up</td>
+<td>you are in <em>Single interface</em> mode and it is following one interface. Use <em>Auto</em></td>
+</tr>
+<tr>
+<td>The lamps went wrong after a reboot</td>
+<td>the daemon starts early, before the modem has answered anything, so the first few seconds show a red 5G flash. That is the search state, not a fault</td>
 </tr>
 </tbody>
 </table>
-<p>If the daemon stops, the power and Wi-Fi LEDs return to their normal kernel triggers and the
-daemon-owned LEDs are turned off.</p>
-<h2 id="under-the-hood">Under the hood<a class="headerlink" href="#under-the-hood" title="Permanent link">&para;</a></h2>
-<p>The daemon reads the modem directly over the AT port with plain shell, so no other app is
-needed. It writes the LED state through sysfs, only when something changes. The source is in the
-<a href="https://github.com/Pr0Luci/luci-app-cw-led"><code>luci-app-cw-led</code></a> repository.</p>
 <h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
 <details class="question">
 <summary>What do the front-panel LEDs of the Arcadyan AW1000 mean?</summary>
-<p>Power is always on. Wi-Fi is on while a radio is up. The 5G LED shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes.</p>
+<p>Power is always on. Wi-Fi is on while a radio is up. The 5G lamp shows the 5G type: solid blue
+for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or
+red for good, average or poor. Internet is on while a real connectivity check passes. Phone
+belongs to the <a href="../awvoice/">phone service</a> and is shown here read-only.</p>
 </details>
 <details class="question">
 <summary>How do I turn off the AW1000 LEDs at night?</summary>
-<p>Enable night mode in <em>System → LED Management</em>. The default window is 22:30 to 06:00, and a window past midnight works. Remove an LED from the keep-on list to switch it off inside the window.</p>
+<p>Enable night mode in <strong>System → LED Management</strong>. The default window is 22:30 to 06:00 and a
+window past midnight works. Remove a lamp from the keep-on list to switch it off inside the
+window. The hardware cannot dim, so a lamp is either off or on.</p>
 </details>
 <details class="question">
 <summary>Why is the 5G LED on my AW1000 off?</summary>
-<p>The 5G LED lights only for 5G. It is off on 4G, 3G, with no service, or when the type is unknown. If the signal LED is off too, the daemon probably cannot read the modem on its AT port.</p>
+<p>It lights for 5G only: off on 4G, 3G, no service, or an unknown type. If the signal lamp is off
+too, the daemon probably cannot read the modem on its AT port — <code>logread -e cw-led</code> says which.</p>
 </details>
 <details class="question">
 <summary>Why is the internet LED off when my internet works?</summary>
-<p>The LED mirrors a connectivity probe. If the probe address is blocked, it stays off. Change the probe URL in <em>LED Management</em>, or switch the check to the default-route mode.</p>
+<p>The lamp mirrors a probe, not your traffic. If the probe address is blocked it stays off. Change
+the probe URL, or switch the check to the default-route mode.</p>
+</details>
+<details class="question">
+<summary>Does the LED daemon use the modem's data connection?</summary>
+<p>No. It reads the modem over an AT port with plain commands and writes lamps through sysfs. It
+stops working if that port is busy, which is why it is on a different port from QModem.</p>
 </details>
 
 

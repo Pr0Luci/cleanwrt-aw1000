@@ -1,0 +1,2946 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="What the AWvoice SIP switch really starts on the AW1000: the inbound and outbound accounts, password handling, the two guards, and the code a phone scans.">
+      
+      
+      
+        <link rel="canonical" href="https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/network-phones/">
+      
+      
+        <link rel="prev" href="../web-phone/">
+      
+      
+        <link rel="next" href="../quiet-hours/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/img/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>Network phones: the SIP side of the line - CleanWRT</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta property="og:type" content="article">
+<meta property="og:site_name" content="CleanWRT">
+<meta property="og:title" content="Network phones and the SIP side - CleanWRT">
+<meta property="og:description" content="What the AWvoice SIP switch really starts on the AW1000: the inbound and outbound accounts, password handling, the two guards, and the code a phone scans.">
+<meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/network-phones/">
+<meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Network phones and the SIP side - CleanWRT">
+<meta name="twitter:description" content="What the AWvoice SIP switch really starts on the AW1000: the inbound and outbound accounts, password handling, the two guards, and the code a phone scans.">
+<meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#14b8a6">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "The phone port"}, {"@type": "ListItem", "position": 3, "name": "Network phones and the SIP side", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/network-phones/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Network phones and the SIP side", "description": "What the AWvoice SIP switch really starts on the AW1000: the inbound and outbound accounts, password handling, the two guards, and the code a phone scans.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/network-phones/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can I use a soft phone with the AW1000's RJ11 port?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, once the AWvoice page's SIP switch is on. The soft phone registers to the router over your own LAN and rings and dials through the SIM's line, beside the handset and the browser page. No provider account and no second number are involved."}}, {"@type": "Question", "name": "Does the AW1000 expose a SIP port to the internet?", "acceptedAnswer": {"@type": "Answer", "text": "No. The listener is on the LAN interface, and the switch that opens it is off as installed. The outbound direction, which is the one that reaches outside your house, ships with no server and no secret at all."}}, {"@type": "Question", "name": "Why does my soft phone register but I hear nothing?", "acceptedAnswer": {"@type": "Answer", "text": "Almost always the audio path: the SIP service must hand media to the phone daemon's socket, and that is one setting in /etc/config/qmodemsip. This image ships it correctly; a configuration carried over from an older release is migrated at first boot."}}, {"@type": "Question", "name": "How do I set up a Linphone account without typing a password?", "acceptedAnswer": {"@type": "Answer", "text": "SIP → Show a Linphone QR code. The phone reads one URL, fetches its own account file, and builds the account. The address stops being served ten minutes later, and the card names the minute it stops."}}]}</script>
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#network-phones" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CleanWRT" class="md-header__button md-logo" aria-label="CleanWRT" data-md-component="logo">
+      
+  <img src="../../assets/img/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CleanWRT
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Network phones: the SIP side of the line
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Pr0Luci/cleanwrt-aw1000" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Pr0Luci/cleanwrt-aw1000
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CleanWRT" class="md-nav__button md-logo" aria-label="CleanWRT" data-md-component="logo">
+      
+  <img src="../../assets/img/logo.svg" alt="logo">
+
+    </a>
+    CleanWRT
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Pr0Luci/cleanwrt-aw1000" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Pr0Luci/cleanwrt-aw1000
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Get started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Get started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mtd-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MTD layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../uart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UART guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The phone port
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The phone port
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWvoice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-switch-actually-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the switch actually does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-service-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the service is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What the service is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#calls-coming-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calls coming in
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calls-going-out-through-a-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calls going out through a provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwords-and-what-is-never-shown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passwords, and what is never shown
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-guards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two guards
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-soft-phone-needs-to-be-set-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a soft phone needs to be set to
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-code-a-phone-scans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The code a phone scans
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-a-network-phone-does-not-behave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When a network phone does not behave
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Using CleanWRT
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Using CleanWRT
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 5G modem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../leds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Front-panel LEDs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theme/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Footstrap theme
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/remote-access/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/vpn-proxy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VPN and proxies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/multiwan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-WAN failover
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    USB storage and NAS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/web-apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apps with their own web interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Packages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../included/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is included
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../generated/packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full package list
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extra-packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extra packages
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../updating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Updating and pinning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Building
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build from source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Help
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Help
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ and troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../licence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licence and notices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-switch-actually-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the switch actually does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-service-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the service is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What the service is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#calls-coming-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calls coming in
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calls-going-out-through-a-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calls going out through a provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwords-and-what-is-never-shown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passwords, and what is never shown
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-guards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two guards
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-soft-phone-needs-to-be-set-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a soft phone needs to be set to
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-code-a-phone-scans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The code a phone scans
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-a-network-phone-does-not-behave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When a network phone does not behave
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/edit/main/docs/awvoice/network-phones.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="network-phones">Network phones<a class="headerlink" href="#network-phones" title="Permanent link">&para;</a></h1>
+<p>The line has one number and any number of phones on it. This page is about the third of them: a
+<strong>soft phone on your own network</strong> — a laptop or a phone running a SIP app — ringing and dialing
+through the same SIM line as the handset and the browser page.</p>
+<div class="admonition important">
+<p class="admonition-title">Nothing speaks SIP until you say so</p>
+<p>A router as installed has <strong>no SIP port open and no SIP process running</strong>. <code>awvoice.sip.mode</code>
+ships as <code>web</code>, which means the page and the handset only. Everything on this page happens after
+you move that switch.</p>
+</div>
+<p><a href="../../assets/img/awvoice/sip-mode.png"><img alt="The SIP tab: the mode card, the account a soft phone signs in with, and both guards" src="../../assets/img/awvoice/sip-mode.png" /></a></p>
+<h2 id="what-the-switch-actually-does">What the switch actually does<a class="headerlink" href="#what-the-switch-actually-does" title="Permanent link">&para;</a></h2>
+<p>The SIP tab's first card asks one question — <strong>who may use the phone line</strong> — and has two answers:</p>
+<table>
+<thead>
+<tr>
+<th>the card says</th>
+<th>the option writes</th>
+<th>what happens next</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>SIP off — the page and the handset</em></td>
+<td><code>awvoice.sip.mode = web</code></td>
+<td>the service is stopped, and the front-end name this port publishes is withdrawn</td>
+</tr>
+<tr>
+<td><em>SIP on — a network phone joins them</em></td>
+<td><code>interop</code>, or <code>baresip</code> if that is the word already stored</td>
+<td>the service is started</td>
+</tr>
+</tbody>
+</table>
+<p>Saving is one action with a fixed order, and the card tells you where it got to:</p>
+<ol>
+<li>the side is written to <code>/etc/config/awvoice</code>;</li>
+<li>the page waits for the daemon to publish or withdraw the front-end object <code>qmodem_voip</code> — eight
+   tries, 250 ms apart;</li>
+<li>the service's own init script, <code>/etc/init.d/qmodem_voip_sipd</code>, is started or stopped.</li>
+</ol>
+<p>While step 3 is pending the card re-checks every two seconds for up to a minute, and after a move it
+re-reads every 1.5 seconds up to six times. The outcome word is always shown:</p>
+<table>
+<thead>
+<tr>
+<th>the card says</th>
+<th>what it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>started</code> / <code>stopped</code></td>
+<td>the service moved as asked</td>
+</tr>
+<tr>
+<td><code>waiting</code></td>
+<td>a call is in progress. The service moves when the call ends rather than being cut in half</td>
+</tr>
+<tr>
+<td><code>absent</code></td>
+<td>there is no SIP service installed on this router</td>
+</tr>
+<tr>
+<td><code>denied</code></td>
+<td>this account may not start or stop it — the permission is a separate grant</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>the service did not answer. The move is yours to make</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">A word the build does not know is refused, not ignored</p>
+<p><code>awvoice.sip.mode</code> accepts <code>web</code>, <code>interop</code> and <code>baresip</code>. Anything else is refused, said so in
+the log, and the line stays on the side it was on.</p>
+</div>
+<h2 id="what-the-service-is">What the service is<a class="headerlink" href="#what-the-service-is" title="Permanent link">&para;</a></h2>
+<p>The network phone is carried by a <strong>separate program on the router</strong> — the SIP service that comes
+with the QModem feed. This page's software does not contain any of it, does not reconfigure it, and
+does not store its secrets. The relationship is exactly two things:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>who may use the line</strong></td>
+<td>decided here, in <code>awvoice.sip.mode</code></td>
+</tr>
+<tr>
+<td><strong>how a network phone signs in</strong></td>
+<td>decided there, in <code>/etc/config/qmodem_sip</code></td>
+</tr>
+</tbody>
+</table>
+<p>The AWvoice page reads that file's settings back and shows them, and it is the only place you can
+change them without a shell. The values this image ships are in
+<a href="../../reference/options/#qmodem_sip--the-service-a-network-phone-uses">UCI options</a>.</p>
+<h3 id="calls-coming-in">Calls coming in<a class="headerlink" href="#calls-coming-in" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>setting</th>
+<th>default</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Allow the calls coming in</em></td>
+<td>on</td>
+<td>the inbound direction</td>
+</tr>
+<tr>
+<td><em>Network</em></td>
+<td><code>lan</code></td>
+<td>which interface it listens on</td>
+</tr>
+<tr>
+<td><em>SIP port</em></td>
+<td><code>5060</code></td>
+<td>UDP and TCP together, shown as fixed text</td>
+</tr>
+<tr>
+<td><em>Account name</em></td>
+<td><code>awvoice</code></td>
+<td>the name a soft phone signs in with. It is named for this router's phone service</td>
+</tr>
+<tr>
+<td><em>Password</em></td>
+<td><code>CleanWRT#40</code></td>
+<td>the same secret as the default Wi-Fi key, so a router has one pair to remember</td>
+</tr>
+</tbody>
+</table>
+<h3 id="calls-going-out-through-a-provider">Calls going out through a provider<a class="headerlink" href="#calls-going-out-through-a-provider" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>setting</th>
+<th>default</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Allow the calls going out</em></td>
+<td>off</td>
+<td>the outbound direction</td>
+</tr>
+<tr>
+<td><em>Network</em></td>
+<td><code>wan</code></td>
+<td></td>
+</tr>
+<tr>
+<td><em>SIP port</em></td>
+<td><code>5061</code></td>
+<td></td>
+</tr>
+<tr>
+<td><em>Provider address</em></td>
+<td>unset</td>
+<td>server and port</td>
+</tr>
+<tr>
+<td><em>Encryption</em></td>
+<td>TLS</td>
+<td>fixed</td>
+</tr>
+<tr>
+<td><em>Account name</em>, <em>Realm</em>, <em>Password</em></td>
+<td>unset</td>
+<td><strong>the image ships no outbound secret at all</strong> — the direction that reaches a server outside the house starts empty</td>
+</tr>
+<tr>
+<td><em>Re-register every</em></td>
+<td><code>300</code> s</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="passwords-and-what-is-never-shown">Passwords, and what is never shown<a class="headerlink" href="#passwords-and-what-is-never-shown" title="Permanent link">&para;</a></h3>
+<p>The password field shows <code>stored — type to replace</code>, or <code>not set</code>. A stored password is never
+displayed, because it cannot be read back: it is stored in a form that cannot be reversed. Type it
+once if you need to see it, or press <strong>Create a new password</strong> to get a fresh one.</p>
+<p>The credential the service actually uses lives at <code>/var/run/qmodem_voip/sip.conf</code> — a derived file
+in memory-backed storage, regenerated from <code>/etc/config/qmodem_sip</code> when the service starts and when
+its configuration is reloaded. The page reports whether that file is in place. It never reads it.</p>
+<h2 id="the-two-guards">The two guards<a class="headerlink" href="#the-two-guards" title="Permanent link">&para;</a></h2>
+<p>A second front end on one line can fight the first, so two checks decide whether the network side
+may run at all. They are <strong>checks, not negotiation</strong>: this port never opens, closes, stops or
+reconfigures another program's things.</p>
+<table>
+<thead>
+<tr>
+<th>guard</th>
+<th>the question</th>
+<th>what a bad answer means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>the voice AT port</strong></td>
+<td>is another process holding the modem's voice AT port?</td>
+<td>the phone daemon cannot run the modem, so the network side is not started</td>
+</tr>
+<tr>
+<td><strong>the front-end name</strong></td>
+<td>is the object name <code>qmodem_voip</code> already registered by something else?</td>
+<td>the network side may not offer it. The page and the handset still work — the name decides only the network half</td>
+</tr>
+</tbody>
+</table>
+<p>Both are asked again at service start, on a settings reload, on a modem hotplug, and on the daemon's
+slow re-check. The Health and Diagnostics panes report the current answers, so a refusal is a fact
+you can read rather than a thing you infer.</p>
+<div class="admonition tip">
+<p class="admonition-title">The vendor VoIP engine is off the boot path in this image</p>
+<p>A <code>qmodem_voip</code> engine that starts before the phone daemon takes the name, and a soft phone then
+registers but never gets audio. This image stops that engine and removes it from the boot path on
+first boot, precisely so the phone daemon can answer the name itself. See
+<a href="../../reference/uci-defaults/">first-boot defaults</a>.</p>
+</div>
+<h2 id="what-a-soft-phone-needs-to-be-set-to">What a soft phone needs to be set to<a class="headerlink" href="#what-a-soft-phone-needs-to-be-set-to" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>field</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIP server / domain</td>
+<td>the router's LAN address</td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code>5060</code> UDP (or TCP)</td>
+</tr>
+<tr>
+<td>User / auth id</td>
+<td>the <em>Account name</em> on the page (<code>awvoice</code> as shipped)</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>the <em>Password</em> on the page</td>
+</tr>
+<tr>
+<td>Display name</td>
+<td>anything you like</td>
+</tr>
+</tbody>
+</table>
+<p>A call placed from the soft phone goes out over the SIM; a call to the SIM's number rings the
+soft phone as well as the handset. Whoever answers first has the call, and the
+<a href="../web-phone/#who-owns-the-line">handset-wins-a-lift rule</a> is what keeps that from becoming a
+contest.</p>
+<h2 id="the-code-a-phone-scans">The code a phone scans<a class="headerlink" href="#the-code-a-phone-scans" title="Permanent link">&para;</a></h2>
+<p>Typing the five fields above into a phone is the last part of the job nobody enjoys. The SIP tab's
+<strong>Show a Linphone QR code</strong> button removes it.</p>
+<p><a href="../../assets/img/awvoice/linphone-qr.png"><img alt="The QR card: the code, the address it is served from, and the minute it stops being served" src="../../assets/img/awvoice/linphone-qr.png" /></a></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>what the code holds</td>
+<td><strong>one URL and nothing else</strong>, because a provisioning URL is what that app expects to read from a code</td>
+</tr>
+<tr>
+<td>what the phone does with it</td>
+<td>fetches the file at that address and builds the account itself. Nothing is typed</td>
+</tr>
+<tr>
+<td>where the file is written</td>
+<td><code>/www/awvoice-provision/awvoice-&lt;32 hex&gt;.xml</code>, by <code>/usr/libexec/awvoice-provision</code>, under a random name</td>
+</tr>
+<tr>
+<td>how it is served</td>
+<td>a plain HTTP listener on port <code>8080</code>, with directory listings off and the private-network filter on, whose document root is that one directory</td>
+</tr>
+<tr>
+<td>how long it lives</td>
+<td><strong>ten minutes</strong>. The card names the minute it stops being served, and the daemon's own round runs every 60 seconds and retires the files this feature wrote. Nothing else in that folder is touched</td>
+</tr>
+<tr>
+<td>what the file contains</td>
+<td>the account name, its realm and its password in clear</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition danger">
+<p class="admonition-title">Show a code while the phone is beside you</p>
+<p>The provisioning file carries the account password in clear text and is readable by anything on
+the LAN for those ten minutes. It is never reachable from outside your network, but it is not a
+secret once it is on the wire. Show it when you are holding both devices.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">If the app already holds an account</p>
+<p>That app offers its scanner only while it holds no account at all. Remove the existing account
+in the app first, then scan.</p>
+</div>
+<p>When no code can be made, the card says why in words instead of showing a broken picture:</p>
+<table>
+<thead>
+<tr>
+<th>the card says</th>
+<th>what to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the network phones are switched off</td>
+<td>move the switch on first</td>
+</tr>
+<tr>
+<td>there is no account name yet</td>
+<td>set one on the page</td>
+</tr>
+<tr>
+<td>the stored password cannot be read back</td>
+<td>type it once, or press <strong>Create a new password</strong></td>
+</tr>
+<tr>
+<td>the network has no address right now</td>
+<td>the interface the page reads has no IPv4 yet</td>
+</tr>
+<tr>
+<td>this router serves no plain address a phone can fetch</td>
+<td>the port-8080 listener is not in <code>/etc/config/uhttpd</code>. That listener belongs to the web server's own configuration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="when-a-network-phone-does-not-behave">When a network phone does not behave<a class="headerlink" href="#when-a-network-phone-does-not-behave" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>symptom</th>
+<th>what it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The phone registers, rings on an incoming call, and there is <strong>no audio</strong></td>
+<td>the service's media socket does not point at this router's phone daemon. <code>/etc/config/qmodem_sip</code>'s <code>main.media_socket_path</code> must be <code>/var/run/awvoice-phoned/media.sock</code>, which is what this image ships. An older configuration is migrated on upgrade</td>
+</tr>
+<tr>
+<td>The phone registers and <strong>cannot place a call</strong></td>
+<td>something else holds the front-end name <code>qmodem_voip</code> — usually the vendor engine, started by hand. The Diagnostics pane names the holder</td>
+</tr>
+<tr>
+<td>The switch says <code>denied</code></td>
+<td>the account you are logged in as may not start or stop that service. See <a href="../../reference/ubus-and-acl/">the API and who may call it</a></td>
+</tr>
+<tr>
+<td>The switch says <code>waiting</code> forever</td>
+<td>a call is in progress and will not be cut. End it, or leave it and the service moves when the call ends</td>
+</tr>
+<tr>
+<td>Inbound calls do not reach the phone</td>
+<td>the inbound direction is off, or the account name and password in the app do not match what the page shows</td>
+</tr>
+<tr>
+<td>Outbound through a provider fails</td>
+<td>the outbound direction ships with no server, no realm and no password. It is configured, not enabled</td>
+</tr>
+<tr>
+<td>The QR card refuses to make a code</td>
+<td>it said why, in words. See the table above</td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions-people-ask">Questions people ask<a class="headerlink" href="#questions-people-ask" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Can I use a soft phone with the AW1000's RJ11 port?</summary>
+<p>Yes, once the AWvoice page's SIP switch is on. The soft phone registers to the router over your
+own LAN and rings and dials through the SIM's line, beside the handset and the browser page. No
+provider account and no second number are involved.</p>
+</details>
+<details class="question">
+<summary>Does the AW1000 expose a SIP port to the internet?</summary>
+<p>No. The listener is on the LAN interface, and the switch that opens it is off as installed. The
+outbound direction, which is the one that reaches outside your house, ships with no server and no
+secret at all.</p>
+</details>
+<details class="question">
+<summary>Why does my soft phone register but I hear nothing?</summary>
+<p>Almost always the audio path: the SIP service must hand media to the phone daemon's socket, and
+that is one setting in <code>/etc/config/qmodem_sip</code>. This image ships it correctly; a configuration
+carried over from an older release is migrated at first boot.</p>
+</details>
+<details class="question">
+<summary>How do I set up a Linphone account without typing a password?</summary>
+<p><strong>SIP → Show a Linphone QR code</strong>. The phone reads one URL, fetches its own account file, and
+builds the account. The address stops being served ten minutes later, and the card names the
+minute it stops.</p>
+</details>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../web-phone/" class="md-footer__link md-footer__link--prev" aria-label="Previous: The web phone">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                The web phone
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../quiet-hours/" class="md-footer__link md-footer__link--next" aria-label="Next: Quiet hours">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Quiet hours
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      GPL-2.0-only. CleanWRT is not affiliated with or endorsed by the OpenWrt project.
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>

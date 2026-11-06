@@ -6,14 +6,14 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Set up and manage the Quectel RG500Q-EA 5G modem of the Arcadyan AW1000 with QModem: signal, SMS, TTL, IPv4/IPv6, AT ports and modem firmware.">
+        <meta name="description" content="The Quectel RG500Q-EA modem on the Arcadyan AW1000: QModem, 3gInfo, SMS, TTL, which process uses which AT port, the LAN SIP service, and modem firmware.">
       
       
       
         <link rel="canonical" href="https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/">
       
       
-        <link rel="prev" href="../awvoice/">
+        <link rel="prev" href="../awvoice/how-it-works/">
       
       
         <link rel="next" href="../leds/">
@@ -27,7 +27,7 @@
     
     
       
-        <title>AW1000 5G modem: QModem, SMS, TTL and firmware - CleanWRT</title>
+        <title>AW1000 5G modem: QModem, SMS, TTL, SIP - CleanWRT</title>
       
     
     
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="The 5G modem - CleanWRT">
-<meta property="og:description" content="Set up and manage the Quectel RG500Q-EA 5G modem of the Arcadyan AW1000 with QModem: signal, SMS, TTL, IPv4/IPv6, AT ports and modem firmware.">
+<meta property="og:description" content="The Quectel RG500Q-EA modem on the Arcadyan AW1000: QModem, 3gInfo, SMS, TTL, which process uses which AT port, the LAN SIP service, and modem firmware.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,13 +64,13 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The 5G modem - CleanWRT">
-<meta name="twitter:description" content="Set up and manage the Quectel RG500Q-EA 5G modem of the Arcadyan AW1000 with QModem: signal, SMS, TTL, IPv4/IPv6, AT ports and modem firmware.">
+<meta name="twitter:description" content="The Quectel RG500Q-EA modem on the Arcadyan AW1000: QModem, 3gInfo, SMS, TTL, which process uses which AT port, the LAN SIP service, and modem firmware.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "The 5G modem", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The 5G modem", "description": "Set up and manage the Quectel RG500Q-EA 5G modem of the Arcadyan AW1000 with QModem: signal, SMS, TTL, IPv4/IPv6, AT ports and modem firmware.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does the 5G modem of my AW1000 not register?", "acceptedAnswer": {"@type": "Answer", "text": "Open Modem → QModem and Modem → 3gInfo-lite and check the SIM, the APN and the signal first. A modem firmware upgrade is only a last resort, and only when the carrier or Quectel confirms that a newer firmware fixes your problem."}}, {"@type": "Question", "name": "How do I read and send SMS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Use Modem → SMS in LuCI. You can read and send messages there, and received SMS can be forwarded."}}, {"@type": "Question", "name": "What does the TTL setting do on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "It gives forwarded packets a fixed TTL of 64 so tethered traffic looks like traffic from the router itself. It is on by default. Whether that is allowed depends on your carrier's terms, and you can change or switch it off in Modem → TTL."}}, {"@type": "Question", "name": "How do I use IPv4 only on the AW1000 5G connection?", "acceptedAnswer": {"@type": "Answer", "text": "Set the modem's PDP type to IPv4 in Modem → QModem. If you send traffic through Passwall 2, also enable IPv6 TProxy in its forwarding settings so devices cannot reach IPv6 sites outside the proxy."}}, {"@type": "Question", "name": "Which AT port do I use on the AW1000 modem?", "acceptedAnswer": {"@type": "Answer", "text": "The modem exposes two AT ports. The LED daemon uses /dev/ttyUSB2 and QModem uses /dev/ttyUSB3. Do not leave a terminal open on either one, because two programs reading one port interleave their replies."}}, {"@type": "Question", "name": "Do I need to upgrade the modem firmware on my AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Only if the modem misbehaves on your carrier. If it works, leave it alone. The firmware is separate from CleanWRT, comes only from Quectel, and an interrupted or wrong flash can leave the modem unusable."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "The 5G modem", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The 5G modem", "description": "The Quectel RG500Q-EA modem on the Arcadyan AW1000: QModem, 3gInfo, SMS, TTL, which process uses which AT port, the LAN SIP service, and modem firmware.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does the 5G modem of my AW1000 not register?", "acceptedAnswer": {"@type": "Answer", "text": "Open Modem → QModem and Modem → 3gInfo-lite and check the SIM, the APN and the signal first. A modem firmware upgrade is a last resort, and only when the carrier or Quectel confirms a newer firmware fixes your case."}}, {"@type": "Question", "name": "How do I read and send SMS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Modem → SMS in LuCI. Received messages can be forwarded from the same place. Note that this image selects one SMS forwarder deliberately: the two packages that exist install the same init script and the image would refuse to assemble with both."}}, {"@type": "Question", "name": "What does the TTL setting do on the AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "It gives forwarded packets a fixed TTL of 64 so tethered traffic looks like traffic from the router itself. It is on by default. Whether that is allowed depends on your carrier's terms."}}, {"@type": "Question", "name": "Which AT port do I use on the AW1000 modem?", "acceptedAnswer": {"@type": "Answer", "text": "/dev/ttyUSB3 for QModem, and the tty on USB interface 2 for the phone daemon; the LED daemon is configured for /dev/ttyUSB2. Do not leave a terminal open on any of them."}}, {"@type": "Question", "name": "Does CleanWRT include a SIP server?", "acceptedAnswer": {"@type": "Answer", "text": "It includes a LAN SIP service, from the same feed as the modem apps, that a soft phone on your own network registers to. It ships stopped, it listens on nothing until the AWvoice page's switch starts it, and it never reaches outside your network unless you configure the outbound direction yourself."}}]}</script>
 </head>
   
   
@@ -125,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AW1000 5G modem: QModem, SMS, TTL and firmware
+              AW1000 5G modem: QModem, SMS, TTL, SIP
             
           </span>
         </div>
@@ -567,14 +567,463 @@
       
   
   
-    
-  
   
   
     
     
       
         
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The phone port
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The phone port
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWvoice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../awvoice/how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
       
         
       
@@ -609,10 +1058,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -630,8 +1079,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -640,34 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../awvoice/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AWvoice, the phone port
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -758,6 +1179,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-sip-service-that-arrives-with-this-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The SIP service that arrives with this feed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ipv4-only" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -792,10 +1224,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-read-the-current-version-safe-changes-nothing" class="md-nav__link">
+  <a href="#when-is-an-upgrade-needed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Read the current version (safe, changes nothing)
+        When is an upgrade needed?
       
     </span>
   </a>
@@ -803,10 +1235,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-when-is-an-upgrade-needed" class="md-nav__link">
+  <a href="#where-the-firmware-comes-from" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. When is an upgrade needed?
+        Where the firmware comes from
       
     </span>
   </a>
@@ -814,10 +1246,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-where-the-firmware-comes-from" class="md-nav__link">
+  <a href="#the-upgrade-in-outline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Where the firmware comes from
+        The upgrade, in outline
       
     </span>
   </a>
@@ -825,21 +1257,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-the-upgrade-vendor-procedure" class="md-nav__link">
+  <a href="#risk-and-recovery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. The upgrade (vendor procedure)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-risk-and-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Risk and recovery
+        Risk and recovery
       
     </span>
   </a>
@@ -848,6 +1269,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-image-fixes-around-the-modem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the image fixes around the modem
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1147,6 +1579,8 @@
       
         
       
+        
+      
     
     
     
@@ -1160,10 +1594,219 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1181,8 +1824,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1337,10 +1980,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1358,8 +2001,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1449,6 +2092,8 @@
       
         
       
+        
+      
     
     
     
@@ -1462,10 +2107,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1483,8 +2128,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1585,6 +2230,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../changelog/" class="md-nav__link">
         
   
@@ -1662,6 +2335,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-sip-service-that-arrives-with-this-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The SIP service that arrives with this feed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ipv4-only" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1696,10 +2380,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-read-the-current-version-safe-changes-nothing" class="md-nav__link">
+  <a href="#when-is-an-upgrade-needed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Read the current version (safe, changes nothing)
+        When is an upgrade needed?
       
     </span>
   </a>
@@ -1707,10 +2391,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-when-is-an-upgrade-needed" class="md-nav__link">
+  <a href="#where-the-firmware-comes-from" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. When is an upgrade needed?
+        Where the firmware comes from
       
     </span>
   </a>
@@ -1718,10 +2402,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-where-the-firmware-comes-from" class="md-nav__link">
+  <a href="#the-upgrade-in-outline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Where the firmware comes from
+        The upgrade, in outline
       
     </span>
   </a>
@@ -1729,21 +2413,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-the-upgrade-vendor-procedure" class="md-nav__link">
+  <a href="#risk-and-recovery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. The upgrade (vendor procedure)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-risk-and-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Risk and recovery
+        Risk and recovery
       
     </span>
   </a>
@@ -1752,6 +2425,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-image-fixes-around-the-modem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the image fixes around the modem
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1792,40 +2476,40 @@
 
 
 <h1 id="the-5g-modem">The 5G modem<a class="headerlink" href="#the-5g-modem" title="Permanent link">&para;</a></h1>
-<p>The AW1000 has a Quectel <strong>RG500Q-EA</strong> 5G modem. CleanWRT drives it with <strong>QModem</strong> and the
+<p>The AW1000 carries a Quectel <strong>RG500Q-EA</strong> 5G modem. CleanWRT drives it with <strong>QModem</strong> and the
 vendor QMI dialer, so it dials and recovers on its own.</p>
 <h2 id="what-works-out-of-the-box">What works out of the box<a class="headerlink" href="#what-works-out-of-the-box" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Feature</th>
-<th>Where</th>
-<th>Notes</th>
+<th>feature</th>
+<th>where</th>
+<th>notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Modem control and status</td>
+<td>modem control and status</td>
 <td><em>Modem → QModem</em></td>
 <td>auto-dial, auto-recovery, dual-stack IPv4/IPv6 when your carrier offers IPv6</td>
 </tr>
 <tr>
-<td>Signal and network details</td>
+<td>signal and network details</td>
 <td><em>Modem → 3gInfo-lite</em></td>
-<td>registration shows correctly on data-only SIMs (a CEREG-based fix)</td>
+<td>registration shows correctly on data-only SIMs, from a CEREG-based fix in this build</td>
 </tr>
 <tr>
 <td>SMS</td>
 <td><em>Modem → SMS</em></td>
-<td>read and send; received SMS can be forwarded</td>
+<td>read and send. Received messages can be forwarded</td>
 </tr>
 <tr>
-<td>Carrier tethering-detection bypass (TTL)</td>
+<td>tethering-detection bypass (TTL)</td>
 <td><em>Modem → TTL</em></td>
 <td><strong>on by default</strong>: forwarded packets get a fixed TTL of 64</td>
 </tr>
 <tr>
-<td>Data usage</td>
+<td>data usage</td>
 <td><em>Statistics → vnStat</em></td>
 <td>daily and monthly totals on the modem interface</td>
 </tr>
@@ -1834,79 +2518,148 @@ vendor QMI dialer, so it dials and recovers on its own.</p>
 <td>automatic</td>
 <td>taken from the network's country code once the modem registers</td>
 </tr>
+<tr>
+<td>the LAN SIP service</td>
+<td>no page of its own — the switch is on <strong>AWvoice → SIP</strong></td>
+<td>it comes with the same feed as the modem apps. See below</td>
+</tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">About the TTL setting</p>
-<p>The TTL rule exists so tethered traffic looks like traffic from the router itself. Whether
-that is allowed depends on your carrier's terms. You can change the value or turn it off
-in <em>Modem → TTL</em>.</p>
+<p>The TTL rule exists so tethered traffic looks like traffic from the router itself. Whether that
+is allowed depends on your carrier's terms. Change the value or switch it off in
+<em>Modem → TTL</em> — the shipped rule is an <code>/etc/nftables.d/</code> fragment, which is what fw4 actually
+applies.</p>
 </div>
 <h2 id="awvoice-and-the-modem">AWvoice and the modem<a class="headerlink" href="#awvoice-and-the-modem" title="Permanent link">&para;</a></h2>
-<p><a href="../awvoice/">AWvoice</a> uses the modem for voice calls (VoLTE) and needs it in PCM slave mode. If you
-use the phone port, read that page before you change the modem's audio or IMS settings.</p>
-<h2 id="ipv4-only">IPv4 only<a class="headerlink" href="#ipv4-only" title="Permanent link">&para;</a></h2>
-<p>To use IPv4 only, set the modem's PDP type to IPv4 in <em>Modem → QModem</em>. If you send traffic
-through Passwall 2, also enable <strong>IPv6 TProxy</strong> in its forwarding settings, otherwise devices
-can reach IPv6 sites directly, outside the proxy.</p>
-<h2 id="at-ports">AT ports<a class="headerlink" href="#at-ports" title="Permanent link">&para;</a></h2>
-<p>The modem exposes several serial ports. Two of them are for AT commands:</p>
+<p><a href="../awvoice/">AWvoice</a> uses this modem for voice, over VoLTE, and needs it in <strong>PCM slave mode</strong>. If
+you use the phone port, read that page before you change the modem's audio or IMS settings: AWvoice
+reads the audio mode and the IMS registration and reports both, and does not change either one
+itself. Changing the audio rate does restart the modem, so mobile data drops for about half a
+minute.</p>
+<h2 id="the-sip-service-that-arrives-with-this-feed">The SIP service that arrives with this feed<a class="headerlink" href="#the-sip-service-that-arrives-with-this-feed" title="Permanent link">&para;</a></h2>
+<p>The QModem feed this build pins carries <code>qmodem-sipd</code>, the LAN SIP service that a
+<a href="../awvoice/network-phones/#what-the-service-is">network phone</a> uses. It is selected into the image,
+and it is <strong>not started</strong> by the image.</p>
 <table>
 <thead>
 <tr>
-<th>Port</th>
-<th>Used by</th>
+<th>fact</th>
+<th>value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>/dev/ttyUSB2</code></td>
-<td>the LED daemon (see <a href="../leds/">Front-panel LEDs</a>)</td>
+<td>package</td>
+<td><code>qmodem-sipd</code>, which pulls the vendor VoIP engine, the SMS daemon and the seven pjproject libraries</td>
 </tr>
 <tr>
-<td><code>/dev/ttyUSB3</code></td>
+<td>size in the image</td>
+<td>166 KiB for the service itself, about 1.5 MiB for the seven pjsip packages together</td>
+</tr>
+<tr>
+<td>config file</td>
+<td><code>/etc/config/qmodem_sip</code>, listed option by option in <a href="../reference/options/#qmodem_sip--the-service-a-network-phone-uses">UCI options</a></td>
+</tr>
+<tr>
+<td>what starts it</td>
+<td>the AWvoice page's SIP switch, through <code>/etc/init.d/qmodem_voip_sipd</code></td>
+</tr>
+<tr>
+<td>boot order, if enabled</td>
+<td>SMS daemon 92, phone daemon 95, VoIP engine 99, SIP service 100</td>
+</tr>
+<tr>
+<td>what is deliberately <strong>not</strong> selected</td>
+<td><code>luci-app-qmodem-voip</code>. Two pages for one service drift apart, so the switch, the credentials and the audio socket live on the AWvoice screen</td>
+</tr>
+<tr>
+<td>the vendor VoIP engine</td>
+<td>stopped and taken off the boot path at first boot, because it claims the front-end name the phone daemon answers</td>
+</tr>
+</tbody>
+</table>
+<p>Six patches in <code>patches/feeds/qmodem/</code> change this service's behaviour — the 2xx ACK, the in-dialog
+BYE from either side, the CANCEL of an unanswered LAN INVITE, the UCI section as the credential
+record, the defaults the phone bridge needs, and the migration for a configuration that kept the
+vendor engine's socket. What each one does is in
+<a href="../building/#what-this-build-changes-upstream">what this build changes upstream</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">If a soft phone registers but no call goes through</p>
+<p>That is the vendor VoIP engine holding the front-end name. This image's first-boot script takes
+it off the boot path for exactly this reason; on a router where the script did not run, the
+AWvoice page's Diagnostics pane names the holder.</p>
+</div>
+<h2 id="ipv4-only">IPv4 only<a class="headerlink" href="#ipv4-only" title="Permanent link">&para;</a></h2>
+<p>To use IPv4 only, set the modem's PDP type to IPv4 in <em>Modem → QModem</em>. If you send traffic through
+Passwall 2, also enable <strong>IPv6 TProxy</strong> in its forwarding settings, otherwise devices can reach IPv6
+sites directly, outside the proxy.</p>
+<h2 id="at-ports">AT ports<a class="headerlink" href="#at-ports" title="Permanent link">&para;</a></h2>
+<p>The modem exposes several serial ports, and more than one program uses them.</p>
+<table>
+<thead>
+<tr>
+<th>who</th>
+<th>which port</th>
+<th>how it is chosen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the phone daemon</td>
+<td>the tty on the modem's <strong>USB interface 2</strong> (<code>awvoice.main.at_interface</code>)</td>
+<td>by interface number, through sysfs — not by a fixed device name</td>
+</tr>
+<tr>
+<td>the LED daemon</td>
+<td><code>/dev/ttyUSB2</code>, configurable</td>
+<td>by device name. Usually the same port as above, which is why it holds a lock, polls every 30 seconds, and absorbs a cut-short reply with its <a href="../leds/#settings">contention grace</a> setting</td>
+</tr>
+<tr>
 <td>QModem</td>
+<td><code>/dev/ttyUSB3</code></td>
+<td>the port left to it by <code>47-cw-awvoice-at-port</code>, which removes the ubus AT daemon's claim on the other one</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition warning">
 <p class="admonition-title">Do not keep a port open</p>
-<p>Two programs reading one AT port interleave their replies. Do not leave a terminal open
-on either port for a long time: a stuck session can blank the LEDs or stall QModem. Close
-the session when you are done.</p>
+<p>Two programs reading one AT port interleave their replies. A terminal left open on any of them
+can blank the LEDs, stall QModem, or make the phone daemon's modem questions time out. Close the
+session when you are done.</p>
 </div>
-<h2 id="modem-firmware">Modem firmware<a class="headerlink" href="#modem-firmware" title="Permanent link">&para;</a></h2>
-<p>The modem's firmware is <strong>separate from the router firmware</strong>. Flashing CleanWRT does not change
-it. CleanWRT does not ship, host or redistribute Quectel firmware or tools, and the project has
-not performed the upgrade itself: it is the vendor's procedure and your risk.</p>
-<h3 id="1-read-the-current-version-safe-changes-nothing">1. Read the current version (safe, changes nothing)<a class="headerlink" href="#1-read-the-current-version-safe-changes-nothing" title="Permanent link">&para;</a></h3>
-<p>Easiest is the <em>QModem</em> page, which shows the firmware revision. Over SSH:</p>
+<p>A read that does not disturb anything:</p>
 <div class="highlight"><pre><span></span><code><span class="o">(</span><span class="w"> </span>timeout<span class="w"> </span><span class="m">3</span><span class="w"> </span>cat<span class="w"> </span>/dev/ttyUSB3<span class="w"> </span>&gt;<span class="w"> </span>/tmp/at.out<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="o">)</span><span class="p">;</span><span class="w"> </span>sleep<span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="nb">printf</span><span class="w"> </span><span class="s1">'ATI\r'</span><span class="w"> </span>&gt;<span class="w"> </span>/dev/ttyUSB3<span class="p">;</span><span class="w"> </span>sleep<span class="w"> </span><span class="m">2</span>
 tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">'\r'</span><span class="w"> </span>&lt;<span class="w"> </span>/tmp/at.out<span class="p">;</span><span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>/tmp/at.out
 </code></pre></div>
-<p>A reply looks like this:</p>
 <div class="highlight"><pre><span></span><code>ATI      -&gt;  Quectel / RG500Q-EA / Revision: RG500QEAAAR13A01M4G
 AT+QGMR  -&gt;  RG500QEAAAR13A01M4G_01.200.01.200
 </code></pre></div>
-<h3 id="2-when-is-an-upgrade-needed">2. When is an upgrade needed?<a class="headerlink" href="#2-when-is-an-upgrade-needed" title="Permanent link">&para;</a></h3>
-<p>Only when the modem misbehaves on your carrier (no registration, no 5G, unstable data) and
-the carrier or Quectel confirms that a newer firmware fixes it. Some units are reported to ship
-with a region-customised firmware that works poorly on other carriers; the revision string is
-what to quote when asking Quectel. <strong>If the modem works, leave it alone.</strong></p>
-<h3 id="3-where-the-firmware-comes-from">3. Where the firmware comes from<a class="headerlink" href="#3-where-the-firmware-comes-from" title="Permanent link">&para;</a></h3>
-<p>Only from Quectel (or your supplier acting for Quectel): the package for your exact module
-variant and revision, with the vendor's release notes. Do not use packages from forums or other
-sites. A wrong or modified package can brick the modem.</p>
-<h3 id="4-the-upgrade-vendor-procedure">4. The upgrade (vendor procedure)<a class="headerlink" href="#4-the-upgrade-vendor-procedure" title="Permanent link">&para;</a></h3>
-<p>Quectel's Linux flashing tool is <strong>QFirehose</strong>. It is not in the OpenWrt 25.12.5 package feeds
-and not in the CleanWRT feed; it comes with the vendor's Linux tools package. Follow the README
-of the version you receive, because the flags differ between versions. In outline:</p>
+<h2 id="modem-firmware">Modem firmware<a class="headerlink" href="#modem-firmware" title="Permanent link">&para;</a></h2>
+<p>The modem's firmware is <strong>separate from the router firmware</strong>. Flashing CleanWRT does not change it.
+CleanWRT does not ship, host or redistribute Quectel firmware or tools, and the project has not
+performed the upgrade itself: it is the vendor's procedure and your risk.</p>
+<h3 id="when-is-an-upgrade-needed">When is an upgrade needed?<a class="headerlink" href="#when-is-an-upgrade-needed" title="Permanent link">&para;</a></h3>
+<p>Only when the modem misbehaves on your carrier — no registration, no 5G, unstable data — and the
+carrier or Quectel confirms that a newer firmware fixes it. Some units are reported to ship with a
+region-customised firmware that works poorly on other carriers; the revision string above is what to
+quote when asking Quectel. <strong>If the modem works, leave it alone.</strong></p>
+<h3 id="where-the-firmware-comes-from">Where the firmware comes from<a class="headerlink" href="#where-the-firmware-comes-from" title="Permanent link">&para;</a></h3>
+<p>Only from Quectel, or your supplier acting for Quectel: the package for your exact module variant and
+revision, with the vendor's release notes. Do not use packages from forums or other sites. A wrong or
+modified package can brick the modem.</p>
+<h3 id="the-upgrade-in-outline">The upgrade, in outline<a class="headerlink" href="#the-upgrade-in-outline" title="Permanent link">&para;</a></h3>
+<p>Quectel's Linux flashing tool is <strong>QFirehose</strong>. It is not in the OpenWrt 25.12.5 package feeds and
+not in the CleanWRT feed; it comes with the vendor's Linux tools package. Follow the README of the
+version you receive, because the flags differ between versions.</p>
 <ol>
-<li>Read the version (step 1) and keep the output.</li>
+<li>Read the version and keep the output.</li>
 <li>Power the router from a stable supply and do not touch it during the flash.</li>
 <li>
 <p>Stop what uses the modem ports:</p>
 <div class="highlight"><pre><span></span><code>/etc/init.d/cw-led<span class="w"> </span>stop
+/etc/init.d/awvoice<span class="w"> </span>stop
 /etc/init.d/qmodem_network<span class="w"> </span>stop
 /etc/init.d/qmodem_monitor<span class="w"> </span>stop
 </code></pre></div>
@@ -1914,41 +2667,76 @@ of the version you receive, because the flags differ between versions. In outlin
 <li>
 <p>Run QFirehose against the unpacked vendor firmware directory, as its README says.</p>
 </li>
-<li>Wait for the modem to re-enumerate, read the version again, then start the services again
-   (or reboot).</li>
+<li>Wait for the modem to re-enumerate, read the version again, then start the services again — or
+   reboot.</li>
 </ol>
-<h3 id="5-risk-and-recovery">5. Risk and recovery<a class="headerlink" href="#5-risk-and-recovery" title="Permanent link">&para;</a></h3>
+<h3 id="risk-and-recovery">Risk and recovery<a class="headerlink" href="#risk-and-recovery" title="Permanent link">&para;</a></h3>
 <ul>
-<li>An interrupted or wrong flash can leave the modem unusable. A downgrade is not guaranteed to
-  work: plan as if the upgrade is one-way.</li>
+<li>An interrupted or wrong flash can leave the modem unusable. A downgrade is not guaranteed to work:
+  plan as if the upgrade is one-way.</li>
 <li>The router itself is unaffected, so SSH and LuCI stay reachable over LAN and Wi-Fi.</li>
-<li>If the modem does not come back, the vendor's tool and package are the recovery path. Contact
-  Quectel with the revision string you saved.</li>
+<li>If the modem does not come back, the vendor's tool and package are the recovery path.</li>
 </ul>
+<h2 id="what-the-image-fixes-around-the-modem">What the image fixes around the modem<a class="headerlink" href="#what-the-image-fixes-around-the-modem" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>change</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>98-cw-modem-fix</code> enables a small init script</td>
+<td>a registration fix for data-only SIMs, which otherwise show as not registered</td>
+</tr>
+<tr>
+<td><code>97-cw-net-tuning</code> sets <code>network.globals.packet_steering='1'</code></td>
+<td>receive work spread over the four cores, which a 5G link actually uses</td>
+</tr>
+<tr>
+<td>IPv6 gets its own retry ladder in <code>quectel-CM-5G-M</code></td>
+<td>a failed IPv6 setup no longer tears down the IPv4 call. 60 seconds, doubling, capped at 32 minutes</td>
+</tr>
+<tr>
+<td><code>qmi_wwan_q</code> keeps its NSS branch behind its own guard</td>
+<td>without it the module cannot even be packaged in this tree</td>
+</tr>
+<tr>
+<td>the generic QMI driver is <strong>not</strong> selected</td>
+<td>with it the modem registers and gets an address but no data flows. The vendor-patched drivers are what work</td>
+</tr>
+</tbody>
+</table>
 <h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
 <details class="question">
 <summary>Why does the 5G modem of my AW1000 not register?</summary>
-<p>Open <em>Modem → QModem</em> and <em>Modem → 3gInfo-lite</em> and check the SIM, the APN and the signal first. A modem firmware upgrade is only a last resort, and only when the carrier or Quectel confirms that a newer firmware fixes your problem.</p>
+<p>Open <em>Modem → QModem</em> and <em>Modem → 3gInfo-lite</em> and check the SIM, the APN and the signal first.
+A modem firmware upgrade is a last resort, and only when the carrier or Quectel confirms a newer
+firmware fixes your case.</p>
 </details>
 <details class="question">
 <summary>How do I read and send SMS on the Arcadyan AW1000?</summary>
-<p>Use <em>Modem → SMS</em> in LuCI. You can read and send messages there, and received SMS can be forwarded.</p>
+<p><em>Modem → SMS</em> in LuCI. Received messages can be forwarded from the same place. Note that this
+image selects one SMS forwarder deliberately: the two packages that exist install the same init
+script and the image would refuse to assemble with both.</p>
 </details>
 <details class="question">
 <summary>What does the TTL setting do on the AW1000?</summary>
-<p>It gives forwarded packets a fixed TTL of 64 so tethered traffic looks like traffic from the router itself. It is on by default. Whether that is allowed depends on your carrier's terms, and you can change or switch it off in <em>Modem → TTL</em>.</p>
-</details>
-<details class="question">
-<summary>How do I use IPv4 only on the AW1000 5G connection?</summary>
-<p>Set the modem's PDP type to IPv4 in <em>Modem → QModem</em>. If you send traffic through Passwall 2, also enable IPv6 TProxy in its forwarding settings so devices cannot reach IPv6 sites outside the proxy.</p>
+<p>It gives forwarded packets a fixed TTL of 64 so tethered traffic looks like traffic from the
+router itself. It is on by default. Whether that is allowed depends on your carrier's terms.</p>
 </details>
 <details class="question">
 <summary>Which AT port do I use on the AW1000 modem?</summary>
-<p>The modem exposes two AT ports. The LED daemon uses <code>/dev/ttyUSB2</code> and QModem uses <code>/dev/ttyUSB3</code>. Do not leave a terminal open on either one, because two programs reading one port interleave their replies.</p>
+<p><code>/dev/ttyUSB3</code> for QModem, and the tty on USB interface 2 for the phone daemon; the LED daemon is
+configured for <code>/dev/ttyUSB2</code>. Do not leave a terminal open on any of them.</p>
 </details>
 <details class="question">
-<summary>Do I need to upgrade the modem firmware on my AW1000?</summary>
-<p>Only if the modem misbehaves on your carrier. If it works, leave it alone. The firmware is separate from CleanWRT, comes only from Quectel, and an interrupted or wrong flash can leave the modem unusable.</p>
+<summary>Does CleanWRT include a SIP server?</summary>
+<p>It includes a LAN SIP <strong>service</strong>, from the same feed as the modem apps, that a soft phone on your
+own network registers to. It ships stopped, it listens on nothing until the AWvoice page's switch
+starts it, and it never reaches outside your network unless you configure the outbound direction
+yourself.</p>
 </details>
 
 
@@ -1988,7 +2776,7 @@ of the version you receive, because the flags differ between versions. In outlin
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../awvoice/" class="md-footer__link md-footer__link--prev" aria-label="Previous: AWvoice, the phone port">
+          <a href="../awvoice/how-it-works/" class="md-footer__link md-footer__link--prev" aria-label="Previous: How it works">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1998,7 +2786,7 @@ of the version you receive, because the flags differ between versions. In outlin
                 Previous
               </span>
               <div class="md-ellipsis">
-                AWvoice, the phone port
+                How it works
               </div>
             </div>
           </a>

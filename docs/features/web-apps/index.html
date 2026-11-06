@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="How to start and open the apps with their own web interface in CleanWRT: Syncthing, AdGuard Home and qBittorrent, with the first-run steps.">
+        <meta name="description" content="The three apps on CleanWRT for the AW1000 with a web interface of their own: what they listen on, what to set first, and what the image wires up for them.">
       
       
       
@@ -16,7 +16,7 @@
         <link rel="prev" href="../storage/">
       
       
-        <link rel="next" href="../../included/">
+        <link rel="next" href="../../reference/uci-defaults/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Syncthing, AdGuard Home and qBittorrent on the AW1000 - CleanWRT</title>
+        <title>Syncthing, AdGuard Home and qBittorrent - CleanWRT</title>
       
     
     
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="Apps with their own web interface - CleanWRT">
-<meta property="og:description" content="How to start and open the apps with their own web interface in CleanWRT: Syncthing, AdGuard Home and qBittorrent, with the first-run steps.">
+<meta property="og:description" content="The three apps on CleanWRT for the AW1000 with a web interface of their own: what they listen on, what to set first, and what the image wires up for them.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/features/web-apps/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,12 +64,13 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Apps with their own web interface - CleanWRT">
-<meta name="twitter:description" content="How to start and open the apps with their own web interface in CleanWRT: Syncthing, AdGuard Home and qBittorrent, with the first-run steps.">
+<meta name="twitter:description" content="The three apps on CleanWRT for the AW1000 with a web interface of their own: what they listen on, what to set first, and what the image wires up for them.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Apps with their own web interface", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/web-apps/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Apps with their own web interface", "description": "How to start and open the apps with their own web interface in CleanWRT: Syncthing, AdGuard Home and qBittorrent, with the first-run steps.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/web-apps/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "Apps with their own web interface", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/web-apps/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Apps with their own web interface", "description": "The three apps on CleanWRT for the AW1000 with a web interface of their own: what they listen on, what to set first, and what the image wires up for them.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/web-apps/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which apps have their own web page on CleanWRT?", "acceptedAnswer": {"@type": "Answer", "text": "AdGuard Home, Syncthing and qBittorrent. Each is installed and switched off, and each listens on its own port only after you enable it."}}, {"@type": "Question", "name": "Does enabling AdGuard Home break the router's own DNS?", "acceptedAnswer": {"@type": "Answer", "text": "Not on this image. A first-boot script gives it the local upstream it needs, which is the usual way this goes wrong on a stock install."}}]}</script>
 </head>
   
   
@@ -124,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Syncthing, AdGuard Home and qBittorrent on the AW1000
+              Syncthing, AdGuard Home and qBittorrent
             
           </span>
         </div>
@@ -566,14 +567,463 @@
       
   
   
-    
-  
   
   
     
     
       
         
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The phone port
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The phone port
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWvoice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
       
         
       
@@ -608,10 +1058,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -629,8 +1079,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -639,34 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../awvoice/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AWvoice, the phone port
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -1030,10 +1452,265 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1076,10 +1753,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1097,8 +1774,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1253,10 +1930,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1274,8 +1951,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1365,6 +2042,8 @@
       
         
       
+        
+      
     
     
     
@@ -1378,10 +2057,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1399,8 +2078,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1481,6 +2160,34 @@
     
   
     Licence and notices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
   
 
     
@@ -1599,6 +2306,50 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1665,6 +2416,84 @@ to <code>http://127.0.0.1:8384</code>.</p>
 <li>Set your own: <em>Tools → Options → Web UI → Authentication</em>.</li>
 </ol>
 <p>The default download folder is on the USB drive (<code>/mnt</code>); attach and mount it first.</p>
+<h2 id="out-of-the-box">Out of the box<a class="headerlink" href="#out-of-the-box" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>state</th>
+<th>its own interface</th>
+<th>first thing to set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AdGuard Home</td>
+<td><strong>off</strong></td>
+<td>its own dashboard</td>
+<td>it is given a local upstream by <code>97-cw-adguard-enable-bridge</code>, so the router's own resolution keeps working when the filter starts</td>
+</tr>
+<tr>
+<td>Syncthing</td>
+<td><strong>off</strong></td>
+<td><code>http://0.0.0.0:8384</code></td>
+<td>a password. The interface binds all addresses as shipped</td>
+</tr>
+<tr>
+<td>qBittorrent</td>
+<td><strong>off</strong></td>
+<td>its own web UI</td>
+<td>the download directory. It defaults to the first USB drive</td>
+</tr>
+<tr>
+<td>Adblock</td>
+<td><strong>off</strong></td>
+<td>no interface of its own</td>
+<td>the checkbox on its LuCI page</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-is-listening">What is listening<a class="headerlink" href="#what-is-listening" title="Permanent link">&para;</a></h2>
+<p>Nothing until you enable an app. Each one's port and address are in
+<a href="../../reference/files-and-ports/#network-ports">files, ports and paths</a>.</p>
+<h2 id="when-it-does-not-work">When it does not work<a class="headerlink" href="#when-it-does-not-work" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>symptom</th>
+<th>what it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The whole network stops resolving when AdGuard Home starts</td>
+<td>the upstream loop. This image's first-boot script wires the local upstream precisely to prevent it; if the script did not run, check the resolver port it expects</td>
+</tr>
+<tr>
+<td>Syncthing's page is open to your network</td>
+<td>it is: <code>0.0.0.0:8384</code>. Set a username and password before you enable it</td>
+</tr>
+<tr>
+<td>Downloads go to flash and fill it</td>
+<td>the download directory. Point it at a mounted USB drive first</td>
+</tr>
+<tr>
+<td>An app's page shows nothing after <code>apk upgrade</code></td>
+<td>the pinned LuCI packages were replaced. See <a href="../../updating/">updating and pinning</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions-people-ask">Questions people ask<a class="headerlink" href="#questions-people-ask" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Which apps have their own web page on CleanWRT?</summary>
+<p>AdGuard Home, Syncthing and qBittorrent. Each is installed and switched off, and each listens on
+its own port only after you enable it.</p>
+</details>
+<details class="question">
+<summary>Does enabling AdGuard Home break the router's own DNS?</summary>
+<p>Not on this image. A first-boot script gives it the local upstream it needs, which is the usual
+way this goes wrong on a stock install.</p>
+</details>
 
 
 
@@ -1720,13 +2549,13 @@ to <code>http://127.0.0.1:8384</code>.</p>
         
         
           
-          <a href="../../included/" class="md-footer__link md-footer__link--next" aria-label="Next: What is included">
+          <a href="../../reference/uci-defaults/" class="md-footer__link md-footer__link--next" aria-label="Next: First-boot defaults">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                What is included
+                First-boot defaults
               </div>
             </div>
             <div class="md-footer__button md-icon">

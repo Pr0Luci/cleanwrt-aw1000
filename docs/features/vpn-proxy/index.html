@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="The VPN and proxy tools in CleanWRT for the Arcadyan AW1000: WireGuard, OpenVPN, Passwall, Passwall 2 and HomeProxy, installed and disabled by default.">
+        <meta name="description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, which cores are in the image and which were left out.">
       
       
       
@@ -27,7 +27,7 @@
     
     
       
-        <title>WireGuard, OpenVPN, Passwall and HomeProxy on OpenWrt - CleanWRT</title>
+        <title>WireGuard, OpenVPN and Passwall on OpenWrt - CleanWRT</title>
       
     
     
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="VPN and proxies - CleanWRT">
-<meta property="og:description" content="The VPN and proxy tools in CleanWRT for the Arcadyan AW1000: WireGuard, OpenVPN, Passwall, Passwall 2 and HomeProxy, installed and disabled by default.">
+<meta property="og:description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, which cores are in the image and which were left out.">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,13 +64,13 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="VPN and proxies - CleanWRT">
-<meta name="twitter:description" content="The VPN and proxy tools in CleanWRT for the Arcadyan AW1000: WireGuard, OpenVPN, Passwall, Passwall 2 and HomeProxy, installed and disabled by default.">
+<meta name="twitter:description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, which cores are in the image and which were left out.">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "VPN and proxies", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "VPN and proxies", "description": "The VPN and proxy tools in CleanWRT for the Arcadyan AW1000: WireGuard, OpenVPN, Passwall, Passwall 2 and HomeProxy, installed and disabled by default.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is fully installed with no interfaces configured, and OpenVPN needs your own .ovpn configuration. Both ship disabled."}}, {"@type": "Question", "name": "Can I run Passwall and HomeProxy at the same time?", "acceptedAnswer": {"@type": "Answer", "text": "It is better not to. Several proxy suites on one router make firewall and DNS rules fight, so enable the one you want."}}, {"@type": "Question", "name": "Why do I need IPv6 TProxy in Passwall 2?", "acceptedAnswer": {"@type": "Answer", "text": "Without it, devices can reach IPv6 sites directly, outside the proxy. Enable it in the forwarding settings when you proxy traffic through Passwall 2."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "VPN and proxies", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "VPN and proxies", "description": "The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, which cores are in the image and which were left out.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is fully installed with no interfaces configured, and OpenVPN needs your own .ovpn configuration. Both ship disabled."}}, {"@type": "Question", "name": "Can I run Passwall and HomeProxy at the same time?", "acceptedAnswer": {"@type": "Answer", "text": "It is better not to. Several proxy suites on one router make firewall and DNS rules fight, so enable the one you want."}}, {"@type": "Question", "name": "Why do I need IPv6 TProxy in Passwall 2?", "acceptedAnswer": {"@type": "Answer", "text": "Without it, devices can reach IPv6 sites directly, outside the proxy. Enable it in the forwarding settings when you proxy traffic through Passwall 2."}}, {"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is a kernel module plus tools and a LuCI page; OpenVPN is installed with its own page and needs your configuration file. Neither is configured out of the box."}}, {"@type": "Question", "name": "Can I run Passwall and HomeProxy at the same time?", "acceptedAnswer": {"@type": "Answer", "text": "You can install both, but only one should be enabled: they both install transparent-proxy rules and the second one silently changes where the first one's traffic goes."}}, {"@type": "Question", "name": "Why do I need IPv6 TProxy in Passwall 2?", "acceptedAnswer": {"@type": "Answer", "text": "Because the 5G connection is dual-stack when your carrier offers IPv6, and a proxy that only captures IPv4 leaves IPv6 traffic going out directly."}}]}</script>
 </head>
   
   
@@ -125,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              WireGuard, OpenVPN, Passwall and HomeProxy on OpenWrt
+              WireGuard, OpenVPN and Passwall on OpenWrt
             
           </span>
         </div>
@@ -567,14 +567,463 @@
       
   
   
-    
-  
   
   
     
     
       
         
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The phone port
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The phone port
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWvoice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
       
         
       
@@ -609,10 +1058,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -630,8 +1079,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -640,34 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../awvoice/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AWvoice, the phone port
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -919,6 +1340,50 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1064,6 +1529,8 @@
       
         
       
+        
+      
     
     
     
@@ -1077,10 +1544,219 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1098,8 +1774,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1254,10 +1930,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1275,8 +1951,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1366,6 +2042,8 @@
       
         
       
+        
+      
     
     
     
@@ -1379,10 +2057,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1400,8 +2078,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1482,6 +2160,34 @@
     
   
     Licence and notices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
   
 
     
@@ -1600,6 +2306,50 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1688,6 +2438,87 @@ settings. Passwall 1 hides IPv6 answers for proxied names by default.</p>
 <details class="question">
 <summary>Why do I need IPv6 TProxy in Passwall 2?</summary>
 <p>Without it, devices can reach IPv6 sites directly, outside the proxy. Enable it in the forwarding settings when you proxy traffic through Passwall 2.</p>
+</details>
+<h2 id="out-of-the-box">Out of the box<a class="headerlink" href="#out-of-the-box" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WireGuard</td>
+<td>kernel module and <code>wireguard-tools</code>, <strong>no tunnel configured</strong></td>
+</tr>
+<tr>
+<td>OpenVPN</td>
+<td>installed, off, needs your <code>.ovpn</code></td>
+</tr>
+<tr>
+<td>Passwall, Passwall 2, HomeProxy</td>
+<td>installed, <strong>all off</strong>. Their cores — <code>sing-box</code>, <code>xray-core</code>, <code>v2ray-plugin</code>, <code>hysteria</code>, <code>naiveproxy</code>, <code>ipt2socks</code>, <code>microsocks</code>, <code>dns2socks</code> — are in the image</td>
+</tr>
+<tr>
+<td>Tailscale, Cloudflare Tunnel</td>
+<td>installed, off. They belong on <a href="../remote-access/">remote access</a></td>
+</tr>
+<tr>
+<td>Shadowsocks-Rust, ShadowsocksR-libev, Simple-Obfs, shadow-tls</td>
+<td><strong>not in the image</strong>, and the reasons are in the seed: a deleted upstream asset, a recipe that fails to build, an archived project with a failing tarball hash. The same protocols are covered by xray-core and sing-box</td>
+</tr>
+<tr>
+<td>OpenClash</td>
+<td><strong>never seeded.</strong> It lives in the optional <code>cw-opt</code> feed, which is not published yet</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-is-listening">What is listening<a class="headerlink" href="#what-is-listening" title="Permanent link">&para;</a></h2>
+<p>A proxy suite that is off listens on nothing. When enabled, the transparent-proxy ports are local to
+the router and the LAN, and none of them is forwarded from the cellular side by this image.</p>
+<h2 id="when-it-does-not-work">When it does not work<a class="headerlink" href="#when-it-does-not-work" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>symptom</th>
+<th>what it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Traffic still goes out unproxied over IPv6</td>
+<td>Passwall 2 needs <strong>IPv6 TProxy</strong> enabled in its forwarding settings, or devices reach IPv6 sites directly</td>
+</tr>
+<tr>
+<td>Two suites fight and one wins</td>
+<td>run one. Both install transparent-proxy rules on the same ports</td>
+</tr>
+<tr>
+<td><code>apk upgrade</code> pulled a different version of a core</td>
+<td>the feed pins decide what the image is built with; see <a href="../../updating/">updating and pinning</a></td>
+</tr>
+<tr>
+<td>A server you added is refused</td>
+<td>check the core it needs is in the image. The excluded list above is the set that is not</td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions-people-ask">Questions people ask<a class="headerlink" href="#questions-people-ask" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Does CleanWRT include WireGuard and OpenVPN?</summary>
+<p>Yes. WireGuard is a kernel module plus tools and a LuCI page; OpenVPN is installed with its own
+page and needs your configuration file. Neither is configured out of the box.</p>
+</details>
+<details class="question">
+<summary>Can I run Passwall and HomeProxy at the same time?</summary>
+<p>You can install both, but only one should be enabled: they both install transparent-proxy rules
+and the second one silently changes where the first one's traffic goes.</p>
+</details>
+<details class="question">
+<summary>Why do I need IPv6 TProxy in Passwall 2?</summary>
+<p>Because the 5G connection is dual-stack when your carrier offers IPv6, and a proxy that only
+captures IPv4 leaves IPv6 traffic going out directly.</p>
 </details>
 
 

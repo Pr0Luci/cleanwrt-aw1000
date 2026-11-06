@@ -68,9 +68,9 @@
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Security", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/security/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Security", "description": "How CleanWRT secures the Arcadyan AW1000 by default: no open services, HTTPS for the admin UI, a first-login password, Wi-Fi key and service advice.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/security/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does my browser say the OpenWrt router connection is not secure?", "acceptedAnswer": {"@type": "Answer", "text": "LuCI uses a self-signed certificate that your router creates at first boot. The connection is still encrypted, but no public authority signed the certificate. Click Advanced → Proceed, or install a trusted certificate with ACME if you own a domain."}}, {"@type": "Question", "name": "What are the default passwords on CleanWRT?", "acceptedAnswer": {"@type": "Answer", "text": "There is no root password at first. The first login happens over Ethernet and LuCI asks you to set one. Wi-Fi is WPA2-PSK with the default key CleanWRT#40. Change both on the first login."}}, {"@type": "Question", "name": "How do I get a trusted HTTPS certificate on the router?", "acceptedAnswer": {"@type": "Answer", "text": "Install acme-common and luci-app-acme, then issue a Let's Encrypt certificate with a DNS challenge. That works behind CGNAT because it needs no inbound connection."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "Security", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/security/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Security", "description": "How CleanWRT secures the Arcadyan AW1000 by default: no open services, HTTPS for the admin UI, a first-login password, Wi-Fi key and service advice.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/security/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does my browser say the OpenWrt router connection is not secure?", "acceptedAnswer": {"@type": "Answer", "text": "LuCI uses a self-signed certificate that your router creates at first boot. The connection is still encrypted, but no public authority signed the certificate. Click Advanced → Proceed, or install a trusted certificate with ACME if you own a domain."}}, {"@type": "Question", "name": "What are the default passwords on CleanWRT?", "acceptedAnswer": {"@type": "Answer", "text": "There is no root password at first. The first login happens over Ethernet and LuCI asks you to set one. Wi-Fi is WPA2-PSK with the default key CleanWRT#40. Change both on the first login."}}, {"@type": "Question", "name": "How do I get a trusted HTTPS certificate on the router?", "acceptedAnswer": {"@type": "Answer", "text": "Install acme-common and luci-app-acme, then issue a Let's Encrypt certificate with a DNS challenge. That works behind CGNAT because it needs no inbound connection."}}, {"@type": "Question", "name": "Is the AW1000 safe with CleanWRT on a 5G connection?", "acceptedAnswer": {"@type": "Answer", "text": "It is a router behind carrier NAT with nothing forwarded in, and this image opens no inbound service beyond the LAN-side admin interface and the local provisioning listener. What makes it unsafe is the same thing that makes any router unsafe: no root password, and the default Wi-Fi key still in place."}}]}</script>
 </head>
   
   
@@ -567,14 +567,463 @@
       
   
   
-    
-  
   
   
     
     
       
         
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The phone port
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The phone port
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWvoice
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/handset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The handset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/calls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calls and the call log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/recordings-and-machine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recordings and the answering machine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/web-phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The web phone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/network-phones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network phones and the SIP side
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/quiet-hours/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quiet hours
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/rules-and-phonebook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules and the phone book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/the-page-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The page, control by control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/health-and-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Health, tests and the log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/settings-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../awvoice/how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How it works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
       
         
       
@@ -609,10 +1058,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -630,8 +1079,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -640,34 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../awvoice/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AWvoice, the phone port
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -885,6 +1306,50 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1086,6 +1551,8 @@
       
         
       
+        
+      
     
     
     
@@ -1099,10 +1566,219 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/uci-defaults/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-boot defaults
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UCI options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/files-and-ports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Files, ports and paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ubus-and-acl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The API and who may call it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1120,8 +1796,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1276,10 +1952,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1297,8 +1973,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1388,6 +2064,8 @@
       
         
       
+        
+      
     
     
     
@@ -1401,10 +2079,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1422,8 +2100,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1504,6 +2182,34 @@
     
   
     Licence and notices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../what-is-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is new
   
 
     
@@ -1644,6 +2350,50 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of the box
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-listening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is listening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-does-not-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it does not work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-people-ask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions people ask
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1752,6 +2502,108 @@ details and ask for a private channel.</p>
 <details class="question">
 <summary>How do I get a trusted HTTPS certificate on the router?</summary>
 <p>Install <code>acme-common</code> and <code>luci-app-acme</code>, then issue a Let's Encrypt certificate with a DNS challenge. That works behind CGNAT because it needs no inbound connection.</p>
+</details>
+<h2 id="out-of-the-box">Out of the box<a class="headerlink" href="#out-of-the-box" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>state</th>
+<th>who wrote it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LuCI over HTTPS, HTTP redirected</td>
+<td>on</td>
+<td><code>46-cw-uhttpd-https</code></td>
+</tr>
+<tr>
+<td>Root password</td>
+<td><strong>none</strong>, until you set one</td>
+<td><code>99-aw1000-defaults</code> leaves it unset, as stock OpenWrt does</td>
+</tr>
+<tr>
+<td>Wi-Fi</td>
+<td>on, WPA2-PSK, key <code>CleanWRT#40</code></td>
+<td>the same script, and only when no key is already set</td>
+</tr>
+<tr>
+<td>Firewall</td>
+<td>stock zones and defaults, <code>firewall4</code> and <code>nftables</code></td>
+<td>OpenWrt</td>
+</tr>
+<tr>
+<td>Opt-in apps</td>
+<td>off, so nothing listens</td>
+<td>each package's own default</td>
+</tr>
+<tr>
+<td>The provisioning listener</td>
+<td><strong>open on port 8080, LAN only</strong>, private-network filtered, directory listings off, document root holding one directory</td>
+<td><code>49-cw-awvoice-provision-port</code></td>
+</tr>
+<tr>
+<td>The SIP listener</td>
+<td><strong>closed</strong> until the AWvoice page's switch starts it</td>
+<td>the switch</td>
+</tr>
+<tr>
+<td>The browser audio port</td>
+<td>opens only while a page session is live, bound to the LAN interface's address</td>
+<td><code>awvoice.main.web_iface</code></td>
+</tr>
+<tr>
+<td>Package pins</td>
+<td>rewritten on every boot so <code>apk upgrade</code> cannot replace patched LuCI packages</td>
+<td><code>96-cw-apk-world-pin</code></td>
+</tr>
+<tr>
+<td>Attended-sysupgrade UI</td>
+<td>removed from the menu; the newer-version check stays</td>
+<td><code>48-cw-strip-asu-ui</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-is-listening">What is listening<a class="headerlink" href="#what-is-listening" title="Permanent link">&para;</a></h2>
+<p>The complete list, with the defaults, is in
+<a href="../../reference/files-and-ports/#network-ports">files, ports and paths</a>. The short version on a new
+router: 443 and 80 for the admin interface, 8080 for the provisioning listener, the LAN-side DNS and
+DHCP, and SSH on the LAN. Nothing is forwarded from the cellular side, and there is no UPnP.</p>
+<h2 id="when-it-does-not-work">When it does not work<a class="headerlink" href="#when-it-does-not-work" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>symptom</th>
+<th>what it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The browser warns about the certificate</td>
+<td>it is self-signed and created on your router. Expected. See the section above</td>
+</tr>
+<tr>
+<td><code>apk upgrade</code> says a package is held back</td>
+<td>that is the pin working. See <a href="../../updating/">updating and pinning</a></td>
+</tr>
+<tr>
+<td>A port you did not open answers on the LAN</td>
+<td>check which app you enabled, and remember the provisioning listener on 8080 is opened by the image itself</td>
+</tr>
+<tr>
+<td>LuCI says <em>"This account may not do that"</em> after an upgrade</td>
+<td>grants are snapshotted at login. Log out and back in. See <a href="../../reference/ubus-and-acl/#who-may-call-what">the API and who may call it</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="questions-people-ask">Questions people ask<a class="headerlink" href="#questions-people-ask" title="Permanent link">&para;</a></h2>
+<details class="question">
+<summary>Is the AW1000 safe with CleanWRT on a 5G connection?</summary>
+<p>It is a router behind carrier NAT with nothing forwarded in, and this image opens no inbound
+service beyond the LAN-side admin interface and the local provisioning listener. What makes it
+unsafe is the same thing that makes any router unsafe: no root password, and the default Wi-Fi
+key still in place.</p>
 </details>
 
 
