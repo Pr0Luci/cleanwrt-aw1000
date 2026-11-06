@@ -46,7 +46,7 @@ checksums and a provenance bundle.
     <td align="center" width="50%"><a href="docs/assets/img/overview-light.jpg"><img src="docs/assets/img/overview-light.jpg" alt="The Status overview in light mode"></a><br><sub>Light mode follows your system, or the toggle</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/assets/img/login-dark.jpg"><img src="docs/assets/img/login-dark.jpg" alt="The login page" width="60%"></a><br><sub>The login page</sub></td>
+    <td align="center"><a href="docs/assets/img/login-dark.jpg"><img src="docs/assets/img/login-dark.jpg" alt="The login page"></a><br><sub>The login page</sub></td>
     <td align="center"><a href="docs/assets/img/overview-mobile.jpg"><img src="docs/assets/img/overview-mobile.jpg" alt="The Status overview on a phone" width="34%"></a><br><sub>Made to be used from a phone</sub></td>
   </tr>
 </table>
