@@ -1,6 +1,7 @@
 ---
 title: "CleanWRT first boot and setup on the AW1000"
 description: "The first login, default Wi-Fi and password, HTTPS, time zone and a short tour of LuCI after you flash CleanWRT on the Arcadyan AW1000."
+updated: 2026-11-06
 ---
 
 # First boot
@@ -18,7 +19,11 @@ CleanWRT follows the stock OpenWrt first-login model.
 | Default Wi-Fi key | `CleanWRT#40` |
 | Time zone | UTC (set yours in LuCI) |
 | Admin UI | LuCI over HTTPS (self-signed certificate) |
-| Opt-in apps | installed, **disabled** |
+| The phone line | **on**. `awvoice.main.enabled` ships as `1`, so a desk phone works the first time you plug one in |
+| The network phone (SIP) side | **off**. No SIP port is open and no SIP process runs until the AWvoice page's switch starts it |
+| The front-panel LED daemon | on |
+| The TTL rewrite for tethering | on, at 64 |
+| Opt-in apps | installed and off, with one exception: the Samba daemon starts, but its share allows no guest access, so nothing is reachable until you add users |
 
 !!! warning "Change both on the first login"
     Anyone who knows the default Wi-Fi key can join your network, and with no root password
@@ -72,3 +77,11 @@ The login page, in dark and light mode:
 Every opt-in app has the same single switch: open its LuCI page, tick **Enable**, press
 **Save & Apply**. Set any passwords the app needs *before* you enable it. See
 [What is included](included.md).
+
+## What the image did before you got here
+
+Thirteen first-boot scripts wrote the defaults above — the hostname, the SSIDs and the key, the
+HTTPS redirect, the theme's look, the LED ownership, the AT port handed to the phone service, the
+vendor VoIP engine taken off the boot path, and the package pins that keep `apk upgrade` from
+replacing patched LuCI packages. All of it, script by script and option by option, is in
+[first-boot defaults](reference/uci-defaults.md).

@@ -1,182 +1,164 @@
 ---
-title: "AW1000 RJ11 phone port: VoLTE calls with AWvoice"
-description: "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line. Use an ordinary desk phone for VoLTE calls over the SIM: caller id, hold, three-way calls and more."
+title: "AWvoice: an RJ11 phone port on the AW1000"
+description: "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line over your SIM. Calls from a desk phone, the browser page, or a soft phone on your LAN."
+updated: 2026-11-06
 ---
 
-# AWvoice: an RJ11 phone port with VoLTE calls on the AW1000
+# AWvoice: a phone line on the router
 
-**AWvoice** turns the AW1000's RJ11 socket into a working phone line. Plug an ordinary desk
-phone into the router and make and take calls over the SIM card, with no extra box, no PBX and no
-SIP account. It is the headline feature of CleanWRT, and it ships with the `25.12.5-R1`
-release, in the same way QModem is the 5G modem app.
+**AWvoice** turns the AW1000's RJ11 socket into a working telephone line. The call is carried by
+the router's 5G modem over VoLTE, so your SIM's number is the line's number: no PBX, no Asterisk,
+no SIP provider, no second number.
 
-!!! info "This page follows the current release"
-    The page describes `25.12.5-R1`. What changed in the earlier candidates is in the
-    [changelog](changelog.md), so a router still on one of them can read the page that fits it.
+Three things can hold that line, and none of them needs the others:
+
+| | what it is | what it does |
+|---|---|---|
+| **A handset** | an ordinary analogue phone on the RJ11 socket | lifts, dials, rings, shows caller id on its own display |
+| **The web page** | the router's own LuCI page | a keypad, a call rail, a microphone and a speaker: the browser *is* the phone |
+| **A network phone** | a soft phone on your own LAN | registers to the router and rings and dials through the same SIM line |
+
+The socket can be empty. With nothing plugged into it, the web page and a soft phone both make and
+take calls, which is what makes the router usable as a phone without buying a handset for it.
+
+!!! danger "Read this before you connect anything"
+    - About **46 V DC** sits on the RJ11 contacts, and up to about **100 V while a call rings**.
+      Do not touch the contacts, and do not wire the socket into anything but a telephone.
+    - **This is not equipment for emergency calls.** The line exists only while the router has
+      power, the modem is registered for VoLTE and your operator carries the call. There is no
+      certification and no battery backup. Keep a phone that works independently for emergencies.
+    - Nothing on this router blocks an emergency number, and a dialled emergency number is never
+      replaced by a speed-dial entry. That is a property of the design, not a guarantee of service.
 
 ## What it does
 
+| calls | |
+|---|---|
+| Dial tone, ring, answer, hang up, clear speech both ways | [the handset](awvoice/handset.md), [the web page](awvoice/web-phone.md) |
+| All of it with nothing in the RJ11 socket | [the web page](awvoice/web-phone.md) |
+| Hook flash, call waiting, hold, swap, three-way join | [the handset](awvoice/handset.md) |
+| Held-call recall: put the handset down, the phone rings it back | [the handset](awvoice/handset.md#recall) |
+| Caller id on the handset's display — FSK (Bellcore or ETSI) or DTMF, before or after the first ring | [the handset](awvoice/handset.md#caller-id) |
+| Calling-line restriction, network service codes, hotline | [the handset](awvoice/handset.md#the-numbers-you-do-not-show) |
+| Progress tones, or the network's own ringback | [the handset](awvoice/handset.md#tones) |
+| HD voice at 16 kHz, following what the modem reports | [how it works](awvoice/how-it-works.md#hd-voice-is-a-wish-and-the-modem-decides) |
+| Emergency numbers | never blocked by anything here |
+
+| around the call | |
+|---|---|
+| Call log with search, filters and CSV export | [calls](awvoice/calls.md) |
+| Call recordings: stereo, the caller and the handset on separate channels, opt-in | [recordings and the machine](awvoice/recordings-and-machine.md#call-recordings) |
+| Answering machine: your greeting, then a message, linked from the call's own card | [recordings and the machine](awvoice/recordings-and-machine.md#the-answering-machine) |
+| Quiet hours: windows when the phone must not ring, and who rings through them | [quiet hours](awvoice/quiet-hours.md) |
+| Phone book with speed dial, and contacts that ring through quiet hours | [rules and the phone book](awvoice/rules-and-phonebook.md) |
+| Call blocking by direction, number or prefix | [rules and the phone book](awvoice/rules-and-phonebook.md#call-blocking) |
+| Alarm calls that dial or ring at a time you set | [rules and the phone book](awvoice/rules-and-phonebook.md#alarm-calls) |
+| The front-panel phone LED: solid, fast blink, slow blink | [the handset](awvoice/handset.md#the-phone-led) |
+
+| the network side, off until you turn it on | |
+|---|---|
+| A soft phone on your own LAN, beside the handset | [network phones](awvoice/network-phones.md) |
+| A code a phone scans to set itself up | [network phones](awvoice/network-phones.md#the-code-a-phone-scans) |
+| The browser as a telephone, over an encrypted LAN stream | [the web page](awvoice/web-phone.md) |
+
+## What is on when the router boots
+
 | | |
 |---|---|
-| **Calls** | incoming and outgoing calls with clear speech both ways |
-| **Tones** | dial tone, ringing tone, busy and congestion tones |
-| **In a call** | DTMF, caller id on the handset display (FSK, Bellcore or ETSI, or the DTMF variant, sent before or after the first ring), hook flash |
-| **Call waiting** | a second call is announced during a call; hold it, swap between the two, or refuse it |
-| **Three-way join** | join two calls into one conversation: **hook flash, then 3** (can be switched off in Settings) |
-| **Recall** | put the handset down with a call on hold and the phone **rings back**; lift it to take the call back |
-| **Call log** | incoming, outgoing and missed calls, with the names from your phone book |
-| **Call recordings** | calls you answer are kept as stereo WAV files, the caller and the handset on separate channels; play, save or delete the recording from the call's card (off by default, with a size budget that removes the oldest) |
-| **Answering machine** | after a delay you set, an unanswered call hears your greeting and leaves a message: play, save or delete it from the call's card. Off until a greeting is on the router; picking up the handset takes the call over and keeps the part of the message already recorded |
-| **Phone book** | contacts with speed dial |
-| **Call blocking** | by direction (incoming or outgoing), by number or by prefix |
-| **Hotline** | dial a number automatically when the handset is lifted |
-| **Calling-line restriction** | hide your number, and the network's service codes |
-| **Phone LED** | solid while the line is ready, a fast blink while a call rings, a slow blink while the handset is off hook (the rates can be set) |
-| **Alarm calls** | wake-up calls at a time you choose |
-| **Line test** | check the line from the web page |
-| **A web page** | *Services → AWvoice(RJ11)* with live status, calls, rules, settings, health and tests |
+| The phone line | **on**. `awvoice.main.enabled` ships as `1`, so the service starts at boot and the line is ready |
+| The web page | available as soon as LuCI is; it needs no separate switch |
+| The browser's microphone and speaker | off until you press the page's audio button, once per browser |
+| The network phone side | **off**. Nothing speaks SIP and no SIP port is open until you switch it on |
+| Call recordings | **off** |
+| The answering machine | **off**, although a greeting ships with the package so it works the moment you switch it on |
+| Quiet hours | off until you write a window; with no window the phone rings at every hour |
 
-## Hook flash codes
+## Start here
 
-During a call, press the handset's **flash** (R) key, then one digit. These are the standard
-network codes:
+The packages are already in CleanWRT, so there is nothing to install. Plug an ordinary analogue
+phone with an RJ11 plug into the socket, and lift the handset: you should hear a dial tone.
 
-| After the flash press | What happens |
-|---|---|
-| **1** | end the current call and take the other one (the waiting or the held call) |
-| **2** | put the current call on hold and take the other one; with two calls it swaps them, and with one held call it takes that call back |
-| **0** | refuse the waiting call, or release the held call |
-| **3** | **join** the two calls into a three-way conversation (needs two calls, and *three-way calling* switched on in Settings) |
-
-Set the flash key's timing in Settings, if your handset's flash key is longer or shorter than the
-default.
-
-## Recall
-
-If you hang up while a call is on hold, the call is not lost. The phone **rings back** until you lift
-the handset, which takes the call back, or the other side ends it.
-
-## How it works
-
-The call itself is carried by the router's **5G modem** (VoLTE), which AWvoice controls over its AT
-port. The router drives the line-interface chip of the RJ11 port and bridges the audio in the
-kernel, so the phone behaves like a normal one. There is no Asterisk and no PBX: the cellular
-network is the exchange, and the SIM's own number is the line's number.
-
-While the page's **SIP switch is off** — which is how the router ships — nothing on it speaks SIP:
-no port is open and nothing registers. Turning that switch on adds a **network phone**: a soft phone
-on your own network (a laptop or a phone running a SIP app) can then ring and dial through the same
-line, beside the handset on the RJ11 port, and the router starts and stops the service that does it
-as you move the switch. No provider account and no second number are involved either way — the
-SIM's line carries every call.
-
-AWvoice has three parts: a kernel module for the line chip (GPL-2.0-only), the phone daemon, and
-the LuCI page.
-
-A watchdog in the kernel puts the line chip back in reset whenever the phone service stops, so the
-line is never left ringing.
-
-## Safety
-
-!!! danger "Read this before you use it"
-    - About **46 V DC** is present on the RJ11 contacts, and up to about **100 V while the phone is
-      ringing**. Do not touch the contacts.
-    - **Not for emergency use.** The line works only while the router has power, the modem is
-      registered for VoLTE and the operator carries the call. There is no emergency-call
-      certification and no battery backup. Keep a mobile phone at hand for emergencies.
-    - The block list never blocks your country's national emergency numbers, and a dialled
-      emergency number is never replaced by a speed-dial entry.
-
-## What you need
-
-- A SIM and an operator that provide **VoLTE** (voice over LTE).
-- The modem in **PCM slave mode**. AWvoice warns in the log if it is not, and does not change
-  it by itself.
-- Nothing else for the line chip: its **board file ships with AWvoice** and is installed on the
-  first start.
-- An ordinary **analogue phone** with an RJ11 plug.
-
-AWvoice reads the modem's audio mode and its VoLTE (IMS) state and shows them on the Health area
-of the page. It does not change them itself.
-
-## Turn it on
-
-AWvoice is installed with CleanWRT but the phone service starts only when you enable it, so the
-line is never left ringing by accident:
+If the line was switched off at some point, switch it back on:
 
 ```sh
 uci set awvoice.main.enabled=1
 uci commit awvoice
-/etc/init.d/awvoice start
+/etc/init.d/awvoice restart
 ```
 
-The defaults fit the AW1000. The settings the page does not show (the modem's AT interface number,
-the LED name) are in `/etc/config/awvoice`.
+Then, in any order you like:
 
-## The web page
+1. Open **Services → AWvoice(RJ11)** and read the [page tour](awvoice/the-page-tour.md) beside the
+   real thing.
+2. Make a call from the page's keypad with the [handset unplugged](awvoice/web-phone.md), to see
+   that the line does not depend on the socket.
+3. Decide what should happen to a call you do not answer:
+   [the answering machine](awvoice/recordings-and-machine.md#the-answering-machine) or
+   [quiet hours](awvoice/quiet-hours.md). Joining two calls into one conversation is a separate
+   switch, and it is **off** as installed.
+4. If a soft phone on your own network should ring too, turn on the
+   [SIP side](awvoice/network-phones.md) — and read what it opens before you do.
 
-*Services → AWvoice(RJ11)* is one page for everything:
+What you need for the line itself: a SIM and an operator that provide **VoLTE**, and the modem in
+**PCM slave mode**. AWvoice reads both, reports them on the [Health tab](awvoice/health-and-tests.md),
+and never changes the modem's audio mode by itself. The line chip's board file ships with the
+package and is installed on the first start, so there is nothing to prepare.
 
-- **live status:** the line (idle, off hook, ringing, in a call), the current call, the voice
-  network and the signal;
-- **calls:** the call log, with names from the phone book;
-- **phone book and speed dial;**
-- **rules:** call blocking, forwarding and alarm calls, and the quiet hours - the windows of the day
-  the handset, the answering machine and the network phones hold off ringing, the contacts marked to
-  ring through one, and the `*78`, `*79` and `#` codes typed on the handset or the page;
-- **settings:** caller id mode, hook-flash timing, tones, audio levels, call waiting, hotline and
-  the line LED;
-- **SIP:** the switch (off: the handset on the RJ11 port; on: a soft phone on your own network joins
-  it, and the service that answers it starts and stops with the switch), the account names and
-  passwords it uses on your LAN, and what it reports while a call is up;
-- **health and tests:** the AT port, the line, the modem, counters and the log, with ring, line and
-  loopback tests.
+## The page
 
-## Frequently asked questions
+One LuCI page at **Services → AWvoice(RJ11)**, seven tabs. It reads the daemon over `ubus` and
+writes the same `/etc/config/awvoice` file the shell does, so the page and `uci` never disagree.
 
-??? question "How do I make phone calls on the Arcadyan AW1000?"
-    Install CleanWRT, which includes AWvoice, plug an ordinary analogue desk phone into the RJ11
-    socket, enable the phone service and lift the handset. Calls go out over the router's 5G modem
-    with your SIM's number.
+[![The Overview tab: the line state, the call card, the keypad and the call rail](assets/img/awvoice/overview-web-phone.png)](assets/img/awvoice/overview-web-phone.png)
 
-??? question "Which phones work on the RJ11 port?"
-    An ordinary analogue (tone dial) phone with an RJ11 plug. A handset with a display also shows
-    the caller id.
+| tab | what lives there | the page that explains it |
+|---|---|---|
+| **Overview** | the line's state, the current call, and the browser phone with its keypad and call rail | [the web page](awvoice/web-phone.md) |
+| **Calls** | the call log, and each call's own recording or message | [calls](awvoice/calls.md) |
+| **Rules** | four panes: the phone book, call blocking, alarm calls, quiet hours | [quiet hours](awvoice/quiet-hours.md), [rules](awvoice/rules-and-phonebook.md) |
+| **Phone settings** | the line's behaviour, the tones, the levels, the recording and answering-machine cards | [the handset](awvoice/handset.md), [recordings and the machine](awvoice/recordings-and-machine.md) |
+| **SIP** | whether a phone on your own network may join the line, and the account it signs in with | [network phones](awvoice/network-phones.md) |
+| **Health** | what the hardware actually reported: rates, guards, storage, the last call's outcome | [health and tests](awvoice/health-and-tests.md) |
+| **Test tools** | the ring test, the line test, and the loopback call test, which this build does not offer yet | [health and tests](awvoice/health-and-tests.md#the-tests) |
 
-??? question "Does AWvoice need Asterisk, SIP or a second phone number?"
-    No. There is no PBX and no SIP account. The cellular network is the exchange and the SIM's
-    number is the line's number. The router ships with nothing speaking SIP at all. The page's SIP
-    switch is for a different case, and it is optional: turning it on lets a soft phone on your own
-    network ring and dial through this router. It asks for no provider account and no second
-    number, and turning it off closes the port again.
+Every control's label, what it writes and when it is disabled is listed in
+[the page tour](awvoice/the-page-tour.md).
 
-??? question "Does the AW1000 need VoLTE for voice calls?"
-    Yes. The call is carried by the modem over VoLTE, so you need a SIM and an operator that
-    provide VoLTE. The modem must also be in PCM slave mode, which AWvoice checks and reports.
+## How it works
 
-??? question "Can I use it for emergency calls?"
-    No. The line works only while the router has power, the modem is registered for VoLTE and the
-    operator carries the call, and there is no battery backup. Keep a mobile phone at hand.
+Three packages, and the line logic in one daemon:
 
-## Known limits
+| package | what it is |
+|---|---|
+| `kmod-awvoice-fxs` | the kernel module: the line chip's register bus, the PCM block, the audio bridge between the modem and the chip, the capture tap that feeds the recordings, the playback ring that carries a greeting and the page's voice to the caller, and the hardware ring watchdog. GPL-2.0-only |
+| `awvoice-phoned` | the phone daemon: the hook, the tones, dialling, ringing, caller id, the call log, the recordings, the machine, quiet hours, the page's audio stream, the front end a network phone speaks through, and the `ubus` service `awvoice` |
+| `luci-app-awvoice` | the LuCI page |
 
-- With **SIP on**, a soft phone rings and talks only when the SIP service hands its audio to the
-  socket AWvoice listens on. The service arrives with its own place for that socket, so on a fresh
-  router the two do not meet until the AWvoice page's SIP card sets it — no audio is not a broken
-  call, it is this setting.
-- Hide my number (CLIR) and call forwarding can be refused by the operator's network when the
-  phone registers (`+CME ERROR: 30`). The page hides both while that is the case.
-- Giving up a second call while it still rings ends every call: the modem cannot release a
-  ringing leg on its own.
-- The modem's IMS registration may not come up after a cold boot, rarely. The page then shows
-  "Not registered", and a modem restart clears it.
-- Alarm calls trust the router's clock, which must be set. A wrong but plausible clock rings them
-  at the wrong time.
-- **Not for emergency calls**, see the safety box.
+The short version of the design: a **watchdog**, not a promise — if the phone service ever stops,
+the kernel puts the chip back into reset within milliseconds, so the line cannot be left ringing.
+Everything else follows from a **20 ms frame** that is the unit everywhere, from the kernel bridge
+to the browser stream to the recording file.
 
-## Source code
+The long version, including the front-end socket, the HD-voice negotiation and the board file, is
+in [how it works](awvoice/how-it-works.md).
 
-AWvoice is developed in its own repository,
-[Pr0Luci/openwrt-aw1000-voice-awvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice),
-which has the standard feed layout (see [Build from source](building.md)). All three parts are
-GPL-2.0-only; see [Licence and notices](licence.md).
+## If something is wrong
+
+Start with [troubleshooting](awvoice/troubleshooting.md): no dial tone, one-way audio, no caller
+id, a machine that will not answer, a soft phone that registers but never rings, a browser page
+with no sound. Each symptom has one check that decides it.
+
+## Reference
+
+| | |
+|---|---|
+| Every option, its values and its shipped default | [settings reference](awvoice/settings-reference.md), and the whole image's options in [UCI options](reference/options.md) |
+| Every file, port, socket and `ubus` method | [files and ports](reference/files-and-ports.md), [the API and who may call it](reference/ubus-and-acl.md) |
+| What was measured on a real router | [health and tests](awvoice/health-and-tests.md#what-has-been-measured-on-a-router) |
+| What changed in each release | [changelog](changelog.md) |
+| The source, its licence and the packages | [repositories](repositories.md), [licence](licence.md) |
+
+!!! info "About the screenshots"
+    These were taken from a real AW1000 running this firmware. The numbers in them — uptime,
+    signal, call times, the caller ids in the log — belong to the moment they were taken and will
+    differ on your router.
