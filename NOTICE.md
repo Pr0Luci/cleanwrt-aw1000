@@ -22,8 +22,8 @@ relicenses them.
 | Vendor `qmi_wwan_{q,f,s}` kernel modules (from QModem) | GPL (`MODULE_LICENSE("GPL")`) | driver sources @ pinned commit |
 | ath11k firmware | Qualcomm Atheros firmware licence (`LICENSE.qca_firmware`) | OpenWrt package Makefile |
 | AWvoice (kernel module, phone daemon, LuCI page) | GPL-2.0-only | shipped with the release |
-| `luci-app-cw-led` (our LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
-| `luci-theme-apex` (our LuCI theme; bundled fonts are SIL OFL 1.1) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-theme-apex> |
+| `luci-app-cw-led` (this project's LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
+| `luci-theme-footstrap`, `luci-theme-argon`, `luci-theme-alpha` and its `luci-app-alpha-config` (the LuCI themes; Footstrap is the one the image selects) | Apache-2.0, each from its own upstream | pinned commits in `configs/local-packages.pin` |
 
 Every other package's licence is listed, per package, in the generated
 [licence manifest](#licence-manifest).
@@ -38,11 +38,52 @@ distributed **free of charge and is not sold**, but **you are responsible for yo
 deploy this firmware in a commercial setting (a business, an ISP, a paid service), check QModem's
 `LICENSE` first. Source: <https://github.com/FUjr/QModem>.
 
-**Our patch to QModem.** `patches/feeds/qmodem/0001-status-modem-info-widgets-apex-theme.patch`
-modifies one QModem file (`luci/luci-app-qmodem/htdocs/luci-static/resources/view/status/include/11_modem.js`,
-the Status -> Modem Info card). It is a modification of QModem's code and stays under QModem's
-terms (the same text and restriction as above); the patch header states what was changed and the
-patch is published in this repository, which is the source for the modified file.
+**SIP service patches.** `patches/feeds/qmodem/0004-sip-inbound-answer-delivered.patch`,
+`0005-sip-dialog-bye-both-directions.patch` and `0006-sip-cancel-unanswered-lan-invite.patch` modify
+one file of `qmodem-sipd` (`application/qmodem_sipd/src/sip_consumer.c`, GPL-2.0-or-later per its own
+Makefile) at the pinned commit: they complete the SIP transaction the cellular side opens - the 2xx
+ACK a UAC owes (RFC 3261 13.2.1), the BYE either side of the dialog (RFC 3261 15.1.2), an in-dialog
+BYE that authenticates by the dialog's own identity (RFC 3261 12.2.2), and the CANCEL of a pending
+LAN INVITE with its 487 recognised as the answer to that CANCEL (RFC 3261 9.2, RFC 6026 8).
+`0007-sip-inbound-credentials-from-uci.patch` calls the same file's own
+`qmodem_voip_sip_credentials_sync()` - defined in `sip_credentials.c` and called nowhere at the
+pinned commit - before the inbound credential is read at start and again on the reload signal, so
+the UCI section becomes the record and the credential file under `/var/run` becomes derived state;
+it adds that file and `libuci` to the consumer's link line in the package Makefile.
+`0008-sip-default-config-for-the-phone-bridge.patch` changes only the shipped
+`files/etc/config/qmodem_sip`: the media socket, the inbound direction enabled on the LAN, and
+`voip_enabled` off in both directions, so the consumer rather than the VoIP-engine wait wrapper is
+the program that starts. No password ships. That file is a configuration file of the package, so an
+upgrade keeps the router's own copy and writes the new default aside;
+`0009-sip-voip-default-migration.patch` adds the `uci-defaults` script that closes that gap - it takes
+`voip_enabled` to 0 when, and only when, the media socket in the config is the phone service's own, and
+leaves a setup that keeps the VoIP engine's socket untouched. Each header says what it changes and why.
+These are modifications of QModem's code and stay under QModem's terms, exactly as above; they are
+published here, which is the source of the modified files. **AWvoice contains none of this code** - the
+two programs meet over ubus and a unix socket.
+
+**QMI driver patch.** `patches/feeds/qmodem/0010-qmi-wwan-nss-path-behind-its-own-guard.patch` restores one
+preprocessor guard in `driver/quectel_QMI_WWAN/src/qmi_wwan_q.c`, so the Qualcomm NSS branch of that driver is
+taken only where the kernel configures `CONFIG_RMNET_DATA`. The branch reads a symbol no module in this tree
+exports, so without the guard the driver cannot be linked and the package cannot be built. It is the guard the
+driver version this pin replaces carried, and a QSDK kernel that does set the symbol still gets the accelerated
+path. Same terms as above: a modification of QModem's code, published here.
+
+### Theme patches
+
+`patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch` changes one line of
+`luci-theme-footstrap/ucode/template/themes/footstrap/sysauth.ut` at the pinned commit, so the login page
+shows this project's logo instead of the router's hostname. It is a modification of Apache-2.0 code, stays
+under that licence, and is published here, which is the source of the modified file. The logo itself is
+`files/www/luci-static/cw-branding/login-logo.png` - this repository's own file, outside the theme's
+directory, so a theme update can neither overwrite it nor collide with the patch.
+
+`patches/packages/luci-theme-argon/0001-argon-registers-itself-and-leaves-the-default.patch` removes one
+line of `luci-theme-argon/root/etc/uci-defaults/30_luci-theme-argon` at the pinned commit: the line that
+writes `luci.main.mediaurlbase`, the design the web interface opens with. Argon still registers itself as
+a selectable theme; which theme a new router starts on is this image's choice, made after every package's
+own first-boot script has run. Same terms as the patch above: a modification of Apache-2.0 code, published
+here.
 
 ### 3ginfo-lite feed patches
 
@@ -75,7 +116,7 @@ which are version-pinned so the same inputs always rebuild the same firmware:
    `configs/local-packages.pin`.
 
 The README describes how to rebuild. If any pinned source becomes unreachable, open an issue
-and we will provide it.
+and the source will be provided.
 
 ## Licence manifest
 

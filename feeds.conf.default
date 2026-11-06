@@ -33,7 +33,14 @@ src-git routing https://git.openwrt.org/feed/routing.git^3d7d0dc7fa43d3eb0949841
 src-git telephony https://git.openwrt.org/feed/telephony.git^2618106d5846a4a542fdf5809f0d3ed228ce439b
 
 # ── QModem - luci-app-qmodem + qmodem/tom_modem/ubus_at_daemon/etc ───────────
-src-git qmodem https://github.com/FUjr/QModem.git^f15cc8fe64148f0a6f9daacc5f84ee79df58fea0
+# Pinned at the tag v3.4.0_rc3. That commit is the oldest one carrying
+# application/qmodem_sipd - the LAN SIP service the AWvoice port bridges to - and no
+# stable tag has it (v3.3.0, v3.2.0, v3.1.0 and the dashed v3.4.0-rc.* tags lack the
+# package outright; there is no v3.4.0 final yet). v3.4.0_rc3 is one commit ahead of
+# v3.4.0_rc3.1 and the difference is a CI workflow file. Every patch under
+# patches/feeds/qmodem/ applies here with zero fuzz, the modem-side ones as well as the
+# three that fix the SIP dialog's answer, teardown and cancel.
+src-git qmodem https://github.com/FUjr/QModem.git^0988085b887346ae9477ef2e77abe2f797bd2c4a
 
 # ── Passwall2 (Openwrt-Passwall org) ─────────────────────────────────────────
 # passwall2 carries the LuCI app; its dependency set (passwall_packages) is the

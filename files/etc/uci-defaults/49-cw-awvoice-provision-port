@@ -1,0 +1,20 @@
+#!/bin/sh
+# The AWvoice SIP page shows a code a softphone scans; the code carries one
+# plain-HTTP address and the account itself is the file behind it. This opens
+# that listener as a uhttpd instance of its own, rooted at a directory holding
+# nothing else, so the plain port never reaches the admin pages. Listings stay
+# off and the RFC1918 filter keeps a fetch to the LAN; the admin pages stay on
+# HTTPS. The directory has to exist before uhttpd starts, or its instance
+# never comes up. (Revert: delete the awvoice_provision section from
+# /etc/config/uhttpd, remove /www/awvoice-provision, restart uhttpd.)
+[ -f /etc/config/uhttpd ] || exit 0
+mkdir -p /www/awvoice-provision
+uci set uhttpd.awvoice_provision=uhttpd
+uci set uhttpd.awvoice_provision.listen_http='0.0.0.0:8080'
+uci set uhttpd.awvoice_provision.home='/www/awvoice-provision'
+uci set uhttpd.awvoice_provision.redirect_https='0'
+uci set uhttpd.awvoice_provision.no_dirlists='1'
+uci set uhttpd.awvoice_provision.rfc1918_filter='1'
+uci commit uhttpd
+logger -t cw-firstboot "uhttpd: provisioning listener opened on the LAN at 8080"
+exit 0

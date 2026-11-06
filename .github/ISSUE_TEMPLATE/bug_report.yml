@@ -33,7 +33,7 @@ body:
         - 5G modem / QModem
         - AWvoice (phone port)
         - Front-panel LEDs
-        - Apex theme / LuCI
+        - Footstrap theme / LuCI
         - Proxy / VPN apps
         - USB storage / NAS apps
         - Wi-Fi / network

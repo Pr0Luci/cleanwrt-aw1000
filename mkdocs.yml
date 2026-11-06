@@ -1,5 +1,5 @@
 site_name: CleanWRT
-site_description: OpenWrt firmware for the Arcadyan AW1000 5G router with AWvoice, an RJ11 phone port with VoLTE calls, a 5G modem stack and the Apex theme.
+site_description: OpenWrt firmware for the Arcadyan AW1000 5G router with AWvoice, an RJ11 phone port with VoLTE calls, a 5G modem stack and the Footstrap interface.
 site_url: https://pr0luci.github.io/cleanwrt-aw1000/docs/
 repo_url: https://github.com/Pr0Luci/cleanwrt-aw1000
 repo_name: Pr0Luci/cleanwrt-aw1000
@@ -81,7 +81,7 @@ nav:
       - AWvoice, the phone port: awvoice.md
       - The 5G modem: modem.md
       - Front-panel LEDs: leds.md
-      - The Apex theme: theme.md
+      - The Footstrap theme: theme.md
       - Security: features/security.md
       - Remote access: features/remote-access.md
       - VPN and proxies: features/vpn-proxy.md

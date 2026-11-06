@@ -23,7 +23,7 @@ CONFIG_ALL_KMODS=y
 # `# CONFIG_KERNEL_KALLSYMS is not set`); the OpenWrt default is on. KALLSYMS is one of the
 # =y symbols in the vermagic hash, so leaving it on gave a different vermagic than the
 # official kmods repo even with ALL_KMODS (checked by computing the hash from the official
-# config.buildinfo: dbd7ac59..., and from ours with only this symbol differing).
+# config.buildinfo: dbd7ac59..., and from this configuration with only this symbol differing).
 # CONFIG_KERNEL_KALLSYMS is not set
 CONFIG_VERSIONOPT=y
 CONFIG_VERSION_FILENAMES=y
@@ -34,7 +34,7 @@ CONFIG_VERSION_DIST="CleanWRT"
 # number: a rebuild before publication keeps it, a fix after publication gets a
 # sub-number (rc1.1, rc1.2, ...). Change it here AND in tools/cw-release-build.sh (CW_VERSION)
 # together; the script asserts the two agree.
-CONFIG_VERSION_NUMBER="25.12.5-rc2"
+CONFIG_VERSION_NUMBER="25.12.5-rc2.1"
 CONFIG_VERSION_CODE=""
 CONFIG_VERSION_PRODUCT="CleanWRT AW1000 5G Router"
 CONFIG_VERSION_HWREV="v1"
@@ -156,11 +156,17 @@ CONFIG_PACKAGE_luci-base=y
 # pull a theme in this feed, so without it LuCI renders a fatal error
 # ("Failed to load template 'themes/bootstrap/header'") and the web UI is dead.
 # luci.main.mediaurlbase starts at /luci-static/bootstrap; files/etc/uci-defaults/
-# 96-cw-default-theme switches a fresh install to the Apex theme (bootstrap stays
+# 96-cw-default-theme switches a fresh install to Footstrap (bootstrap stays
 # installed as the fallback / user choice).
 CONFIG_PACKAGE_luci-theme-bootstrap=y
-# Default theme: luci-theme-apex (public repo, pinned in configs/local-packages.pin).
-CONFIG_PACKAGE_luci-theme-apex=y
+# Themes, each its own package pinned in configs/local-packages.pin (all Apache-2.0):
+# Footstrap is the default; Argon and Alpha ship so the three can be compared through the
+# theme selector in LuCI. Alpha's own Makefile depends on luci-app-alpha-config, so both are
+# named here - the app is what the theme installs against, and neither writes the default.
+CONFIG_PACKAGE_luci-theme-footstrap=y
+CONFIG_PACKAGE_luci-theme-argon=y
+CONFIG_PACKAGE_luci-theme-alpha=y
+CONFIG_PACKAGE_luci-app-alpha-config=y
 # Transitive deps of the luci-mod-* set that a minimal seed must name explicitly,
 # else `make defconfig` drops the whole admin UI (status/network -> admin-full):
 #   luci-mod-status  needs +libiwinfo +rpcd-mod-iwinfo
@@ -274,7 +280,13 @@ CONFIG_PACKAGE_adguardhome=y
 CONFIG_PACKAGE_luci-app-qmodem=y
 CONFIG_PACKAGE_qmodem=y
 CONFIG_PACKAGE_qmodem_monitor=y
-CONFIG_PACKAGE_sms-forwarder=y
+# The feed declares its two SMS forwarders as alternatives (PKG_CONFLICTS in the older
+# recipe) and both install /etc/init.d/sms_forwarder, so carrying both makes the image
+# refuse to assemble: "trying to overwrite etc/init.d/sms_forwarder owned by
+# sms-forwarder-next". The QModem SMS page pulls the -next variant at this pin, so
+# -next is the one this image carries.
+CONFIG_PACKAGE_sms-forwarder-next=y
+# CONFIG_PACKAGE_sms-forwarder is not set
 CONFIG_PACKAGE_tom_modem=y
 CONFIG_PACKAGE_ubus-at-daemon=y
 # QMI-WWAN driver: use the VENDOR-patched drivers (qmodem's own default), NOT
@@ -287,6 +299,18 @@ CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_vendor-qmi-wwan=y
 CONFIG_PACKAGE_kmod-qmi_wwan_q=y
 CONFIG_PACKAGE_kmod-qmi_wwan_f=y
 CONFIG_PACKAGE_kmod-qmi_wwan_s=y
+# The NSS variants of these drivers, and the feed's own vendor MHI PCIe driver, are
+# named off: they need the Qualcomm NSS driver (kmod-qca-nss-drv), which this tree
+# does not carry. rmnet_nss.c stops at a missing nss_api_if.h, and pcie_mhi 1.4 links
+# the rmnet_nss_callbacks symbol that driver exports. The feed's conditional selects
+# pull all four in as modules even with qmodem's PCIe support switched off, so each
+# needs its own line here. Nothing is taken away from the image: the modem's data path
+# on this board is USB QMI (the three drivers above), and no image of this project has
+# installed any of these four modules.
+# CONFIG_PACKAGE_kmod-rmnet-nss is not set
+# CONFIG_PACKAGE_kmod-qmi_wwan_q_nss is not set
+# CONFIG_PACKAGE_kmod-pcie_mhi is not set
+# CONFIG_PACKAGE_kmod-pcie_mhi_nss is not set
 
 # 5. AWvoice (Pr0Luci): the RJ11 phone port. The three packages are pinned in
 # configs/local-packages.pin (one repository, feed layout at the repo root).
@@ -315,6 +339,45 @@ CONFIG_PACKAGE_quectel-CM-5G-M=y
 # CONFIG_PACKAGE_luci-app-qmodem-ttl is not set
 CONFIG_PACKAGE_luci-app-qmodem-ttlfw4=y
 CONFIG_PACKAGE_luci-app-qmodem-sms=y
+
+# 4b. The LAN SIP service (qmodem-sipd): the network-phone side of the phone port. The
+#     AWvoice page's SIP switch starts and stops this unit, so the image has to carry it
+#     for that switch to have anything to control. Selecting this one package is the
+#     whole selection: its own DEPENDS pull the two daemons it works beside
+#     (qmodem-voip, qmodem-smsd) and the libraries it links - libpj, libpjlib-util,
+#     libpjmedia, libpjnath, libpjsip, libpjsip-ua and libpjsip-simple from the pinned
+#     telephony feed's pjproject, plus libsoxr and alsa-lib. Measured installed bytes on
+#     a router that carries them: qmodem-sipd 166 KiB, the seven pjsip packages 1.5 MiB
+#     together. The two daemons' own bytes arrive with the first image build: the
+#     prebuilt apk the router was fed with declared only `D:libpjsip`, so neither landed.
+#     Nothing here is enabled at boot, deliberately. Each package installs an
+#     /etc/init.d script with no enabling hook (no postinst; its two uci-defaults only
+#     migrate an older config and add the firewall include), so a fresh router comes up
+#     with nothing listening on 5060 - no port, no registration, no cost - and the
+#     switch is what opens it. The order only matters if a unit is enabled:
+#     qmodem-smsd START=92, awvoice-phoned START=95, qmodem_voip START=99,
+#     qmodem_voip_sipd START=100. The SIP unit belongs after AWvoice because its
+#     consumer looks the `qmodem_voip` name up once, at its own start, and AWvoice
+#     registers that name while its mode wants a network phone: started first, the
+#     consumer finds no one and every call carries no audio. qmodem-voip (voipd) is the
+#     one to leave off - it registers that same name, and while it runs AWvoice cannot
+#     take the network side. An installed, never-started voipd stays silent: its USB
+#     hotplug script exits unless voipd's own safety journal says it owns the modem.
+#     Their own LuCI page for this service (luci-app-qmodem-voip) is NOT selected: the
+#     switch, the credentials and the audio socket belong on one screen, and that screen
+#     is AWvoice's; two pages for one service drift apart.
+#     The image writes none of this service's configuration. /etc/config/qmodem_sip
+#     ships as the package's own conffile, both directions `enabled 0`, and its default
+#     `media_socket_path` is /var/run/qmodem_voip/media.sock - NOT the socket AWvoice
+#     binds (/var/run/awvoice-phoned/media.sock). A fresh router therefore opens the port
+#     and stays silent until the AWvoice page's SIP card points the audio link at that
+#     socket; credentials and network settings are the owner's, not the firmware's.
+#     What this block cannot state as satisfied: the switch lives in the AWvoice page,
+#     and configs/local-packages.pin still pins AWvoice at the release with no SIP page
+#     at all, so a build made today carries the service with nothing on screen to move
+#     it. The pin decides that, not this seed; once it names a published AWvoice commit
+#     whose page carries the switch, the image is the phone feature as described.
+CONFIG_PACKAGE_qmodem-sipd=y
 
 # ── System utilities ─────────────────────────────────────────────────────────
 CONFIG_PACKAGE_bash=y

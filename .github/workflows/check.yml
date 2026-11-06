@@ -46,6 +46,18 @@ jobs:
             case "$(head -1 "$f")" in *bash*) bash -n "$f" ;; *) sh -n "$f" ;; esac
           done < <(grep -rlE '^#!.*(sh|bash)' tools files)
 
+      - name: Tool tests
+        run: |
+          set -eu
+          # The build tools carry one guarantee each that a tree of this repository cannot show:
+          # what a feed looks like when an earlier build's patch leftovers are still in it. A
+          # release job always starts from a fresh tree, so only a scratch tree of miniature
+          # repositories can meet that state. These need no network and finish in seconds.
+          for t in tools/tests/*-test.sh; do
+            echo "== $t"
+            sh "$t"
+          done
+
       - name: Version label agrees between seed and build script
         run: |
           seed=$(sed -n 's/^CONFIG_VERSION_NUMBER="\(.*\)"$/\1/p' configs/arcadyan_aw1000.seed)
@@ -80,7 +92,10 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" != "pull_request" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
           git fetch -q origin "${{ github.base_ref }}"
-          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(feeds\.conf\.default|configs/|patches/|feeds-src/|tools/cw-release-build\.sh|docker/)'; then
+          # The patch applier belongs with the patches here: a feed's Makefile is rewritten by a
+          # patch before it is read, so the download pass - which fetches what the patched source
+          # says to fetch - is the check that a changed applier still hands the build the same tree.
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(feeds\.conf\.default|configs/|patches/|feeds-src/|tools/cw-release-build\.sh|tools/cw-apply-feed-patches\.sh|docker/)'; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "run=false" >> "$GITHUB_OUTPUT"

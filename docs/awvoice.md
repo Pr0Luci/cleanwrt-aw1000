@@ -60,7 +60,15 @@ the handset, which takes the call back, or the other side ends it.
 
 The call itself is carried by the router's **5G modem** (VoLTE), which AWvoice controls over its AT
 port. The router drives the line-interface chip of the RJ11 port and bridges the audio in the
-kernel, so the phone behaves like a normal one. No Asterisk, no SIP.
+kernel, so the phone behaves like a normal one. There is no Asterisk and no PBX: the cellular
+network is the exchange, and the SIM's own number is the line's number.
+
+While the page's **SIP switch is off** — which is how the router ships — nothing on it speaks SIP:
+no port is open and nothing registers. Turning that switch on adds a **network phone**: a soft phone
+on your own network (a laptop or a phone running a SIP app) can then ring and dial through the same
+line, beside the handset on the RJ11 port, and the router starts and stops the service that does it
+as you move the switch. No provider account and no second number are involved either way — the
+SIM's line carries every call.
 
 AWvoice has three parts: a kernel module for the line chip (GPL-2.0-only), the phone daemon, and
 the LuCI page.
@@ -113,9 +121,14 @@ the LED name) are in `/etc/config/awvoice`.
   network and the signal;
 - **calls:** the call log, with names from the phone book;
 - **phone book and speed dial;**
-- **rules:** call blocking, forwarding and alarm calls;
+- **rules:** call blocking, forwarding and alarm calls, and the quiet hours - the windows of the day
+  the handset, the answering machine and the network phones hold off ringing, the contacts marked to
+  ring through one, and the `*78`, `*79` and `#` codes typed on the handset or the page;
 - **settings:** caller id mode, hook-flash timing, tones, audio levels, call waiting, hotline and
   the line LED;
+- **SIP:** the switch (off: the handset on the RJ11 port; on: a soft phone on your own network joins
+  it, and the service that answers it starts and stops with the switch), the account names and
+  passwords it uses on your LAN, and what it reports while a call is up;
 - **health and tests:** the AT port, the line, the modem, counters and the log, with ring, line and
   loopback tests.
 
@@ -132,7 +145,10 @@ the LED name) are in `/etc/config/awvoice`.
 
 ??? question "Does AWvoice need Asterisk, SIP or a second phone number?"
     No. There is no PBX and no SIP account. The cellular network is the exchange and the SIM's
-    number is the line's number.
+    number is the line's number. The router ships with nothing speaking SIP at all. The page's SIP
+    switch is for a different case, and it is optional: turning it on lets a soft phone on your own
+    network ring and dial through this router. It asks for no provider account and no second
+    number, and turning it off closes the port again.
 
 ??? question "Does the AW1000 need VoLTE for voice calls?"
     Yes. The call is carried by the modem over VoLTE, so you need a SIM and an operator that
@@ -144,6 +160,10 @@ the LED name) are in `/etc/config/awvoice`.
 
 ## Known limits
 
+- With **SIP on**, a soft phone rings and talks only when the SIP service hands its audio to the
+  socket AWvoice listens on. The service arrives with its own place for that socket, so on a fresh
+  router the two do not meet until the AWvoice page's SIP card sets it — no audio is not a broken
+  call, it is this setting.
 - Hide my number (CLIR) and call forwarding can be refused by the operator's network when the
   phone registers (`+CME ERROR: 30`). The page hides both while that is the case.
 - Giving up a second call while it still rings ends every call: the modem cannot release a

@@ -23,7 +23,7 @@ checksums and a provenance bundle.
 > OpenWrt® is a registered trademark of Software Freedom Conservancy (SFC) - https://openwrt.org
 
 <p align="center">
-  <a href="docs/assets/img/overview-dark.png"><img src="docs/assets/img/overview-dark.png" alt="The Status overview of CleanWRT in dark mode" width="92%"></a>
+  <a href="docs/assets/img/overview-dark.jpg"><img src="docs/assets/img/overview-dark.jpg" alt="The Status overview of CleanWRT in dark mode" width="92%"></a>
 </p>
 
 ## Highlights
@@ -32,7 +32,7 @@ checksums and a provenance bundle.
 |---|---|
 | **AWvoice, a phone on the router** | Plug an ordinary desk phone into the RJ11 socket and make and take calls over your SIM. Caller id, call waiting, hold, a three-way join, recall of a held call, a call log, call recordings, an answering machine, speed dial, call blocking and alarm calls. No extra box, no PBX, no SIP account. |
 | **5G that just works** | QModem, auto-dial and auto-recovery, dual-stack IPv4/IPv6, SMS, TTL control, per-interface data usage, and a registration fix for data-only SIMs. |
-| **Apex, a modern interface** | Dark and light mode, a sidebar and a phone-friendly drawer, and card-style status widgets for system, modem, memory and storage. |
+| **A modern interface** | Footstrap: dark or light mode, a top bar or a sidebar, five palettes, an accent colour you choose, frosted surfaces, and a photo or pattern behind the pages. |
 | **LEDs that mean something** | The 5G LED shows SA or NSA, the signal LED shows quality, the internet LED runs a real connectivity check, and night mode switches them off at bedtime. |
 | **Tools, but off by default** | Passwall, Passwall 2, HomeProxy, WireGuard, OpenVPN, Tailscale, Cloudflare Tunnel, Adblock, AdGuard Home, Syncthing, qBittorrent, DLNA, file sharing and a printer server. Nothing listens until you tick **Enable**. |
 | **Careful defaults** | HTTPS for the admin UI, no hidden remote access, BBR congestion control, pinned LuCI so an `apk upgrade` cannot undo the build. |
@@ -42,12 +42,12 @@ checksums and a provenance bundle.
 
 <table>
   <tr>
-    <td align="center" width="50%"><a href="docs/assets/img/leds-dark-status.png"><img src="docs/assets/img/leds-dark-status.png" alt="LED Management with the live status card"></a><br><sub>LED Management: live state of the panel LEDs</sub></td>
-    <td align="center" width="50%"><a href="docs/assets/img/overview-light.png"><img src="docs/assets/img/overview-light.png" alt="The Status overview in light mode"></a><br><sub>Light mode follows your system, or the toggle</sub></td>
+    <td align="center" width="50%"><a href="docs/assets/img/leds-dark-status.jpg"><img src="docs/assets/img/leds-dark-status.jpg" alt="LED Management with the live status card"></a><br><sub>LED Management: live state of the panel LEDs</sub></td>
+    <td align="center" width="50%"><a href="docs/assets/img/overview-light.jpg"><img src="docs/assets/img/overview-light.jpg" alt="The Status overview in light mode"></a><br><sub>Light mode follows your system, or the toggle</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/assets/img/login-dark.png"><img src="docs/assets/img/login-dark.png" alt="The login page" width="60%"></a><br><sub>The login page</sub></td>
-    <td align="center"><a href="docs/assets/img/overview-mobile.png"><img src="docs/assets/img/overview-mobile.png" alt="The Status overview on a phone" width="34%"></a><br><sub>Made to be used from a phone</sub></td>
+    <td align="center"><a href="docs/assets/img/login-dark.jpg"><img src="docs/assets/img/login-dark.jpg" alt="The login page" width="60%"></a><br><sub>The login page</sub></td>
+    <td align="center"><a href="docs/assets/img/overview-mobile.jpg"><img src="docs/assets/img/overview-mobile.jpg" alt="The Status overview on a phone" width="34%"></a><br><sub>Made to be used from a phone</sub></td>
   </tr>
 </table>
 
@@ -149,7 +149,7 @@ package feed.
 | [cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000) | this repository: configuration, patches, overlay, workflows, documentation |
 | [AWvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice) | the phone port: kernel module, daemon and LuCI page |
 | [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | the front-panel LED daemon and its page |
-| [luci-theme-apex](https://github.com/Pr0Luci/luci-theme-apex) | the Apex theme |
+| [luci-theme-footstrap](https://github.com/VizzleTF/luci-theme-footstrap) | the web interface: the theme the image selects |
 
 ## Help and contributions
 

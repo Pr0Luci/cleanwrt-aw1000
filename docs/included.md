@@ -19,6 +19,7 @@ switch.
 | QModem (+ SMS, TTL) | Modem | On | 5G modem control, SMS, TTL tools |
 | 3ginfo-lite | Modem → 3gInfo-lite | On | SIM and signal details |
 | sms-forwarder | part of QModem | On | forwards received SMS |
+| SIP service for the phone port | no page of its own — the switch is on AWvoice → SIP | Off until the AWvoice SIP switch turns it on | a soft phone on your own network rings and dials through the SIM's line; off means no port is open ([AWvoice](awvoice.md)) |
 | Passwall | Services → PassWall | Off (configure servers) | proxy / bypass suite |
 | Passwall 2 | Services → PassWall 2 | Off (configure servers) | proxy / bypass suite (v2) |
 | HomeProxy | Services → HomeProxy | Off | sing-box based proxy |
@@ -41,7 +42,8 @@ switch.
 | vnStat | Statistics → vnStat | On | traffic history, monthly totals |
 | SQM QoS | Network → SQM QoS | Off (set your speeds) | fix bufferbloat |
 | Web terminal (ttyd) | Tools → Terminal | On | a shell in the browser |
-| Apex theme | System → System → Language and Style | On | the default look ([theme](theme.md)) |
+| Footstrap theme | System → Footstrap | On | the default look ([theme](theme.md)) |
+| Argon, Alpha themes | System → System → Language and Style | installed, not selected | alternatives to compare ([theme](theme.md)) |
 | LED Management | System → LED Management | On | front-panel LEDs ([LEDs](leds.md)) |
 | New-version notice | Status → Overview | On | tells you when a newer CleanWRT is published |
 

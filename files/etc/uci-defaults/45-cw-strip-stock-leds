@@ -4,7 +4,7 @@
 # luci-app-cw-led supersedes it for the front-panel indicators (Power / 5G /
 # Signal / Wi-Fi / Internet), so the stock editor is redundant and a
 # footgun (a stock `led` section on a daemon-owned node would fight the daemon).
-# We strip ONLY the `admin/system/leds` menu node + its view, leaving the rest
+# This script strips ONLY the `admin/system/leds` menu node + its view, leaving the rest
 # of luci-mod-system - and the /etc/config/system `led` blocks - intact.
 #
 # NB: the ethernet WAN PORT LED (`90000.mdio-1:1c:green:wan`) is NOT a front-

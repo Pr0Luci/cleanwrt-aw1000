@@ -65,7 +65,7 @@ fi
     esac
 
     # Compare ALL radios, not just radio0 - a partially configured wireless block
-    # must not make us think the country is already applied.
+    # must not read as the country already being applied.
     all_radios=$(uci show wireless 2>/dev/null | sed -n 's/^wireless\.\([^.=]*\)=wifi-device.*/\1/p')
     [ -n "$all_radios" ] || exit 0
     for r in $all_radios; do

@@ -5,6 +5,43 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
+## 25.12.5-rc2.1
+
+- **AWvoice 1.1.3** (rc2 shipped 1.1.2). The phone port gains its **SIP side**. A switch on the new
+  SIP tab starts and stops the LAN SIP service this image now carries, so a soft phone on your own
+  network rings and dials through the SIM's line beside the handset on the RJ11 port; the tab shows
+  the accounts and passwords it uses and what it reports while a call is up. The page also carries a
+  **web phone** - the handset's audio in the browser - and a **code a phone can scan**, which writes
+  the account a soft phone fetches into a directory of its own. Wideband voice follows what the modem
+  answers, the caller-id message and the ring supervision were corrected, and the front end now
+  behaves the same in every mode. The same version also carries **quiet hours**: windows of the day
+  that hold the handset, the answering machine and the network phones off a ringing call, contacts
+  marked to ring through one, and the `*78`, `*79` and `#` codes on the handset and the page. The
+  vendor's VoIP engine is kept off the boot path (`files/etc/uci-defaults/51-cw-awvoice-voipd-off`)
+  so the phone daemon itself serves the SIP side.
+- **Six patches to that SIP service.** Three complete the transaction the cellular side opens: the
+  2xx ACK a UAC owes, the BYE from either side of a dialog with the in-dialog authentication an
+  in-dialog BYE needs, and the CANCEL of an unanswered LAN INVITE with its 487 recognised. One makes
+  the UCI section the record of the inbound credential, one sets the defaults the phone bridge needs,
+  and one migrates a configuration that kept the VoIP engine's socket ([AWvoice](awvoice.md)).
+- **The web interface is Footstrap**, an upstream Apache-2.0 LuCI theme pinned to one commit and
+  changed by one line of it - the login page now carries the CleanWRT logo where the theme prints the
+  router's hostname. The LuCI feed now carries a copy of this theme too, at an older commit and under
+  the same package name; the image ships the pinned one, and the build says on every run which
+  package it took out of the feed to do that. The theme that shipped before it is out of the image, with the five feed
+  patches written for it - four that drew card-style status widgets and one that read a CPU counter.
+  The stock Bootstrap theme stays as the fallback and Argon and Alpha ship beside it for comparison, with
+  the one line of Argon's first-boot script that claimed the default removed - an installed theme is
+  offered, not selected. Alpha keeps the Lua template layout it was written for, so its pages are the one
+  thing in this image that may not render as intended on 25.12; choosing it changes nothing else.
+  A new router starts at the look
+  `files/etc/uci-defaults/50-cw-footstrap-look` writes, with the photo and the pattern that go with
+  it ([theme](theme.md)).
+- `files/etc/uci-defaults/49-cw-awvoice-provision-port` opens the plain HTTP listener that serves the
+  scanned account file, on the LAN only, from a directory that holds nothing else.
+- The QModem feed pin moves to the commit that first carries that SIP service.
+- Terminal moves from the Tools menu to System, and Tools sits where its own order says.
+
 ## 25.12.5-rc2
 
 - **AWvoice 1.1.2** (rc1 shipped 1.0.0). The phone port gains **call recordings**: a call you
@@ -31,7 +68,7 @@ First release candidate.
   call blocking, hotline and alarm calls.
 - 5G stack: QModem, vendor QMI dialer, 3ginfo-lite with a registration fix for data-only SIMs,
   SMS, TTL, vnStat.
-- Apex theme with dark and light mode and card-style status widgets.
+- A dark interface theme with dark and light mode, a sidebar and card-style status widgets.
 - Front-panel LED daemon (power, Wi-Fi, 5G type, signal, internet) with a night mode.
 - Proxy and VPN tools installed and disabled: Passwall, Passwall 2, HomeProxy, WireGuard,
   OpenVPN, Tailscale, Cloudflare Tunnel.

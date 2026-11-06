@@ -43,7 +43,7 @@ echo "== seed: $SEED =="
 # Image identity - SINGLE source of truth. Bump the RC label HERE;
 # the seeds carry a copy (kept readable) that must agree - asserted below, so a
 # stale seed fails the build instead of shipping a mismatched banner.
-CW_VERSION="25.12.5-rc2"
+CW_VERSION="25.12.5-rc2.1"
 seed_ver=$(sed -n 's/^CONFIG_VERSION_NUMBER="\(.*\)"$/\1/p' "$SEED")
 [ "$seed_ver" = "$CW_VERSION" ] || {
     echo "ERROR: $SEED has CONFIG_VERSION_NUMBER=\"$seed_ver\" but the build script says \"$CW_VERSION\" - bump both" >&2
@@ -93,7 +93,7 @@ cp "$REPO/feeds.conf.default" feeds.conf
 # commit pin: the vendored content is the repo itself).
 # It is inserted BEFORE the luci feed, not appended: names resolve first-match-wins
 # and the upstream luci feed has its own luci-app-adguardhome whose +adguardhome
-# dependency pulls the ~9 MiB Go binary into the image. Our vendored copy (with
+# dependency pulls the ~9 MiB Go binary into the image. The vendored copy (with
 # that dependency dropped) must win the name, or the image grows from 94 to 103 MiB.
 # The link target is a stable directory inside the tree, not the checkout. With a
 # fresh checkout every run has new file mtimes, and OpenWrt's ".prepared" stamp is
@@ -307,27 +307,50 @@ while read -r name url sha extra; do
     git -C "$src/repo" checkout -q --detach "$sha"
     got=$(git -C "$src/repo" rev-parse HEAD)
     [ "$got" = "$sha" ] || { echo "ERROR: package/$name is at $got, pin says $sha" >&2; exit 1; }
+    # The same rule as 2a, for a locally pinned package: patches/packages/<name>/*.patch
+    # go on the pinned commit before the package is installed, with zero fuzz, so an
+    # upstream change to a patched line stops the build instead of shipping a package that
+    # quietly lost the change. Applied to the clone and not to package/$name, because the
+    # paths a `git diff` of the upstream repository produces are the paths read here.
+    for pf in "$REPO"/patches/packages/"$name"/*.patch; do
+        [ -e "$pf" ] || continue
+        ( cd "$src/repo" && patch -p1 --fuzz=0 -i "$pf" ) \
+            || { echo "ERROR: $pf does not apply to $name @ $sha" >&2; exit 1; }
+        echo "== patched $name: $(basename "$pf") =="
+    done
     # Feed-compatible repos keep the package in a <name>/ subdirectory (a root
     # Makefile breaks the feeds indexer); legacy single-package repos have the
     # Makefile at the root. Install whichever layout the pinned commit has.
+    vdate=$(git -C "$src/repo" show -s --format=%cd --date=short "$sha" | tr -d '-')
     if [ -f "$src/repo/$name/Makefile" ]; then
         cp -a "$src/repo/$name" "package/$name"
     elif [ -f "$src/repo/Makefile" ]; then
         cp -a "$src/repo" "package/$name"; rm -rf "package/$name/.git"
-        # Deterministic version for luci.mk apps without an upstream PKG_VERSION
-        # (homeproxy): with .git stripped, luci.mk's findrev falls back to file
-        # mtimes and the apk version would drift per build. Pin it to the date of the
-        # pinned commit (digits only): apk accepts only digit segments in the numeric
-        # part of a version, a short sha like 98a6ad9e is rejected at packaging.
-        grep -q '^PKG_VERSION' "package/$name/Makefile" || {
-            vdate=$(git -C "$src/repo" show -s --format=%cd --date=short "$sha" | tr -d '-')
-            sed -i "s|^\(PKG_NAME:=.*\)|&\nPKG_VERSION:=${vdate}|" "package/$name/Makefile"
-        }
     else
         echo "ERROR: pinned $name has no Makefile at <root> or <root>/$name/" >&2; exit 1
     fi
     rm -rf "$src"
     [ -f "package/$name/Makefile" ] || { echo "ERROR: package/$name/Makefile missing after install" >&2; exit 1; }
+    # Deterministic version for a luci.mk recipe that carries no PKG_VERSION of its own
+    # (homeproxy, and the Footstrap theme): the version comes from git, and the clone's .git
+    # is gone by now, so luci.mk's findrev falls back to file mtimes - the apk version would
+    # drift every build, or come out as zero. Give it the date of the pinned commit (digits
+    # only): apk accepts only digit segments in the numeric part of a version, and a short sha
+    # like 98a6ad9e is rejected at packaging. A version of 0 is not merely untidy - a device
+    # can never upgrade from it, and an image assembled beside an older copy of the same
+    # package installs the one with the larger number.
+    if ! grep -q '^PKG_VERSION' "package/$name/Makefile" &&
+       grep -q 'luci\.mk' "package/$name/Makefile"; then
+        sed -i "s|^\(PKG_NAME:=.*\)|&\nPKG_VERSION:=${vdate}|" "package/$name/Makefile"
+    fi
+    # What an earlier build left of this package goes before anything is compiled.
+    # OpenWrt decides whether to copy a package's sources into its build directory from a
+    # stamp of its own, and that stamp does not notice a pin moving under it: the Makefile,
+    # the version and the file list can all look unchanged while every file inside the
+    # package is now from a different commit. The tree then compiles what was there before,
+    # packages that, installs that into the image, and reports success throughout. A release
+    # run on a tree this script has used once before is how an old package reaches a device.
+    "$REPO/tools/cw-reset-pinned-package.sh" "$TREE" "$name"
     echo "== local package $name @ $sha =="
 done < "$REPO/configs/local-packages.pin"
 
@@ -337,6 +360,11 @@ done < "$REPO/configs/local-packages.pin"
 cp "$SEED" .config
 rm -rf files
 cp -a "$REPO/files" files
+# Ownership is not recorded in git, but `cp -a` carries it. A checkout made by a builder that
+# is not uid 0 (a developer's container, a CI runner) would otherwise put that uid's files
+# into the rootfs, and every file on a device belongs to root - the scripts this folder adds
+# are read by the boot process as root and written back as root.
+chown -R --no-dereference 0:0 files
 # The user-visible version is exactly "<dist> <version>".
 # Stock base-files appends the version code to DISTRIB_DESCRIPTION and
 # OPENWRT_RELEASE; with an empty VERSION_CODE that is the OpenWrt revision, so drop
@@ -511,8 +539,10 @@ fi
 #    Named must-haves (belt-and-suspenders; also covers script-added options).
 #    A package the seed does not select is SKIPPED, not failed (an experimental
 #    seed via CW_SEED may omit opt-in packages).
-for p in luci luci-mod-admin-full luci-theme-bootstrap luci-theme-apex libiwinfo rpcd-mod-iwinfo \
-         luci-app-passwall2 luci-app-qmodem qmodem kmod-qmi_wwan_q \
+for p in luci luci-mod-admin-full luci-theme-bootstrap luci-theme-footstrap luci-theme-argon \
+         luci-theme-alpha luci-app-alpha-config \
+         libiwinfo rpcd-mod-iwinfo \
+         luci-app-passwall2 luci-app-qmodem qmodem kmod-qmi_wwan_q qmodem-sipd \
          minidlna samba4-server syncthing \
          luci-app-qmodem-ttlfw4 luci-app-tailscale-community luci-app-cw-led \
          luci-app-3ginfo-lite bash ttyd ; do

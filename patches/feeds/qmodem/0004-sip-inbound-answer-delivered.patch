@@ -1,0 +1,93 @@
+qmodem_sipd: a cellular-originated call is answered once
+
+The inbound direction sent its INVITE to the LAN with no transaction completion
+callback, so a final response never reached the application: the LAN's 200 OK, which
+is the answer trigger for a call the cellular side originated, was dropped.  PJSIP
+also expects the UAC to ACK a 2xx itself (RFC 3261 13.2.1), and the inbound path only
+ACKed for the outbound direction, so the LAN retransmitted its 200 until an ACK
+arrived and every retransmission was read as a fresh answer.  The first was accepted,
+the second was refused because the call was already answered, and the refusal path
+tore the call down about a second after it was answered.
+
+Keep a referenced copy of the INVITE (the transaction frees its own copy, and reading
+it afterwards was a use-after-free that segfaulted the consumer on the release), pass
+a completion callback that feeds the response to the same handler the dialog uses,
+ACK the 2xx from that copy, and treat any further final response as a retransmission
+of an answer already settled.
+
+diff --git a/application/qmodem_sipd/src/sip_consumer.c b/application/qmodem_sipd/src/sip_consumer.c
+index 53072e8e..9fab60a5 100644
+--- a/application/qmodem_sipd/src/sip_consumer.c
++++ b/application/qmodem_sipd/src/sip_consumer.c
+@@ -104,6 +104,7 @@ struct consumer {
+ 	pjsip_auth_clt_sess outbound_auth;
+ 	int outbound_auth_initialized;
+ 	pjsip_tx_data *outbound_invite;
++	pjsip_tx_data *inbound_invite;	/* the cellular-originated INVITE: its 200 is ACKed from this */
+ 	char dialog_contact[BINDING_SIZE];
+ 	char outbound_server[256];
+ 	char outbound_server_uri[384];
+@@ -791,6 +792,17 @@ static int set_incoming_offer(pjsip_tx_data *request)
+ 	return request->msg->body ? 0 : -1;
+ }
+ 
++static void remember_inbound_invite(pjsip_tx_data *request)
++{
++	if (app.inbound_invite == request)
++		return;
++	if (app.inbound_invite)
++		pjsip_tx_data_dec_ref(app.inbound_invite);
++	app.inbound_invite = request;
++	if (request)
++		pjsip_tx_data_add_ref(request);
++}
++
+ static void remember_outbound_invite(pjsip_tx_data *request)
+ {
+ 	if (app.outbound_invite)
+@@ -905,6 +917,17 @@ static void outbound_invite_cb(void *token, pjsip_event *event)
+ 	}
+ }
+ 
++static pj_bool_t on_response(pjsip_rx_data *response);
++
++/* A final response to the INVITE reaches the application only through the transaction's completion callback;
++ * without one PJSIP ends the transaction and the answer never arrives (the LAN's 200/486 was ignored). */
++static void incoming_invite_cb(void *token, pjsip_event *event)
++{
++	(void)token;
++	if (event->body.tsx_state.type == PJSIP_EVENT_RX_MSG)
++		(void)on_response(event->body.tsx_state.src.rdata);
++}
++
+ static void send_incoming_invite(void)
+ {
+ 	pjsip_method method;
+@@ -944,9 +967,11 @@ static void send_incoming_invite(void)
+ 		return;
+ 	if (app.outbound)
+ 		remember_outbound_invite(request);
++	else
++		remember_inbound_invite(request);
+ 	app.dialog_contact[0] = '\0';
+ 	if (pjsip_endpt_send_request(app.endpoint, request, 30000, NULL,
+-		app.outbound ? &outbound_invite_cb : NULL) != PJ_SUCCESS) {
++		app.outbound ? &outbound_invite_cb : &incoming_invite_cb) != PJ_SUCCESS) {
+ 		if (app.outbound)
+ 			remember_outbound_invite(NULL);
+ 		app.dialog_contact[0] = '\0';
+@@ -967,6 +992,14 @@ static pj_bool_t on_response(pjsip_rx_data *response)
+ 	    status == PJSIP_SC_PROXY_AUTHENTICATION_REQUIRED)
+ 		return PJ_FALSE;
+ 	if (status >= 200 && status < 300) {
++		pjsip_tx_data *ack = NULL;
++		/* A 2xx to an INVITE is ACKed by the UAC itself, and it is retransmitted until that ACK
++		 * arrives; without one every retransmission looked like a new answer and tore the call down */
++		if (app.inbound_invite &&
++		    pjsip_endpt_create_ack(app.endpoint, app.inbound_invite, response, &ack) == PJ_SUCCESS && ack)
++			(void)pjsip_endpt_send_request_stateless(app.endpoint, ack, NULL, NULL);
++		if (app.call.established)
++			return PJ_FALSE;
+ 		pj_status_t ack_status = app.outbound ?
+ 			send_outbound_ack(app.outbound_invite, response) : PJ_SUCCESS;
+ 		char remote_tag[QMODEM_VOIP_SIP_TAG_SIZE];

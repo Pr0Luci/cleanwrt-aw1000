@@ -1,6 +1,6 @@
 ---
 title: "CleanWRT repositories and how they fit together"
-description: "The CleanWRT firmware, AWvoice, the LED app and the Apex theme: what each repository is, how they are pinned together, and where to report issues."
+description: "The CleanWRT firmware, AWvoice, the LED app and the web interface: what each repository is, how they are pinned together, and where to report issues."
 ---
 
 # Repositories
@@ -13,14 +13,14 @@ CleanWRT is built from a few small repositories, all on GitHub under
 | [cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000) | the firmware: build configuration, patches, rootfs overlay, workflows and this documentation | [Build from source](building.md), [Contributing](contributing.md) |
 | [openwrt-aw1000-voice-awvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice) | AWvoice: the kernel module, the phone daemon and the LuCI page for the RJ11 port | [AWvoice](awvoice.md) |
 | [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | the front-panel LED daemon and its LuCI page | [Front-panel LEDs](leds.md) |
-| [luci-theme-apex](https://github.com/Pr0Luci/luci-theme-apex) | the Apex LuCI theme | [The Apex theme](theme.md) |
+| [luci-theme-footstrap](https://github.com/VizzleTF/luci-theme-footstrap) | the LuCI theme the image selects (upstream, unpatched) | [The Footstrap theme](theme.md) |
 
 ## How they fit together
 
 ```text
 cleanwrt-aw1000  (feeds.conf.default, configs/local-packages.pin, patches/)
    ├── pins  luci-app-cw-led      → LED daemon and page
-   ├── pins  luci-theme-apex      → default theme
+   ├── pins  luci-theme-footstrap → default theme
    ├── pins  AWvoice              → phone port
    └── pins  OpenWrt, LuCI, QModem, Passwall, 3ginfo-lite, ... (upstream feeds)
 ```

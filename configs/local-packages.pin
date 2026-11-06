@@ -8,10 +8,38 @@
 # Repositories that keep the package in a <name>/ subdirectory (feed layout) are
 # installed from that subdirectory; ones with the Makefile at the repo root as a whole.
 
-# luci-app-cw-led: front-panel LED daemon and LuCI page, GPL-2.0-only
-luci-app-cw-led https://github.com/Pr0Luci/luci-app-cw-led.git ee7b5f8861f1c247868207ccbff6b65c988783ce
-# luci-theme-apex: default LuCI theme, GPL-2.0-only with bundled OFL fonts
-luci-theme-apex https://github.com/Pr0Luci/luci-theme-apex.git a3351c31309eb1a273281c427e161409a4e461dd
+# luci-app-cw-led: front-panel LED daemon and LuCI page, GPL-2.0-only. Pinned at the commit
+# the theme-surface change merged as, on the repository's own default branch. The page's live
+# status card takes its panel, hairline and corner radius from the active theme instead of
+# painting them itself, and the form styling written for one theme this image no longer ships
+# comes out: the form is LuCI's own under every theme.
+luci-app-cw-led https://github.com/Pr0Luci/luci-app-cw-led.git a65586cf81aff771d17183405965b40112d7deea
+# LuCI themes. Three third-party themes ship so the web UI can be compared on the
+# device; each keeps its own package, licence file and pin. None of them is merged
+# into CleanWRT code.
+#
+# luci-theme-footstrap: the default theme (files/etc/uci-defaults/96-cw-default-theme).
+# Apache-2.0; the package builds its CSS with cat and awk only, so no node toolchain
+# enters the builder image. Pinned at the commit tag v0.14.20 points to. The LuCI feed also
+# carries a `luci-theme-footstrap` by the same author - an older copy, without the glass
+# surfaces and the opacity controls the image's look writes - and one package name is built
+# from one recipe only, so the feed's link is removed for the pin to win
+# (tools/cw-reset-pinned-package.sh says so on every build).
+luci-theme-footstrap https://github.com/VizzleTF/luci-theme-footstrap.git a1711eda02fefe87a12590bae9eaa80c373a4bd9
+# luci-theme-argon: Apache-2.0, ucode templates (the 25.12 theme mechanism).
+# Pinned at the commit tag v3.1.2 points to. Its own first-boot script is patched
+# (patches/packages/luci-theme-argon) so that installing it does not make it the design a
+# fresh router opens with - registering a theme and choosing the default are two things.
+luci-theme-argon https://github.com/jerrykuku/luci-theme-argon.git 7b77b44b8324ba4939144760ed3f09c1a1d1e833
+# luci-theme-alpha: Apache-2.0, still the luasrc (Lua templates) layout, pinned at the
+# commit tag 3.9.7-beta2 points to. Its Makefile declares `+luci-app-alpha-config`, so the
+# theme cannot be installed without that app: it is a separate repository, and both are
+# pinned here. Whether the Lua layout renders at all on 25.12 is checked on the device.
+luci-theme-alpha https://github.com/derisamedia/luci-theme-alpha.git aed1071054ecc3fdb0cc2368c68197a906f9946a
+# luci-app-alpha-config: Apache-2.0, the settings app the theme above depends on - a menu
+# entry, its rpcd ACL and its browser-side page, and no first-boot script of its own, so it
+# cannot claim a default theme. Pinned at the commit tag v2.1 points to.
+luci-app-alpha-config https://github.com/animegasan/luci-app-alpha-config.git a67b82dd1117ff3792d2f8ea002948a6cda1b809
 
 # luci-app-homeproxy: HomeProxy LuCI app (ImmortalWrt), another proxy app on the same
 # cores the image already ships (sing-box). Single-package repo with the Makefile at
@@ -20,9 +48,17 @@ luci-app-homeproxy https://github.com/immortalwrt/homeproxy.git 98a6ad9e71484528
 
 # AWvoice: the RJ11 phone port (feed-layout repo; the three packages live at the
 # repository root). GPL-2.0-only, the board configuration data file included.
-# Pinned at the commit tag v1.1.2 points to (the first public release); the three
-# packages share that one number. The commit one before it carries the same code
-# but still the 1.1.1 versions, so the tag's commit is the one to pin.
-kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git eba5ab94cbc1c1fc57c08104deac872eb90dbe4f
-awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git eba5ab94cbc1c1fc57c08104deac872eb90dbe4f
-luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git eba5ab94cbc1c1fc57c08104deac872eb90dbe4f
+# Pinned at the commit that carries version 1.1.3 of all three packages: the SIP
+# side of the phone port - the switch that starts and stops the LAN service this
+# image now ships, the account a soft phone signs in with, the web phone - and the
+# code a phone scans: the phone daemon writes that file into a folder of its own,
+# keeps it only for the lifetime the page promises, and
+# files/etc/uci-defaults/49-cw-awvoice-provision-port opens the listener that
+# serves it. On top of that, quiet hours: a window of the day the handset, the
+# answering machine and the network phones all hold off ringing, a per-contact
+# exception in the phone book that rings through, and the *78, *79 and # codes
+# typed on the handset or the page to switch the window on, off or until the next
+# day. The three packages share one version, so they share one pin.
+kmod-awvoice-fxs https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git bc629081ee472092a36ace7b53fb76c51de4bf68
+awvoice-phoned https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git bc629081ee472092a36ace7b53fb76c51de4bf68
+luci-app-awvoice https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git bc629081ee472092a36ace7b53fb76c51de4bf68

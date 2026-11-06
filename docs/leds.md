@@ -18,20 +18,20 @@ what the panel shows without looking at the router.
 
 === "Dark"
 
-    [![LED Management page, dark](assets/img/leds-dark-status.png)](assets/img/leds-dark-status.png)
+    [![LED Management page, dark](assets/img/leds-dark-status.jpg)](assets/img/leds-dark-status.jpg)
 
 === "Light"
 
-    [![LED Management page, light](assets/img/leds-light-status.png)](assets/img/leds-light-status.png)
+    [![LED Management page, light](assets/img/leds-light-status.jpg)](assets/img/leds-light-status.jpg)
 
 === "On a phone"
 
-    [![LED Management page on a phone](assets/img/leds-mobile.png)](assets/img/leds-mobile.png){ width="300" }
+    [![LED Management page on a phone](assets/img/leds-mobile.jpg)](assets/img/leds-mobile.jpg){ width="300" }
 
 !!! info "About the screenshots"
-    The screenshots in this documentation were taken from a development preview of the interface
-    (the same theme, pages and LED app as the firmware) running on a computer, with a simulated
-    modem. Values such as the kernel, memory and storage differ on a real router.
+    The screenshots in this documentation were taken from a real AW1000 running this firmware. The
+    numbers in them - uptime, memory, storage, signal - belong to the moment they were taken and
+    will differ on your router.
 
 ## What each LED shows
 
@@ -59,7 +59,7 @@ settings:
 
 ### How the internet LED is decided
 
-[![Internet LED settings](assets/img/leds-dark-internet.png)](assets/img/leds-dark-internet.png)
+[![Internet LED settings](assets/img/leds-dark-internet.jpg)](assets/img/leds-dark-internet.jpg)
 
 *Active connectivity probe (HTTP 204)* is the default and the most accurate. The daemon asks a
 test address for an empty "204" answer; anything else (a captive portal page, a redirect, a
@@ -76,7 +76,7 @@ a host*.
 
 Night mode switches chosen LEDs off between two times of day.
 
-[![Night mode and Wi-Fi LED settings](assets/img/leds-dark-night.png)](assets/img/leds-dark-night.png)
+[![Night mode and Wi-Fi LED settings](assets/img/leds-dark-night.jpg)](assets/img/leds-dark-night.jpg)
 
 | Setting | Default |
 |---|---|
