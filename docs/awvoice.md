@@ -7,12 +7,12 @@ description: "AWvoice turns the Arcadyan AW1000's RJ11 socket into a phone line.
 
 **AWvoice** turns the AW1000's RJ11 socket into a working phone line. Plug an ordinary desk
 phone into the router and make and take calls over the SIM card, with no extra box, no PBX and no
-SIP account. It is the headline feature of CleanWRT, and it ships with the `25.12.5-rc2`
+SIP account. It is the headline feature of CleanWRT, and it ships with the `25.12.5-R1`
 release, in the same way QModem is the 5G modem app.
 
-!!! info "Pre-release documentation"
-    CleanWRT is still a release-candidate series, so this page follows the current candidate.
-    Details, especially the setup steps, can change from one candidate to the next.
+!!! info "This page follows the current release"
+    The page describes `25.12.5-R1`. What changed in the earlier candidates is in the
+    [changelog](changelog.md), so a router still on one of them can read the page that fits it.
 
 ## What it does
 

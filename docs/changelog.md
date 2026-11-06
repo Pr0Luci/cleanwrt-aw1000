@@ -5,6 +5,20 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
+## 25.12.5-R1
+
+The first stable release of the OpenWrt 25.12.5 base. It carries everything `25.12.5-rc2.1`
+shipped — AWvoice 1.1.3 with the LAN SIP side, the web phone, the code a phone scans and quiet
+hours, Footstrap as the default look, Alpha and Argon alongside it, the phone bridge's working
+defaults and the vendor VoIP engine kept off the boot path — and adds two changes:
+
+- **the provenance bundle is verifiable**. `sha256sums.cw` names the bundle's files under
+  `cw-release-provenance/`, while the release step packed them as `provenance/`, so the checksums
+  could not be run against the bundle. The bundle now keeps the name the checksums use, and the
+  build unpacks it again and verifies those lines before anything is uploaded.
+- The LED Management picture in the documentation is the page as the released package draws it:
+  the live status strip takes its surface from the active theme and the form is LuCI's own.
+
 ## 25.12.5-rc2.1
 
 - **AWvoice 1.1.3** (rc2 shipped 1.1.2). The phone port gains its **SIP side**. A switch on the new

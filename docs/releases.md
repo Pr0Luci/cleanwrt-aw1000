@@ -21,7 +21,8 @@ A version looks like `25.12.5-rc1`: the OpenWrt base (`25.12.5`) and the stage.
 |---|---|
 | `-rc1`, `-rc2` ... | release candidates. They are the testing series. |
 | `-rc1.1` ... | a fix after the candidate was published |
-| no suffix (`25.12.5`) | a stable release |
+| `-R1`, `-R2` ... | stable releases of the base. `-R1` is the first of them. |
+| no suffix (`25.12.5`) | reserved: a base update carries the new OpenWrt version |
 
 ## What a release contains
 

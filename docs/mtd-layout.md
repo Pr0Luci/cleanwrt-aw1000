@@ -29,12 +29,14 @@ partition uses exactly 316 (kernel 24 + rootfs 177 + rootfs_data 115).
 
 ## What CleanWRT needs
 
-The `25.12.5-rc2` image needs **498 blocks**, the same as rc1. That is more than the stock layout
-offers (316) and fits the expanded layout (2720 blocks on a router with a 701 MiB `rootfs`). The
-release build prints a line like this and fails if the image does not fit:
+The `25.12.5-R1` image needs **514 blocks**. The published `25.12.5-rc2.1` image measured the
+same 514 and `25.12.5-rc2` needed 498; R1 carries rc2.1's package set unchanged, so it needs what
+rc2.1 needed. That is more than the stock layout offers (316) and fits the expanded layout (2720
+blocks on a router with a 701 MiB `rootfs`). The release build prints a line like this and fails
+if the image does not fit the layout it targets:
 
 ```text
-UBI_PEBS volumes need 498 PEBs; stock 100 MiB layout (316): does NOT fit; gate layout=expanded (capacity 2720)
+UBI_PEBS volumes need 514 PEBs; stock 100 MiB layout (316): does NOT fit; gate layout=expanded (capacity 2720)
 ```
 
 A `sysupgrade` that cannot create the new volumes after removing the old ones can leave the
@@ -70,7 +72,7 @@ Next: [Recovery](recovery.md). Read it before you flash.
     Run `cat /proc/mtd` on a router that runs OpenWrt. The `rootfs` partition must be at least `0x08000000` (128 MiB). If it shows up as `rootfs_bak` instead, you have the stock layout, so do not flash this image.
 
 ??? question "Why does OpenWrt not fit on the stock AW1000 flash layout?"
-    The stock `rootfs` partition leaves 316 erase blocks for UBI volumes, and the CleanWRT image needs 498. The build checks this and fails if the image does not fit the layout it targets.
+    The stock `rootfs` partition leaves 316 erase blocks for UBI volumes, while a CleanWRT image needs over 500 (the current release measures 514). The build checks this and fails if the image does not fit the layout it targets.
 
 ??? question "Can I flash CleanWRT if my AW1000 has the stock layout?"
     No. CleanWRT does not convert the layout. Use a layout-conversion procedure from the OpenWrt community first, make sure you can reach the serial console, and only then install.
