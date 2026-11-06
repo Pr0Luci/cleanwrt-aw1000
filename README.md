@@ -23,7 +23,7 @@ checksums and a provenance bundle.
 > OpenWrt® is a registered trademark of Software Freedom Conservancy (SFC) - https://openwrt.org
 
 <p align="center">
-  <a href="docs/assets/img/overview-dark.png"><img src="docs/assets/img/overview-dark.png" alt="The Status overview of CleanWRT in dark mode" width="92%"></a>
+  <a href="docs/assets/img/overview-dark.jpg"><img src="docs/assets/img/overview-dark.jpg" alt="The Status overview of CleanWRT in dark mode" width="92%"></a>
 </p>
 
 ## Highlights
@@ -42,12 +42,12 @@ checksums and a provenance bundle.
 
 <table>
   <tr>
-    <td align="center" width="50%"><a href="docs/assets/img/leds-dark-status.png"><img src="docs/assets/img/leds-dark-status.png" alt="LED Management with the live status card"></a><br><sub>LED Management: live state of the panel LEDs</sub></td>
-    <td align="center" width="50%"><a href="docs/assets/img/overview-light.png"><img src="docs/assets/img/overview-light.png" alt="The Status overview in light mode"></a><br><sub>Light mode follows your system, or the toggle</sub></td>
+    <td align="center" width="50%"><a href="docs/assets/img/leds-dark-status.jpg"><img src="docs/assets/img/leds-dark-status.jpg" alt="LED Management with the live status card"></a><br><sub>LED Management: live state of the panel LEDs</sub></td>
+    <td align="center" width="50%"><a href="docs/assets/img/overview-light.jpg"><img src="docs/assets/img/overview-light.jpg" alt="The Status overview in light mode"></a><br><sub>Light mode follows your system, or the toggle</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/assets/img/login-dark.png"><img src="docs/assets/img/login-dark.png" alt="The login page" width="60%"></a><br><sub>The login page</sub></td>
-    <td align="center"><a href="docs/assets/img/overview-mobile.png"><img src="docs/assets/img/overview-mobile.png" alt="The Status overview on a phone" width="34%"></a><br><sub>Made to be used from a phone</sub></td>
+    <td align="center"><a href="docs/assets/img/login-dark.jpg"><img src="docs/assets/img/login-dark.jpg" alt="The login page" width="60%"></a><br><sub>The login page</sub></td>
+    <td align="center"><a href="docs/assets/img/overview-mobile.jpg"><img src="docs/assets/img/overview-mobile.jpg" alt="The Status overview on a phone" width="34%"></a><br><sub>Made to be used from a phone</sub></td>
   </tr>
 </table>
 
