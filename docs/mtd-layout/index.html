@@ -70,7 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "MTD layout", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "MTD layout", "description": "Why the Arcadyan AW1000 needs the expanded flash layout for CleanWRT, what has to fit in the rootfs partition, and how to check your router first.", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I check the flash layout of my Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Run cat /proc/mtd on a router that runs OpenWrt. The rootfs partition must be at least 0x08000000 (128 MiB). If it shows up as rootfsbak instead, you have the stock layout, so do not flash this image."}}, {"@type": "Question", "name": "Why does OpenWrt not fit on the stock AW1000 flash layout?", "acceptedAnswer": {"@type": "Answer", "text": "The stock rootfs partition leaves 316 erase blocks for UBI volumes, and the CleanWRT image needs 498. The build checks this and fails if the image does not fit the layout it targets."}}, {"@type": "Question", "name": "Can I flash CleanWRT if my AW1000 has the stock layout?", "acceptedAnswer": {"@type": "Answer", "text": "No. CleanWRT does not convert the layout. Use a layout-conversion procedure from the OpenWrt community first, make sure you can reach the serial console, and only then install."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I check the flash layout of my Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Run cat /proc/mtd on a router that runs OpenWrt. The rootfs partition must be at least 0x08000000 (128 MiB). If it shows up as rootfsbak instead, you have the stock layout, so do not flash this image."}}, {"@type": "Question", "name": "Why does OpenWrt not fit on the stock AW1000 flash layout?", "acceptedAnswer": {"@type": "Answer", "text": "The stock rootfs partition leaves 316 erase blocks for UBI volumes, while a CleanWRT image needs over 500 (the current release measures 514). The build checks this and fails if the image does not fit the layout it targets."}}, {"@type": "Question", "name": "Can I flash CleanWRT if my AW1000 has the stock layout?", "acceptedAnswer": {"@type": "Answer", "text": "No. CleanWRT does not convert the layout. Use a layout-conversion procedure from the OpenWrt community first, make sure you can reach the serial console, and only then install."}}]}</script>
 </head>
   
   
@@ -1684,10 +1684,12 @@ of 256 KiB). UBI reserves part of it for itself:</p>
 <p>So <strong>316 blocks (about 76 MiB)</strong> are left for volumes. The stock firmware's own UBI on that
 partition uses exactly 316 (kernel 24 + rootfs 177 + rootfs_data 115).</p>
 <h2 id="what-cleanwrt-needs">What CleanWRT needs<a class="headerlink" href="#what-cleanwrt-needs" title="Permanent link">&para;</a></h2>
-<p>The <code>25.12.5-rc2</code> image needs <strong>498 blocks</strong>, the same as rc1. That is more than the stock layout
-offers (316) and fits the expanded layout (2720 blocks on a router with a 701 MiB <code>rootfs</code>). The
-release build prints a line like this and fails if the image does not fit:</p>
-<div class="highlight"><pre><span></span><code>UBI_PEBS volumes need 498 PEBs; stock 100 MiB layout (316): does NOT fit; gate layout=expanded (capacity 2720)
+<p>The <code>25.12.5-R1</code> image needs <strong>514 blocks</strong>. The published <code>25.12.5-rc2.1</code> image measured the
+same 514 and <code>25.12.5-rc2</code> needed 498; R1 carries rc2.1's package set unchanged, so it needs what
+rc2.1 needed. That is more than the stock layout offers (316) and fits the expanded layout (2720
+blocks on a router with a 701 MiB <code>rootfs</code>). The release build prints a line like this and fails
+if the image does not fit the layout it targets:</p>
+<div class="highlight"><pre><span></span><code>UBI_PEBS volumes need 514 PEBs; stock 100 MiB layout (316): does NOT fit; gate layout=expanded (capacity 2720)
 </code></pre></div>
 <p>A <code>sysupgrade</code> that cannot create the new volumes after removing the old ones can leave the
 router unbootable.</p>
@@ -1717,7 +1719,7 @@ community for this device first, and only then install CleanWRT. Make sure you c
 </details>
 <details class="question">
 <summary>Why does OpenWrt not fit on the stock AW1000 flash layout?</summary>
-<p>The stock <code>rootfs</code> partition leaves 316 erase blocks for UBI volumes, and the CleanWRT image needs 498. The build checks this and fails if the image does not fit the layout it targets.</p>
+<p>The stock <code>rootfs</code> partition leaves 316 erase blocks for UBI volumes, while a CleanWRT image needs over 500 (the current release measures 514). The build checks this and fails if the image does not fit the layout it targets.</p>
 </details>
 <details class="question">
 <summary>Can I flash CleanWRT if my AW1000 has the stock layout?</summary>
