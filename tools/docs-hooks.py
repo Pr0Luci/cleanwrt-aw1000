@@ -91,6 +91,17 @@ def on_page_markdown(markdown, page, config, files, **kwargs):
     return markdown
 
 
+def _trail(page):
+    """The nav titles above this page, outermost first, for the breadcrumb trail."""
+    titles = []
+    section = getattr(page, "parent", None)
+    while section is not None:
+        if getattr(section, "title", None):
+            titles.append(section.title)
+        section = getattr(section, "parent", None)
+    return list(reversed(titles))
+
+
 def _ld(obj):
     return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False).replace("</", "<\\/") + "</script>\n"
 
@@ -141,7 +152,7 @@ def on_post_page(output, page, config, **kwargs):
             "url": base,
             "description": config["site_description"],
         })
-        ld += _ld({
+        app = {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
             "name": "CleanWRT",
@@ -158,17 +169,23 @@ def on_post_page(output, page, config, **kwargs):
             "isAccessibleForFree": True,
             "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
             "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"},
-        })
+        }
+        upd = page.meta.get("updated")
+        if upd:
+            app["dateModified"] = str(upd)
+        ld += _ld(app)
     else:
+        trail = _trail(page)
+        items = [{"@type": "ListItem", "position": 1, "name": name, "item": base}]
+        for depth, section_title in enumerate(trail, start=2):
+            items.append({"@type": "ListItem", "position": depth, "name": section_title})
+        items.append({"@type": "ListItem", "position": len(items) + 1, "name": page.title, "item": url})
         ld += _ld({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
-            "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": base},
-                {"@type": "ListItem", "position": 2, "name": page.title, "item": url},
-            ],
+            "itemListElement": items,
         })
-        ld += _ld({
+        article = {
             "@context": "https://schema.org",
             "@type": "TechArticle",
             "headline": page.title,
@@ -178,7 +195,12 @@ def on_post_page(output, page, config, **kwargs):
             "inLanguage": "en",
             "isPartOf": {"@type": "WebSite", "name": name, "url": base},
             "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"},
-        })
+        }
+        upd = page.meta.get("updated")
+        if upd:
+            # the day this page was last brought in line with the code, not the day it was written
+            article["dateModified"] = str(upd)
+        ld += _ld(article)
     faq = page.meta.get("_faq") or []
     if len(faq) >= 2:
         ld += _ld({
