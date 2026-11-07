@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/img/favicon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -2325,8 +2325,8 @@ rows.</p>
 </tr>
 <tr>
 <td><code>48-cw-strip-asu-ui</code></td>
-<td>removes the Attended Sysupgrade menu node and deletes its view, then clears the caches. The Status page's newer-version check and <code>attendedsysupgrade-common</code> stay</td>
-<td>it writes the menu back unless the node is gone. See <a href="../../releases/#the-new-version-notice">releases</a> for what the notice does</td>
+<td>removes the Attended Sysupgrade menu node and deletes its views, turns the Status page's newer-version check <strong>on</strong> (<code>attendedsysupgrade.client.login_check_for_upgrades='1'</code>) — those views are the only switch that ever turned it on, so the notice is on out of the box and its own button is the way off — then clears the caches. <code>attendedsysupgrade-common</code> stays</td>
+<td>it writes the menu back unless the node is gone, and skips the option where the config has no <code>client</code> section. See <a href="../../releases/#the-new-version-notice">releases</a> for what the notice does</td>
 </tr>
 <tr>
 <td><code>49-cw-awvoice-provision-port</code></td>
@@ -2565,7 +2565,7 @@ the leftovers — are the evidence of what happened.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
