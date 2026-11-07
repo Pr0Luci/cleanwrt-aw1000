@@ -7,8 +7,14 @@
 # (11_upgrades.js, also shipped by this package) is KEPT - patch
 # patches/feeds/luci/0007 points it at the site's .versions.json +
 # /releases/<ver>/ profiles, so it reports only real CleanWRT releases.
-# The attendedsysupgrade-common package and its uci config stay untouched:
-# the "Stop showing upgrade alerts" preference lives there.
+# The attendedsysupgrade-common package and its uci config stay in place: the
+# "Stop showing upgrade alerts" preference lives there.
+#
+# The request views removed below are also the only place that switched that
+# notice on, so a CleanWRT image would ship with the check off and no way to
+# turn it on. The notice is therefore turned on here instead; its own button is
+# the way off. This runs again with every newly installed image, which is how a
+# router upgraded with its settings kept gets the notice at all.
 
 MENU=/usr/share/luci/menu.d/luci-app-attendedsysupgrade.json
 if [ -f "$MENU" ] && command -v jq >/dev/null 2>&1; then
@@ -21,6 +27,14 @@ if [ -f "$MENU" ] && command -v jq >/dev/null 2>&1; then
 fi
 # The request/config views (the build-on-request pages themselves):
 rm -rf /www/luci-static/resources/view/attendedsysupgrade
+
+# The Status notice, on: its own switch went with the views above. The guard
+# keeps this off a router whose config has no such section, so the option is
+# only ever written where the package shipped one.
+if uci -q get attendedsysupgrade.client >/dev/null 2>&1; then
+	uci -q set attendedsysupgrade.client.login_check_for_upgrades='1'
+	uci -q commit attendedsysupgrade
+fi
 
 # 3. Invalidate LuCI's cached menus so the strip shows immediately.
 rm -f /tmp/luci-indexcache /tmp/luci-indexcache.* 2>/dev/null
