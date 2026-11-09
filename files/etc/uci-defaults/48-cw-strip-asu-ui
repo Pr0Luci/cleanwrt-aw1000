@@ -1,5 +1,5 @@
 #!/bin/sh
-# Remove the Attended Sysupgrade build-on-request UI (menu entry + its views).
+# Remove the Attended Sysupgrade build-on-request UI (its menu nodes and their views).
 #
 # The CleanWRT release flow = the project site (https://pr0luci.github.io/cleanwrt-aw1000/):
 # a build-on-request service cannot build CleanWRT images, so its LuCI pages
@@ -19,8 +19,12 @@
 MENU=/usr/share/luci/menu.d/luci-app-attendedsysupgrade.json
 if [ -f "$MENU" ] && command -v jq >/dev/null 2>&1; then
 	tmp="$MENU.cwtmp.$$"
-	if jq 'del(."admin/system/attendedsysupgrade")' "$MENU" > "$tmp" 2>/dev/null && [ -s "$tmp" ] &&
-	   jq -e '(has("admin/system/attendedsysupgrade")|not)' "$tmp" >/dev/null 2>&1; then
+	# The package keys its pages as admin/system/attendedsysupgrade/overview and .../configuration,
+	# so the parent has to go with every child that carries its path. Deleting the parent alone
+	# left two nodes that still answered, with the views this script deletes behind them.
+	if jq 'with_entries(select(.key | startswith("admin/system/attendedsysupgrade") | not))' "$MENU" > "$tmp" 2>/dev/null &&
+	   [ -s "$tmp" ] &&
+	   jq -e '([keys[] | select(startswith("admin/system/attendedsysupgrade"))] | length) == 0' "$tmp" >/dev/null 2>&1; then
 		mv "$tmp" "$MENU"
 	fi
 	rm -f "$tmp"
