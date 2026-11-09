@@ -2325,8 +2325,8 @@ rows.</p>
 </tr>
 <tr>
 <td><code>48-cw-strip-asu-ui</code></td>
-<td>removes every Attended Sysupgrade menu node — the package keys its pages as <code>admin/system/attendedsysupgrade/overview</code> and <code>…/configuration</code>, so the parent goes with them — and deletes their views, turns the Status page's newer-version check <strong>on</strong> (<code>attendedsysupgrade.client.login_check_for_upgrades='1'</code>) — those views are the only switch that ever turned it on, so the notice is on out of the box and its own button is the way off — then clears the caches. <code>attendedsysupgrade-common</code> stays</td>
-<td>it writes the menu back unless no key carries that path any more, and skips the option where the config has no <code>client</code> section. See <a href="../../releases/#the-new-version-notice">releases</a> for what the notice does</td>
+<td>removes every Attended Sysupgrade menu node — the package keys its pages as <code>admin/system/attendedsysupgrade/overview</code> and <code>…/configuration</code>, so the parent goes with them — and deletes their views, then clears the caches. <code>attendedsysupgrade-common</code> stays</td>
+<td>it writes the menu back unless no key carries that path any more. The firmware-check preference those pages used to hold is written by <code>52-cw-upgrade-check</code>. See <a href="../../releases/#the-new-version-notice">releases</a> for what the notice does</td>
 </tr>
 <tr>
 <td><code>49-cw-awvoice-provision-port</code></td>
@@ -2342,6 +2342,11 @@ rows.</p>
 <td><code>51-cw-awvoice-voipd-off</code></td>
 <td>stops the vendor VoIP engine <code>qmodem_voip</code> and takes it off the boot path, so the phone daemon can answer the front-end name itself and the <a href="../../awvoice/network-phones/">network phone</a> carries audio</td>
 <td>exits if the init script is not executable. It <strong>fails</strong> — and retries next boot — if any boot link for that engine survives other than the SIP service's own. This is the fix for a soft phone that registers and never sets up media</td>
+</tr>
+<tr>
+<td><code>52-cw-upgrade-check</code></td>
+<td>writes <code>attendedsysupgrade.client.login_check_for_upgrades='1'</code>, the answer to LuCI's firmware-check question, and <strong>only where the option is absent</strong>. LuCI asks that question on every load of <em>Status → Overview</em> until the option exists, and the page it names for a later change is the one <code>48-cw-strip-asu-ui</code> removes. See <a href="../../releases/#the-new-version-notice">releases</a></td>
+<td>the number is part of the fix: the package's own <code>50-attendedsysupgrade</code> creates that config file, without the option, and uci-defaults run in name order — anything numbered below 50 is written into a file that does not exist yet and is then overwritten. A router whose owner answered the question keeps that answer, because the option is already there</td>
 </tr>
 <tr>
 <td><code>96-cw-apk-world-pin</code></td>
