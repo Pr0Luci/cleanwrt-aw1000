@@ -1,0 +1,26 @@
+#!/bin/sh
+# Answer LuCI's firmware-check question, so it is asked once and never again.
+#
+# LuCI's Status -> Overview asks whether it may look for a newer CleanWRT and
+# stores the answer as attendedsysupgrade.client.login_check_for_upgrades. Until
+# that option exists the question is put again on every load of that page, and
+# the page it names for a later change - System -> Attended Sysupgrade
+# configuration - is the one 48-cw-strip-asu-ui removes from this image. So the
+# answer is written here. The check itself is untouched: the router turns the
+# notice on, and LuCI's own "Stop showing upgrade alerts" button is the way off.
+#
+# The number in this file's name is load-bearing. attendedsysupgrade-common
+# ships its own uci-defaults as 50-attendedsysupgrade, which creates the config
+# file with its defaults and without this option. Those defaults run in name
+# order, so a write numbered below 50 lands in a file that does not exist yet
+# and is then overwritten; this one runs after them, into the file they made.
+#
+# Only an absent option is written, which is what LuCI's own test asks for: a
+# router whose owner answered the question - either way - keeps that answer
+# across upgrades, because the option is already there.
+
+uci -q get attendedsysupgrade.client >/dev/null 2>&1 || exit 0
+uci -q get attendedsysupgrade.client.login_check_for_upgrades >/dev/null 2>&1 && exit 0
+uci -q set attendedsysupgrade.client.login_check_for_upgrades='1'
+uci -q commit attendedsysupgrade
+exit 0
