@@ -2325,8 +2325,8 @@ rows.</p>
 </tr>
 <tr>
 <td><code>48-cw-strip-asu-ui</code></td>
-<td>removes the Attended Sysupgrade menu node and deletes its views, turns the Status page's newer-version check <strong>on</strong> (<code>attendedsysupgrade.client.login_check_for_upgrades='1'</code>) — those views are the only switch that ever turned it on, so the notice is on out of the box and its own button is the way off — then clears the caches. <code>attendedsysupgrade-common</code> stays</td>
-<td>it writes the menu back unless the node is gone, and skips the option where the config has no <code>client</code> section. See <a href="../../releases/#the-new-version-notice">releases</a> for what the notice does</td>
+<td>removes every Attended Sysupgrade menu node — the package keys its pages as <code>admin/system/attendedsysupgrade/overview</code> and <code>…/configuration</code>, so the parent goes with them — and deletes their views, turns the Status page's newer-version check <strong>on</strong> (<code>attendedsysupgrade.client.login_check_for_upgrades='1'</code>) — those views are the only switch that ever turned it on, so the notice is on out of the box and its own button is the way off — then clears the caches. <code>attendedsysupgrade-common</code> stays</td>
+<td>it writes the menu back unless no key carries that path any more, and skips the option where the config has no <code>client</code> section. See <a href="../../releases/#the-new-version-notice">releases</a> for what the notice does</td>
 </tr>
 <tr>
 <td><code>49-cw-awvoice-provision-port</code></td>
