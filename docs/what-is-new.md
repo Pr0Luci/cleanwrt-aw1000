@@ -1,7 +1,7 @@
 ---
 title: "What is new in each CleanWRT release"
 description: "Each CleanWRT release for the Arcadyan AW1000 read the other way: what arrived, what changes if you come from the release before, and the page that explains it."
-updated: 2026-11-06
+updated: 2026-11-09
 ---
 
 # What is new
@@ -15,6 +15,19 @@ other way round: what changes for you if you are on the release before.
     ```
     The LuCI login footer shows the same string. The version is also the first line of the
     [Health tab](awvoice/health-and-tests.md)'s log view.
+
+## 25.12.5-R2.1
+
+The second stable release. The line is quieter, and the update notice works from the first boot.
+
+| if you are on | you gain |
+|---|---|
+| `R1` | AWvoice 1.1.5: a refused call no longer holds the line busy, and an idle line costs nothing. The update notice is on as installed, your answer is kept, and the Attended Sysupgrade pages are gone |
+| `rc2.1` or earlier | everything in the R1 row below, then this |
+
+Nothing else moves: the theme, the modem packages and every other pin are R1's. The notice is the
+one on *Status → Overview*, and it never installs anything
+([the notice](releases.md#the-new-version-notice)).
 
 ## 25.12.5-R1
 

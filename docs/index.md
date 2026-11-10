@@ -109,7 +109,7 @@ router supported?" to a flashed, working router, and tell you how to get out if 
 
 ## Status
 
-CleanWRT's current release is `25.12.5-R1`, the first stable release of the OpenWrt 25.12.5
+CleanWRT's current release is `25.12.5-R2.1`, the second stable release of the OpenWrt 25.12.5
 base; `rc1`, `rc2` and `rc2.1` were the candidates before it. The image is built on GitHub
 Actions from the sources pinned in the repository. Read the [known limits](faq.md#known-limits)
 before relying on it for anything important.

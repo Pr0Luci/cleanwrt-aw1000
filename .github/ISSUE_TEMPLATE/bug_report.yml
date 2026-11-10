@@ -12,7 +12,7 @@ body:
     attributes:
       label: CleanWRT version
       description: Output of `cat /etc/openwrt_release`, or the version in the login footer.
-      placeholder: CleanWRT 25.12.5-R1
+      placeholder: CleanWRT 25.12.5-R2.1
     validations:
       required: true
   - type: dropdown
