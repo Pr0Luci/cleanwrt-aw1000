@@ -57,7 +57,12 @@ enforce_modes() {
 restore_feed() {
     [ -d "$1/.git" ] || return 0
     top=$(git -c "safe.directory=$1" -C "$1" rev-parse --show-toplevel 2>/dev/null) || return 0
-    [ "$top" = "$TREE" ] && return 0
+    # Compare physical paths: git reports the real path, and a tree given as
+    # /tmp/... on a platform that spells it /private/tmp/... must still match,
+    # or a src-link feed is mistaken for a feed of its own and the tree is cleared.
+    top=$(CDPATH= cd -- "$top" 2>/dev/null && pwd -P) || return 0
+    tree=$(CDPATH= cd -- "$TREE" 2>/dev/null && pwd -P) || return 0
+    [ "$top" = "$tree" ] && return 0
     # safe.directory names this feed alone: git run as root over a tree owned by the
     # build user is refused outright by some git versions, and naming the directory
     # makes the call work wherever this script runs.
@@ -144,12 +149,16 @@ for pf in "$REPO"/patches/feeds/*/*.patch; do
     [ -d "$dir" ] || { echo "ERROR: feed '$feed' (needed by $name) is not in $TREE/feeds" >&2; exit 1; }
     restore_once "$feed" "$dir"
 
-    if patch -p1 -R -F0 --dry-run -s -d "$dir" < "$pf" >/dev/null 2>&1; then
+    # -f: obey the direction given. Without it a reverse dry run on a patch whose
+    # hunks do not reverse makes patch ask "Ignore -R?" and, with no tty to answer
+    # it, treat the patch as already applied. Stacked patches hit this every time:
+    # the state a later patch expects only exists once the earlier one ran.
+    if patch -p1 -R -f -F0 --dry-run -s -d "$dir" < "$pf" >/dev/null 2>&1; then
         echo "feed patch already applied: $name"
         enforce_modes "$pf" "$dir"
         continue
     fi
-    if ! patch -p1 -F0 --dry-run -s -d "$dir" < "$pf" >/dev/null 2>&1; then
+    if ! patch -p1 -f -F0 --dry-run -s -d "$dir" < "$pf" >/dev/null 2>&1; then
         echo "ERROR: feed patch $name does not apply cleanly to the pinned feed." >&2
         echo "       Upstream changed the code it patches (or the feed pin moved)." >&2
         echo "       Re-port the patch onto the new upstream." >&2
