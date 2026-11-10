@@ -1,0 +1,5133 @@
+diff --git a/luci-app-3ginfo-lite/Makefile b/luci-app-3ginfo-lite/Makefile
+index 1fe2ee2..7404b44 100644
+--- a/luci-app-3ginfo-lite/Makefile
++++ b/luci-app-3ginfo-lite/Makefile
+@@ -10,10 +10,10 @@ PKG_NAME:=luci-app-3ginfo-lite
+ LUCI_TITLE:=LuCI JS Support for 3ginfo-lite
+ MAINTAINER:=Rafał Wabik <4Rafal@gmail.com>
+ LUCI_DESCRIPTION:=LuCI JS interface for the 3ginfo-lite. The package allows you to view the parameters of the mobile internet connection.
+-LUCI_DEPENDS:=+sms-tool +comgt +kmod-usb-serial-option
++LUCI_DEPENDS:=+sms-tool +comgt +kmod-usb-serial-option +jq
+ LUCI_PKGARCH:=all
+-PKG_VERSION:=1.0.76
+-PKG_RELEASE:=20250609
++PKG_VERSION:=1.0.77
++PKG_RELEASE:=20261110
+ 
+ include $(TOPDIR)/feeds/luci/luci.mk
+ 
+diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/3ginfo/radio.css b/luci-app-3ginfo-lite/htdocs/luci-static/resources/3ginfo/radio.css
+new file mode 100644
+index 0000000..9f3f824
+--- /dev/null
++++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/3ginfo/radio.css
+@@ -0,0 +1,836 @@
++/*
++ * 3gInfo-lite radio view.
++ *
++ * This is a page surface, not a theme: colour and type come from the active
++ * LuCI theme's exported tokens. The fallbacks are only for themes that do not
++ * publish the export tier, and they keep the page readable rather than trying
++ * to reproduce Footstrap's palette.
++ *
++ * GPL-3.0. Part of luci-app-3ginfo-lite.
++ */
++
++.tg-page {
++	--tg-bg: var(--background-color-high, #fff);
++	--tg-bg-soft: var(--background-color-low, #f6f8fa);
++	--tg-text: var(--text-color-highest, #1f2328);
++	--tg-dim: var(--text-color-medium, #57606a);
++	--tg-border: var(--border-color-medium, #d0d7de);
++	--tg-accent: var(--primary-color-high, #0969da);
++	--tg-good: var(--success-color-high, #197c36);
++	--tg-warn: var(--warn-color-high, #946300);
++	--tg-bad: var(--error-color-high, #cf222e);
++	--tg-radius: var(--fs-radius-lg, 10px);
++	--tg-radius-sm: var(--fs-radius, 8px);
++	--tg-gap: 12px;
++
++	display: flex;
++	flex-direction: column;
++	gap: 0;
++	color: var(--tg-text);
++	min-width: 0;
++}
++
++.tg-page *,
++.tg-page *::before,
++.tg-page *::after {
++	box-sizing: border-box;
++}
++
++.tg-page-head {
++	display: flex;
++	flex-direction: column;
++	gap: 12px;
++	margin-bottom: 14px;
++}
++
++.tg-page-title {
++	margin: 0;
++	color: var(--tg-text);
++	font-size: 1.35rem;
++	line-height: 1.2;
++	letter-spacing: -.02em;
++}
++
++.tg-page-sub {
++	margin: 4px 0 0;
++	color: var(--tg-dim);
++	font-size: .8125rem;
++}
++
++.tg-page-actions {
++	display: flex;
++	flex-wrap: wrap;
++	align-items: center;
++	gap: 8px;
++}
++
++.tg-refresh-label {
++	display: inline-flex;
++	align-items: center;
++	gap: 7px;
++	color: var(--tg-dim);
++	font-size: .75rem;
++}
++
++.tg-select {
++	min-height: 38px;
++	max-width: 10rem;
++}
++
++.tg-button {
++	display: inline-flex;
++	align-items: center;
++	justify-content: center;
++	gap: 4px;
++	min-height: 38px;
++	white-space: nowrap;
++}
++
++.tg-button[disabled] {
++	opacity: .65;
++}
++
++.tg-refresh-glyph {
++	display: inline-block;
++	line-height: 1;
++}
++
++.tg-busy .tg-refresh-glyph {
++	animation: tg-spin .8s linear infinite;
++}
++
++@keyframes tg-spin {
++	to { transform: rotate(360deg); }
++}
++
++.tg-banner {
++	margin-bottom: 12px;
++	padding: 10px 12px;
++	border: 1px solid var(--tg-border);
++	border-radius: var(--tg-radius-sm);
++	background: var(--tg-bg-soft);
++	color: var(--tg-text);
++	font-size: .8125rem;
++}
++
++.tg-banner[hidden] {
++	display: none;
++}
++
++.tg-banner-error {
++	border-color: var(--tg-bad);
++	color: var(--tg-bad);
++}
++
++.tg-banner-warning {
++	border-color: var(--tg-warn);
++	color: var(--tg-warn);
++}
++
++.tg-banner-info {
++	border-color: var(--tg-accent);
++	color: var(--tg-text);
++}
++
++.tg-summary {
++	position: relative;
++	margin-bottom: 12px;
++	overflow: hidden;
++}
++
++.tg-summary::before {
++	content: "";
++	position: absolute;
++	inset: 0 auto 0 0;
++	width: 3px;
++	background: var(--tg-accent);
++}
++
++.tg-summary-top {
++	display: flex;
++	flex-wrap: wrap;
++	align-items: center;
++	gap: 7px;
++	margin-bottom: 9px;
++}
++
++.tg-dot {
++	display: inline-block;
++	width: 8px;
++	height: 8px;
++	flex: 0 0 8px;
++	border-radius: 50%;
++	background: var(--tg-dim);
++}
++
++.tg-dot.tg-good { background: var(--tg-good); }
++.tg-dot.tg-warn { background: var(--tg-warn); }
++.tg-dot.tg-bad { background: var(--tg-bad); }
++.tg-dot.tg-muted { background: var(--tg-dim); }
++
++.tg-age {
++	margin-left: auto;
++	color: var(--tg-dim);
++	font-size: .6875rem;
++}
++
++.tg-summary-line {
++	margin: 0 0 10px;
++	color: var(--tg-dim);
++	font-size: .8125rem;
++}
++
++.tg-badges {
++	display: flex;
++	flex-wrap: wrap;
++	gap: 6px;
++}
++
++.tg-badge {
++	display: inline-flex;
++	align-items: center;
++	min-height: 25px;
++	padding: 2px 8px;
++	border: 1px solid var(--tg-border);
++	border-radius: 999px;
++	background: var(--tg-bg-soft);
++	color: var(--tg-dim);
++	font-size: .6875rem;
++	font-weight: 650;
++	line-height: 1.3;
++	white-space: nowrap;
++}
++
++.tg-badge-accent {
++	border-color: var(--tg-accent);
++	color: var(--tg-accent);
++}
++
++.tg-badge-good {
++	border-color: var(--tg-good);
++	color: var(--tg-good);
++}
++
++.tg-badge-warn {
++	border-color: var(--tg-warn);
++	color: var(--tg-warn);
++}
++
++.tg-badge-bad {
++	border-color: var(--tg-bad);
++	color: var(--tg-bad);
++}
++
++.tg-nav {
++	position: sticky;
++	top: var(--fs-bar-h, 0px);
++	z-index: 2;
++	display: flex;
++	gap: 4px;
++	overflow-x: auto;
++	margin: 0 -2px 12px;
++	padding: 2px 2px 8px;
++	background: var(--tg-bg);
++	scrollbar-width: none;
++}
++
++.tg-nav::-webkit-scrollbar {
++	display: none;
++}
++
++.tg-nav a {
++	display: inline-flex;
++	align-items: center;
++	flex: 0 0 auto;
++	min-height: 38px;
++	padding: 0 10px;
++	border: 1px solid transparent;
++	border-radius: var(--tg-radius-sm);
++	color: var(--tg-dim);
++	font-size: .75rem;
++	font-weight: 650;
++	text-decoration: none;
++}
++
++.tg-nav a:hover,
++.tg-nav a:focus-visible {
++	border-color: var(--tg-border);
++	background: var(--tg-bg-soft);
++	color: var(--tg-text);
++	text-decoration: none;
++}
++
++.tg-overview,
++.tg-lower {
++	display: grid;
++	grid-template-columns: minmax(0, 1fr);
++	gap: var(--tg-gap);
++	min-width: 0;
++	/* Cards keep their own height: a half-empty card stretched to match its
++	   neighbour reads as missing content rather than as empty space. */
++	align-items: start;
++}
++
++.tg-card {
++	/* A cbi-section, so the theme paints the box. Only what the grid needs
++	   stays here: no stretched cards, and no double spacing from the theme's
++	   own section margin. */
++	min-width: 0;
++	margin-bottom: 0;
++	scroll-margin-top: calc(var(--fs-bar-h, 0px) + 3rem);
++}
++
++.tg-card-head {
++	display: flex;
++	flex-wrap: wrap;
++	align-items: flex-start;
++	justify-content: space-between;
++	gap: 8px 12px;
++	margin-bottom: 12px;
++}
++
++.tg-card-copy {
++	min-width: 0;
++}
++
++.tg-card-title {
++	margin: 0;
++	color: var(--tg-text);
++	font-size: 1rem;
++	line-height: 1.3;
++}
++
++.tg-card-desc {
++	margin: 3px 0 0;
++	color: var(--tg-dim);
++	font-size: .75rem;
++	line-height: 1.45;
++}
++
++.tg-signal-grid {
++	display: grid;
++	grid-template-columns: minmax(0, 1fr);
++	gap: 8px;
++}
++
++.tg-tile {
++	min-width: 0;
++	padding: 11px 12px;
++	border: 1px solid var(--tg-border);
++	border-radius: var(--tg-radius-sm);
++	background: var(--tg-bg-soft);
++}
++
++.tg-tile-head {
++	display: flex;
++	flex-wrap: wrap;
++	align-items: center;
++	justify-content: space-between;
++	gap: 5px;
++	color: var(--tg-dim);
++	font-size: .6875rem;
++	font-weight: 650;
++}
++
++.tg-tile-label {
++	min-width: 0;
++}
++
++.tg-tile-value {
++	margin-top: 5px;
++	line-height: 1.2;
++}
++
++.tg-metric-value {
++	color: var(--tg-text);
++	font-size: 1.5rem;
++	font-weight: 750;
++	letter-spacing: -.03em;
++	font-variant-numeric: tabular-nums;
++}
++
++.tg-metric-unit {
++	color: var(--tg-dim);
++	font-size: .6875rem;
++	font-weight: 500;
++	letter-spacing: 0;
++}
++
++.tg-quality {
++	display: inline-flex;
++	align-items: center;
++	gap: 4px;
++	font-size: .625rem;
++	font-weight: 700;
++	white-space: nowrap;
++}
++
++.tg-quality::before {
++	content: "";
++	width: 6px;
++	height: 6px;
++	border-radius: 50%;
++	background: currentColor;
++}
++
++.tg-q-good { color: var(--tg-good); }
++.tg-q-fair { color: var(--tg-warn); }
++.tg-q-weak { color: var(--tg-bad); }
++
++.tg-muted {
++	color: var(--tg-dim) !important;
++}
++
++.tg-carrier-stack {
++	display: grid;
++	grid-template-columns: minmax(0, 1fr);
++	gap: 8px;
++}
++
++.tg-carrier {
++	display: grid;
++	grid-template-columns: minmax(0, 1fr);
++	gap: 9px;
++	min-width: 0;
++	padding: 11px 12px;
++	border: 1px solid var(--tg-border);
++	border-radius: var(--tg-radius-sm);
++	background: var(--tg-bg-soft);
++}
++
++.tg-carrier-main {
++	display: flex;
++	align-items: flex-start;
++	gap: 9px;
++	min-width: 0;
++}
++
++.tg-carrier-index {
++	display: grid;
++	place-items: center;
++	flex: 0 0 28px;
++	height: 28px;
++	border: 1px solid var(--tg-accent);
++	border-radius: 8px;
++	color: var(--tg-accent);
++	font-size: .625rem;
++	font-weight: 800;
++	line-height: 1;
++}
++
++.tg-carrier-copy {
++	min-width: 0;
++}
++
++.tg-carrier-title {
++	margin: 0;
++	color: var(--tg-text);
++	font-size: .8125rem;
++	line-height: 1.35;
++}
++
++.tg-carrier-meta {
++	margin: 2px 0 0;
++	color: var(--tg-dim);
++	font-size: .6875rem;
++	line-height: 1.45;
++	overflow-wrap: anywhere;
++}
++
++.tg-chips {
++	display: flex;
++	flex-wrap: wrap;
++	gap: 5px;
++}
++
++.tg-chip {
++	display: inline-flex;
++	flex-wrap: wrap;
++	align-items: baseline;
++	gap: 4px;
++	max-width: 100%;
++	padding: 3px 6px;
++	border: 1px solid var(--tg-border);
++	border-radius: 6px;
++	background: var(--tg-bg);
++	color: var(--tg-dim);
++	font-size: .625rem;
++	line-height: 1.4;
++}
++
++.tg-chip-label {
++	color: var(--tg-dim);
++}
++
++.tg-chip strong {
++	color: var(--tg-text);
++	font-family: var(--fs-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
++	font-size: .6875rem;
++	font-weight: 650;
++	white-space: nowrap;
++}
++
++.tg-chip .tg-quality {
++	font-size: .5625rem;
++}
++
++.tg-kv {
++	display: grid;
++	grid-template-columns: minmax(0, 1fr);
++	gap: 8px 12px;
++	margin: 0;
++}
++
++.tg-kv-item {
++	min-width: 0;
++}
++
++.tg-kv dt {
++	margin: 0;
++	color: var(--tg-dim);
++	font-size: .625rem;
++	line-height: 1.35;
++}
++
++.tg-kv dd {
++	margin: 2px 0 0;
++	color: var(--tg-text);
++	font-size: .75rem;
++	font-weight: 650;
++	line-height: 1.4;
++	overflow-wrap: anywhere;
++}
++
++.tg-kv-compact {
++	gap: 7px 12px;
++}
++
++.tg-inline-note {
++	margin-bottom: 10px;
++	padding: 9px 10px;
++	border: 1px solid var(--tg-border);
++	border-radius: var(--tg-radius-sm);
++	background: var(--tg-bg-soft);
++	color: var(--tg-dim);
++	font-size: .6875rem;
++	line-height: 1.45;
++}
++
++.tg-inline-note[hidden] {
++	display: none;
++}
++
++.tg-neighbour-tools {
++	display: grid;
++	grid-template-columns: minmax(0, 1fr);
++	gap: 8px;
++	margin-bottom: 10px;
++}
++
++.tg-filters {
++	display: flex;
++	flex-wrap: wrap;
++	gap: 5px;
++}
++
++.tg-filter {
++	min-height: 36px;
++	padding: 0 9px;
++	border: 1px solid var(--tg-border);
++	border-radius: 999px;
++	background: var(--tg-bg-soft);
++	color: var(--tg-dim);
++	font-size: .6875rem;
++	font-weight: 650;
++	line-height: 1;
++	cursor: pointer;
++}
++
++.tg-filter-active {
++	border-color: var(--tg-accent);
++	color: var(--tg-accent);
++}
++
++.tg-search {
++	width: 100%;
++	min-width: 0;
++	min-height: 36px;
++	font-size: .75rem;
++}
++
++.tg-neighbour-cards {
++	display: grid;
++	grid-template-columns: minmax(0, 1fr);
++	gap: 8px;
++}
++
++.tg-neighbour-card {
++	min-width: 0;
++	padding: 10px 11px;
++	border: 1px solid var(--tg-border);
++	border-radius: var(--tg-radius-sm);
++	background: var(--tg-bg-soft);
++}
++
++.tg-neighbour-head {
++	display: flex;
++	flex-wrap: wrap;
++	align-items: center;
++	justify-content: space-between;
++	gap: 6px;
++	margin-bottom: 8px;
++	color: var(--tg-text);
++	font-size: .75rem;
++}
++
++.tg-neighbour-kv {
++	display: grid;
++	grid-template-columns: repeat(2, minmax(0, 1fr));
++	gap: 7px 10px;
++	margin: 0;
++}
++
++.tg-neighbour-kv dt {
++	color: var(--tg-dim);
++	font-size: .625rem;
++}
++
++.tg-neighbour-kv dd {
++	margin: 1px 0 0;
++	color: var(--tg-text);
++	font-size: .75rem;
++	font-weight: 650;
++	font-variant-numeric: tabular-nums;
++}
++
++.tg-table-wrap {
++	display: none;
++	width: 100%;
++	overflow-x: auto;
++	border: 1px solid var(--tg-border);
++	border-radius: var(--tg-radius-sm);
++}
++
++.tg-table {
++	width: 100%;
++	min-width: 640px;
++	border-collapse: collapse;
++	color: var(--tg-text);
++	font-size: .75rem;
++	text-align: left;
++}
++
++.tg-table th,
++.tg-table td {
++	padding: 8px 9px;
++	border-bottom: 1px solid var(--tg-border);
++	white-space: nowrap;
++}
++
++.tg-table th {
++	background: var(--tg-bg-soft);
++	color: var(--tg-dim);
++	font-size: .625rem;
++	font-weight: 700;
++}
++
++.tg-table tbody tr:last-child td {
++	border-bottom: 0;
++}
++
++.tg-table tbody tr:hover {
++	background: var(--tg-bg-soft);
++}
++
++.tg-sort {
++	display: inline-flex;
++	align-items: center;
++	min-height: 24px;
++	padding: 0;
++	border: 0;
++	background: none;
++	color: inherit;
++	font: inherit;
++	cursor: pointer;
++}
++
++.tg-sort-active {
++	color: var(--tg-accent);
++}
++
++.tg-empty {
++	padding: 16px 10px;
++	border: 1px dashed var(--tg-border);
++	border-radius: var(--tg-radius-sm);
++	color: var(--tg-dim);
++	text-align: center;
++	font-size: .75rem;
++	line-height: 1.5;
++}
++
++.tg-empty strong {
++	display: block;
++	margin-bottom: 3px;
++	color: var(--tg-text);
++	font-size: .8125rem;
++}
++
++.tg-empty span {
++	display: block;
++}
++
++.tg-warnings {
++	margin-top: 12px;
++}
++
++.tg-warning-list {
++	margin: 0;
++	padding-left: 1.1rem;
++	color: var(--tg-warn);
++	font-size: .6875rem;
++	line-height: 1.5;
++}
++
++.tg-warning-list li {
++	margin-bottom: 3px;
++}
++
++.tg-details summary {
++	display: flex;
++	align-items: center;
++	min-height: 34px;
++	color: var(--tg-accent);
++	font-size: .75rem;
++	font-weight: 650;
++	cursor: pointer;
++}
++
++.tg-details[open] summary {
++	margin-bottom: 8px;
++}
++
++.tg-foot {
++	margin: 10px 0 0;
++	color: var(--tg-dim);
++	font-size: .625rem;
++	line-height: 1.5;
++}
++
++.tg-page a:focus-visible,
++.tg-page button:focus-visible,
++.tg-page summary:focus-visible,
++.tg-page input:focus-visible,
++.tg-page select:focus-visible {
++	outline: 2px solid var(--tg-accent);
++	outline-offset: 2px;
++}
++
++@media (min-width: 420px) {
++	.tg-kv {
++		grid-template-columns: repeat(2, minmax(0, 1fr));
++	}
++}
++
++@media (min-width: 520px) {
++	.tg-page-head {
++		flex-direction: row;
++		align-items: flex-end;
++		justify-content: space-between;
++	}
++
++	.tg-page-actions {
++		justify-content: flex-end;
++	}
++
++	.tg-signal-grid {
++		grid-template-columns: repeat(2, minmax(0, 1fr));
++	}
++
++	.tg-carrier {
++		grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
++		align-items: center;
++	}
++
++	.tg-neighbour-tools {
++		grid-template-columns: auto minmax(12rem, 1fr);
++		align-items: center;
++	}
++
++	.tg-neighbour-cards {
++		grid-template-columns: repeat(2, minmax(0, 1fr));
++	}
++}
++
++@media (min-width: 768px) {
++	.tg-signal-grid {
++		grid-template-columns: repeat(4, minmax(0, 1fr));
++	}
++
++	.tg-kv {
++		grid-template-columns: repeat(3, minmax(0, 1fr));
++	}
++
++	/* The network card sits in the narrow column; two wide fields read better
++	   there than three cramped ones, and a long firmware id stays on one line. */
++	#tg-network-grid {
++		grid-template-columns: repeat(2, minmax(0, 1fr));
++	}
++
++	.tg-neighbour-cards {
++		display: none;
++	}
++
++	.tg-table-wrap {
++		display: block;
++	}
++
++	.tg-lower {
++		grid-template-columns: repeat(2, minmax(0, 1fr));
++	}
++}
++
++@media (min-width: 1000px) {
++	.tg-overview {
++		grid-template-columns: minmax(0, 1.45fr) minmax(18rem, .8fr);
++		align-items: start;
++	}
++
++	.tg-overview #tg-signal {
++		grid-column: 1;
++	}
++
++	.tg-overview #tg-serving {
++		grid-column: 1;
++	}
++
++	.tg-overview #tg-network {
++		grid-column: 2;
++		grid-row: 1 / span 2;
++	}
++}
++
++@media (max-width: 380px) {
++	.tg-card,
++	.tg-summary {
++		padding: 12px;
++	}
++
++	.tg-page-title {
++		font-size: 1.2rem;
++	}
++
++	.tg-age {
++		width: 100%;
++		margin-left: 0;
++	}
++
++	.tg-neighbour-kv {
++		grid-template-columns: minmax(0, 1fr);
++	}
++}
++
++@media (prefers-reduced-motion: reduce) {
++	.tg-busy .tg-refresh-glyph {
++		animation-duration: .01ms;
++	}
++}
+diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js
+index c64dbca..3f4b325 100644
+--- a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js
++++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js
+@@ -57,6 +57,26 @@ return view.extend({
+ 		o.placeholder = _('Please select a port');
+ 		o.rmempty = true;
+ 
++		o = s.option(form.ListValue, 'radio_refresh',
++			_('Page refresh'),
++			_('How often the radio page asks for a new snapshot. The collector still enforces its own minimum interval.'));
++		o.value('0', _('Off'));
++		o.value('15', _('15 seconds'));
++		o.value('30', _('30 seconds'));
++		o.value('60', _('1 minute'));
++		o.value('120', _('2 minutes'));
++		o.default = '30';
++		o.rmempty = false;
++
++		o = s.option(form.ListValue, 'radio_neighbor_interval',
++			_('Neighbour scan interval'),
++			_('The minimum time between neighbour scans. Scans are manual; this prevents a page refresh from triggering them repeatedly.'));
++		o.value('60', _('1 minute'));
++		o.value('120', _('2 minutes'));
++		o.value('300', _('5 minutes'));
++		o.default = '60';
++		o.rmempty = false;
++
+ 		s = m.section(form.TypedSection, '3ginfo', null);
+ 		s.anonymous = true;
+ 		s.addremove = false;
+diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdebug.js b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdebug.js
+index 8e3684e..15d9a76 100644
+--- a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdebug.js
++++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdebug.js
+@@ -49,6 +49,10 @@ return view.extend({
+ 		return this.handleCommand('/bin/sh', ['-x', '/usr/share/3ginfo-lite/3ginfo.sh']);
+ 	},
+ 
++	handleRADIO: function(ev, cmd) {
++		return this.handleCommand('/bin/sh', ['-x', '/usr/share/3ginfo-lite/radiodata.sh', 'json']);
++	},
++
+ 	handleClear: function(ev) {
+ 		var out = document.getElementById('pre');
+ 		out.style.display = 'none';
+@@ -70,7 +74,7 @@ return view.extend({
+ 					link.click();
+ 					URL.revokeObjectURL(link.href);
+ 				}
+-			}).catch(() => {
++			}).catch(function(err) {
+ 				ui.addNotification(null, E('p', {}, _('Download error') + ': ' + err.message));
+ 		});
+ 
+@@ -134,6 +138,25 @@ return view.extend({
+ 							}, [ _('Debug') ])
+ 						])
+ 					]),
++
++					E('tr', { 'class': 'tr' }, [
++						E('td', { 'class': 'td left', 'colspan': '3' }, [
++							E('label', { 'class': 'cbi-value-title' },
++								_("Check the normalized radio snapshot.")
++							),
++							E('p'),
++							E('label', { 'class': 'cbi-value-title' },
++								_("<code>sh -x /usr/share/3ginfo-lite/radiodata.sh json</code>.")
++							),
++							E('p'),
++							E('span', { 'class': 'diag-action' }, [
++								E('button', {
++									'class': 'cbi-button cbi-button-action',
++									'click': ui.createHandlerFn(this, 'handleRADIO')
++								}, [ _('Show snapshot') ])
++							])
++						])
++					])
+ 				])
+ 			]);
+ 
+diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
+index 88ba185..fb34dbc 100644
+--- a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
++++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
+@@ -1,1211 +1,1215 @@
+ 'use strict';
+-'require baseclass';
+-'require form';
+-'require fs';
+ 'require view';
+-'require ui';
+-'require uci';
++'require fs';
+ 'require poll';
+ 'require dom';
+-'require tools.widgets as widgets';
++'require uci';
+ 
+ /*
+-	Copyright 2021-2025 Rafał Wabik - IceG - From eko.one.pl forum
+-	
+-	Licensed to the GNU General Public License v3.0.
+-	
+-	Thanks to https://github.com/koshev-msk for the initial progress bar calculation for rssi/rsrp/rsrq/sinnr.
+-*/
+-
+-function csq_bar(v, m) {
+-var pg = document.querySelector('#csq')
+-var vn = parseInt(v) || 0;
+-var mn = parseInt(m) || 100;
+-var pc = Math.floor((100 / mn) * vn);
+-		if (vn >= 20 && vn <= 31 ) 
+-			{
+-			pg.firstElementChild.style.background = 'lime';
+-			var tip = _('Very good');
+-			};
+-		if (vn >= 14 && vn <= 19) 
+-			{
+-			pg.firstElementChild.style.background = 'yellow';
+-			var tip = _('Good');
+-			};
+-		if (vn >= 10 && vn <= 13) 
+-			{
+-			pg.firstElementChild.style.background = 'darkorange';
+-			var tip = _('Weak');
+-			};
+-		if (vn <= 9 && vn >= 1) 
+-			{
+-			pg.firstElementChild.style.background = 'red';
+-			var tip = _('Very weak');
+-			};
+-pg.firstElementChild.style.width = pc + '%';
+-pg.style.width = '33%';
+-pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
++ * 3gInfo-lite radio view.
++ *
++ * The page is presentation only: radiodata.sh owns modem access and returns a
++ * normalized snapshot. Missing measurements stay missing, with the reason shown
++ * where it matters, rather than being rendered as zero.
++ *
++ * Copyright 2021-2025 Rafał Wabik - IceG - From eko.one.pl forum
++ * Copyright 2026 CleanWRT contributors
++ * Licensed to the GNU General Public License v3.0.
++ */
++
++var RADIO = '/usr/share/3ginfo-lite/radiodata.sh';
++
++// LuCI's poller lives for the whole session, so the view registers one handler
++// and points it at the instance that is on screen now. Without this, every visit
++// to the page would add another handler that kept fetching for a dead view.
++var activeView = null;
++var pollRegistered = false;
++
++function pollHandler() {
++	if (activeView && document.getElementById('tg-summary'))
++		activeView.pollTick();
++}
++
++// LuCI's E(tag, attrs, children) appends a children array verbatim: a nested
++// array or a null entry becomes a text node ("[object HTMLDivElement]" or
++// "null"). Every element below is built with el(), which flattens nested
++// arrays and drops empty entries before E() sees them.
++function normalizeChildren(value) {
++	var out = [];
++
++	function walk(v) {
++		if (v === null || v === undefined || v === false || v === '')
++			return;
++
++		if (Array.isArray(v))
++			v.forEach(walk);
++		else
++			out.push(v);
++	}
++
++	walk(value);
++	return out;
+ }
+ 
+-function rssi_bar(v, m) {
+-var pg = document.querySelector('#rssi')
+-var vn = parseInt(v) || 0;
+-var mn = parseInt(m) || 100;
+-if (vn > -50) { vn = -50 };
+-if (vn < -110) { vn = -110 };
+-var pc =  Math.floor(100*(1-(-50 - vn)/(-50 - mn)));
+-		if (vn > -70) 
+-			{
+-			pg.firstElementChild.style.background = 'lime';
+-			var tip = _('Very good');
+-			};
+-		if (vn >= -85 && vn <= -70) 
+-			{
+-			pg.firstElementChild.style.background = 'yellow';
+-			var tip = _('Good');
+-			};
+-		if (vn >= -100 && vn <= -86) 
+-			{
+-			pg.firstElementChild.style.background = 'darkorange';
+-			var tip = _('Weak');
+-			};
+-		if (vn < -100) 
+-			{
+-			pg.firstElementChild.style.background = 'red';
+-			var tip = _('Very weak');
+-			};
+-pg.firstElementChild.style.width = pc + '%';
+-pg.style.width = '33%';
+-pg.firstElementChild.style.animationDirection = "reverse";
+-pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
++function el(tag, attrs, children) {
++	return E(tag, attrs, normalizeChildren(children));
+ }
+ 
+-function rsrp_bar(v, m) {
+-var pg = document.querySelector('#rsrp')
+-var vn = parseInt(v) || 0;
+-var mn = parseInt(m) || 100;
+-if (vn > -50) { vn = -50 };
+-if (vn < -140) { vn = -140 };
+-var pc =  Math.floor(120*(1-(-50 - vn)/(-70 - mn)));
+-		if (vn >= -80 ) 
+-			{
+-			pg.firstElementChild.style.background = 'lime';
+-			var tip = _('Very good');
+-			};
+-		if (vn >= -90 && vn <= -79) 
+-			{
+-			pg.firstElementChild.style.background = 'yellow';
+-			var tip = _('Good');
+-			};
+-		if (vn >= -100 && vn <= -89) 
+-			{
+-			pg.firstElementChild.style.background = 'darkorange';
+-			var tip = _('Weak');
+-			};
+-		if (vn < -100) 
+-			{
+-			pg.firstElementChild.style.background = 'red';
+-			var tip = _('Very weak');
+-			};
+-pg.firstElementChild.style.width = pc + '%';
+-pg.style.width = '33%';
+-pg.firstElementChild.style.animationDirection = "reverse";
+-pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
++
++var REFRESH_CHOICES = [0, 15, 30, 60, 120];
++
++function num(v) {
++	if (v === null || v === undefined || v === '')
++		return null;
++
++	var n = Number(v);
++	return isFinite(n) ? n : null;
++}
++
++function shown(v, digits) {
++	var n = num(v);
++	if (n === null)
++		return null;
++
++	var s = (digits !== undefined) ? n.toFixed(digits) : String(Math.round(n * 10) / 10);
++	return s.replace('-', '−');
+ }
+ 
+-function sinr_bar(v, m) {
+-var pg = document.querySelector('#sinr')
+-var vn = parseInt(v) || 0;
+-var mn = parseInt(m) || 100;
+-var pc = Math.floor(100-(100*(1-((mn - vn)/(mn - 40)))));
+-		if (vn > 20 ) 
+-			{
+-			pg.firstElementChild.style.background = 'lime';
+-			var tip = _('Excellent');
+-			};
+-		if (vn >= 13 && vn <= 20)
+-			{
+-			pg.firstElementChild.style.background = 'yellow';
+-			var tip = _('Good');
+-			};
+-		if (vn > 0 && vn <= 12) 
+-			{
+-			pg.firstElementChild.style.background = 'darkorange';
+-			var tip = _('Mid cell');
+-			};
+-		if (vn <= 0) 
+-			{
+-			pg.firstElementChild.style.background = 'red';
+-			var tip = _('Cell edge');
+-			};
+-pg.firstElementChild.style.width = pc + '%';
+-pg.style.width = '33%';
+-pg.firstElementChild.style.animationDirection = "reverse";
+-pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
++function fmtBytes(v) {
++	var n = num(v);
++	if (n === null)
++		return null;
++
++	var units = [ 'B', 'KiB', 'MiB', 'GiB', 'TiB' ];
++	var i = 0;
++	while (n >= 1024 && i < units.length - 1) {
++		n /= 1024;
++		i++;
++	}
++	return (i === 0 ? String(Math.round(n)) : n.toFixed(1)) + ' ' + units[i];
+ }
+ 
+-function rsrq_bar(v, m) {
+-var pg = document.querySelector('#rsrq')
+-var vn = parseInt(v) || 0;
+-var mn = parseInt(m) || 100;
+-var pc = Math.floor(115-(100/mn)*vn);
+-if (vn > 0) { vn = 0; };
+-		if (vn >= -10 ) 
+-			{
+-			pg.firstElementChild.style.background = 'lime';
+-			var tip = _('Excellent');
+-			};
+-		if (vn >= -15 && vn <= -9) 
+-			{
+-			pg.firstElementChild.style.background = 'yellow';
+-			var tip = _('Good');
+-			};
+-		if (vn >= -20 && vn <= -14) 
+-			{
+-			pg.firstElementChild.style.background = 'darkorange';
+-			var tip = _('Mid cell');
+-			};
+-		if (vn < -20) 
+-			{
+-			pg.firstElementChild.style.background = 'red';
+-			var tip = _('Cell edge');
+-			};
+-pg.firstElementChild.style.width = pc + '%';
+-pg.style.width = '33%';
+-pg.firstElementChild.style.animationDirection = "reverse";
+-pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
++function fmtDuration(sec) {
++	var n = num(sec);
++	if (n === null || n < 0)
++		return null;
++
++	var d = Math.floor(n / 86400),
++	    h = Math.floor(n / 3600) % 24,
++	    m = Math.floor(n / 60) % 60,
++	    s = Math.floor(n) % 60;
++
++	if (d > 0)
++		return _('%dd %dh %dm').format(d, h, m);
++	if (h > 0)
++		return _('%dh %dm').format(h, m);
++	if (m > 0)
++		return _('%dm %ds').format(m, s);
++	return _('%ds').format(s);
+ }
+ 
+-function SIMdata(data) {
+-	var sdata = {};
++function fmtMillis(ms) {
++	var n = num(ms);
++	if (n === null || n < 0)
++		return null;
++	if (n < 1000)
++		return _('%d ms').format(Math.round(n));
++	return _('%s s').format((n / 1000).toFixed(1));
++}
++
++function fmtAge(sec) {
++	var n = num(sec);
++	if (n === null)
++		return _('never');
++	if (n < 5)
++		return _('just now');
++	if (n < 60)
++		return _('%ds ago').format(Math.floor(n));
++	if (n < 3600)
++		return _('%dm ago').format(Math.floor(n / 60));
++	return _('%dh ago').format(Math.floor(n / 3600));
++}
++
++function fmtClock(epoch) {
++	var n = num(epoch);
++	if (n === null)
++		return '—';
++
+ 	try {
+-		if (data) sdata = JSON.parse(data);
+-	} catch(e) {}
+-
+-	if (sdata.simslot && sdata.simslot.length > 0) {
+-		return ui.itemlist(E('span'),[
+-		_('SIM Slot'), sdata.simslot,
+-		_('SIM IMSI'), sdata.imsi,
+-		_('SIM ICCID'), sdata.iccid,
+-		_('Modem IMEI'), sdata.imei,
+-		_('Hint'), _('CLICK ME TO SEE NEW MENU')
+-		]);
++		return new Date(n * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+ 	}
+-	else {
+-		return ui.itemlist(E('span'),[
+-		_('SIM IMSI'), sdata.imsi,
+-		_('SIM ICCID'), sdata.iccid,
+-		_('Modem IMEI'), sdata.imei,
+-		_('Hint'), _('CLICK ME TO SEE NEW MENU')
+-		]);
++	catch (e) {
++		return '—';
+ 	}
+ }
+ 
+-function active_select() {
+-	uci.load('modemdefine').then(function() {
+-		var modemz = (uci.get('modemdefine', '@modemdefine[1]', 'comm_port'));
+-		if (!modemz) {
+-			document.getElementById("modc").disabled = true;
+-		}
+-		else {
+-			document.getElementById("modc").disabled = false;
++function fmtTac(v) {
++	if (v === null || v === undefined || v === '')
++		return null;
++
++	var s = String(v);
++	if (/^[0-9A-Fa-f]+$/.test(s) && /[A-Fa-f]/.test(s))
++		return s.toUpperCase() + ' (' + parseInt(s, 16) + ')';
++	return s;
++}
++
++function bandLabel(cell) {
++	if (!cell || cell.band === null || cell.band === undefined)
++		return null;
++	if (cell.rat === 'nr')
++		return 'n' + cell.band;
++	return 'B' + cell.band;
++}
++
++function quality(metric, value) {
++	var n = num(value);
++	if (n === null)
++		return null;
++
++	switch (metric) {
++	case 'rsrp':
++	case 'ssrsrp':
++		if (n >= -80) return 'excellent';
++		if (n >= -90) return 'good';
++		if (n >= -100) return 'fair';
++		return 'weak';
++
++	case 'rsrq':
++	case 'ssrsrq':
++		if (n >= -10) return 'excellent';
++		if (n >= -15) return 'good';
++		if (n >= -20) return 'fair';
++		return 'weak';
++
++	case 'sinr':
++	case 'sssinr':
++		if (n >= 20) return 'excellent';
++		if (n >= 13) return 'good';
++		if (n >= 0) return 'fair';
++		return 'weak';
++
++	case 'rssi':
++		if (n >= -65) return 'excellent';
++		if (n >= -75) return 'good';
++		if (n >= -85) return 'fair';
++		return 'weak';
++
++	case 'rscp':
++		if (n >= -75) return 'excellent';
++		if (n >= -85) return 'good';
++		if (n >= -95) return 'fair';
++		return 'weak';
++
++	case 'ecio':
++		if (n >= -5) return 'excellent';
++		if (n >= -10) return 'good';
++		if (n >= -15) return 'fair';
++		return 'weak';
++	}
++
++	return null;
++}
++
++function qualityLabel(q) {
++	switch (q) {
++	case 'excellent': return _('Excellent');
++	case 'good': return _('Good');
++	case 'fair': return _('Fair');
++	case 'weak': return _('Weak');
++	}
++	return _('Not reported');
++}
++
++function qualityClass(q) {
++	switch (q) {
++	case 'excellent':
++	case 'good': return 'tg-q-good';
++	case 'fair': return 'tg-q-fair';
++	case 'weak': return 'tg-q-weak';
++	}
++	return 'tg-muted';
++}
++
++function qualityBadge(q) {
++	return el('span', { 'class': 'tg-quality ' + qualityClass(q) }, qualityLabel(q));
++}
++
++function metricValue(value, unit) {
++	if (num(value) === null)
++		return el('span', { 'class': 'tg-muted' }, _('Not reported'));
++
++	return el('span', { 'class': 'tg-metric-value' }, [
++		shown(value),
++		unit ? el('span', { 'class': 'tg-metric-unit' }, ' ' + unit) : null
++	]);
++}
++
++function badge(text, kind) {
++	return el('span', { 'class': 'tg-badge' + (kind ? ' tg-badge-' + kind : '') }, text);
++}
++
++function navLink(id, label) {
++	return el('a', {
++		'href': '#' + id,
++		'click': function(ev) {
++			ev.preventDefault();
++			var target = document.getElementById(id);
++			if (!target)
++				return;
++			var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
++			target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+ 		}
+-	});
++	}, label);
+ }
+ 
+-function formatDuration(sec) {
+-    if (sec === '-') { return '-'; }
+-    if (sec === '') { return '-'; }
+-    var d = Math.floor(sec / 86400),
+-        h = Math.floor(sec / 3600) % 24,
+-        m = Math.floor(sec / 60) % 60,
+-        s = sec % 60;
+-    var time = d > 0 ? d + 'd ' : '';
+-    if (time !== '') { time += h + 'h '; } else { time = h > 0 ? h + 'h ' : ''; }
+-    if (time !== '') { time += m + 'm '; } else { time = m > 0 ? m + 'm ' : ''; }
+-    time += s + 's';
+-    return time;
++function card(id, title, description, right, children) {
++	// The card is a plain LuCI section: the theme owns its background, border and
++	// corner radius, so it follows the active theme and its wallpaper/glass modes
++	// instead of a second, competing box style.
++	return el('section', { 'class': 'cbi-section tg-card', 'id': id }, [
++		el('div', { 'class': 'tg-card-head' }, [
++			el('div', { 'class': 'tg-card-copy' }, [
++				el('h3', { 'class': 'tg-card-title' }, title),
++				description ? el('p', { 'class': 'tg-card-desc' }, description) : null
++			]),
++			right || null
++		]),
++		children
++	]);
++}
++
++function emptyState(text, detail) {
++	return el('div', { 'class': 'tg-empty' }, [
++		el('strong', {}, text),
++		detail ? el('span', {}, detail) : null
++	]);
+ }
+ 
+-function formatDateTime(s) {
+-	if (s.length == 14) {
+-		return s.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, "$1-$2-$3 $4:$5:$6");
+-	} else if (s.length == 12) {
+-		return s.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/, "$1-$2-$3 $4:$5");
+-	} else if (s.length == 8) {
+-		return s.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
+-	} else if (s.length == 6) {
+-		return s.replace(/(\d{4})(\d{2})/, "$1-$2");
++function kvItem(label, value, hint) {
++	var v = (value === null || value === undefined || value === '') ? '—' : value;
++	return el('div', { 'class': 'tg-kv-item', 'title': hint || null }, [
++		el('dt', {}, label),
++		el('dd', {}, String(v))
++	]);
++}
++
++function findCell(cells, rat, role) {
++	for (var i = 0; i < cells.length; i++) {
++		if (cells[i].rat === rat && (role === undefined || cells[i].role === role))
++			return cells[i];
+ 	}
+-	return s;
++	return null;
++}
++
++function signalTiles(cells) {
++	var nr = findCell(cells, 'nr', 'nsa') || findCell(cells, 'nr', 'pcc') || findCell(cells, 'nr');
++	var lte = findCell(cells, 'lte', 'pcc') || findCell(cells, 'lte');
++	var g3 = findCell(cells, '3g');
++	var tiles = [];
++
++	if (nr) {
++		tiles.push([ _('NR · SS-RSRP'), 'rsrp', nr.metrics ? nr.metrics.rsrp : null, 'dBm' ]);
++		tiles.push([ _('NR · SS-RSRQ'), 'rsrq', nr.metrics ? nr.metrics.rsrq : null, 'dB' ]);
++		tiles.push([ _('NR · SS-SINR'), 'sinr', nr.metrics ? nr.metrics.sinr : null, 'dB' ]);
++		if (lte)
++			tiles.push([ _('LTE · RSRP'), 'rsrp', lte.metrics ? lte.metrics.rsrp : null, 'dBm' ]);
++	}
++	else if (lte) {
++		tiles.push([ _('LTE · RSRP'), 'rsrp', lte.metrics ? lte.metrics.rsrp : null, 'dBm' ]);
++		tiles.push([ _('LTE · RSRQ'), 'rsrq', lte.metrics ? lte.metrics.rsrq : null, 'dB' ]);
++		tiles.push([ _('LTE · RSSI'), 'rssi', lte.metrics ? lte.metrics.rssi : null, 'dBm' ]);
++		tiles.push([ _('LTE · SINR'), 'sinr', lte.metrics ? lte.metrics.sinr : null, 'dB' ]);
++	}
++	else if (g3) {
++		tiles.push([ _('3G · RSCP'), 'rscp', g3.metrics ? g3.metrics.rscp : null, 'dBm' ]);
++		tiles.push([ _('3G · Ec/Io'), 'ecio', g3.metrics ? g3.metrics.ecio : null, 'dB' ]);
++	}
++
++	return tiles;
+ }
+ 
+-function checkOperatorName(t) {
+-    var w = t.split(" ");
+-    var f = {};
++function overallQuality(cells) {
++	var nr = findCell(cells, 'nr', 'nsa') || findCell(cells, 'nr', 'pcc') || findCell(cells, 'nr');
++	var lte = findCell(cells, 'lte', 'pcc') || findCell(cells, 'lte');
++	var g3 = findCell(cells, '3g');
++
++	if (nr && nr.metrics)
++		return quality('rsrp', nr.metrics.rsrp);
++	if (lte && lte.metrics)
++		return quality('rsrp', lte.metrics.rsrp);
++	if (g3 && g3.metrics)
++		return quality('rscp', g3.metrics.rscp);
++	return null;
++}
+ 
+-    for (var i = 0; i < w.length; i++) {
+-        var wo = w[i].toLowerCase(); 
+-        if (!f.hasOwnProperty(wo)) {
+-            f[wo] = i;
+-        }
+-    }
++function cellIndex(cell, sccIndex) {
++	if (cell.role === 'pcc')
++		return 'P';
++	if (cell.role === 'nsa')
++		return 'NR';
++	if (cell.rat === '3g')
++		return '3G';
++	return 'S' + sccIndex;
++}
+ 
+-    var u = Object.keys(f).map(function(wo) {
+-        return w[f[wo]];
+-    });
++function cellTitle(cell, sccIndex) {
++	if (cell.rat === '3g')
++		return _('3G serving cell');
++	if (cell.role === 'nsa')
++		return _('5G NR · NSA leg');
++	if (cell.role === 'pcc')
++		return cell.rat === 'nr' ? _('5G NR · SA serving cell') : _('LTE primary');
++	if (cell.rat === 'nr')
++		return _('5G NR secondary %d').format(sccIndex);
++	return _('LTE secondary %d').format(sccIndex);
++}
+ 
+-    var r = u.join(" ");
+-    return r;
++function metricSourceLabel(source) {
++	switch (source) {
++	case 'qca': return _('AT+QCAINFO');
++	case 'cell': return _('Cell Information');
++	case 'current_band': return _('Current band');
++	case 'legacy': return _('3gInfo');
++	}
++	return _('Modem');
+ }
+ 
+-return view.extend({
++function cellChips(cell) {
++	var defs = [];
+ 
++	if (cell.rat === 'nr') {
++		defs = [
++			[ 'rsrp', _('SS-RSRP'), 'dBm' ],
++			[ 'rsrq', _('SS-RSRQ'), 'dB' ],
++			[ 'sinr', _('SS-SINR'), 'dB' ]
++		];
++	}
++	else if (cell.rat === '3g') {
++		defs = [
++			[ 'rscp', _('RSCP'), 'dBm' ],
++			[ 'ecio', _('Ec/Io'), 'dB' ]
++		];
++	}
++	else {
++		defs = [
++			[ 'rsrp', _('RSRP'), 'dBm' ],
++			[ 'rsrq', _('RSRQ'), 'dB' ],
++			[ 'rssi', _('RSSI'), 'dBm' ],
++			[ 'sinr', _('SINR'), 'dB' ]
++		];
++	}
+ 
+-modemDialog: baseclass.extend({
+-		__init__: function(title, description, callback) {
+-			this.title       = title;
+-			this.description = description;
+-			this.callback    = callback;
+-		},
+-
+-		load: function() {
+-			return uci.load('modemdefine');
+-		},
+-
+-		render: function(content) {
+-
+-			var sections = uci.sections('modemdefine');
+-			var portM = sections.length;
+-
+-    			var result = "";
+-    			for (var i = 1; i < portM; i++) {
+-       			       	result += sections[i].comm_port + '_' + sections[i].network + '#' + sections[i].comm_port + ' - ' + sections[i].modem + ' (' + sections[i].user_desc + ');';
+-    			}
+-			var result = result.slice(0, -1);
+-			var result = result.replace("(undefined)", "");
+-
+-			ui.showModal(this.title, [
+-				E('div', { 'class': 'cbi-section' }, [
+-					E('div', { 'class': 'cbi-section-descr' }, this.description),
+-					E('div', { 'class': 'cbi-section' },
+-						E('p', {},
+-							E('div', { 'class': 'cbi-value' }, [
+-							E('p'),
+-							E('label', { 'class': 'cbi-value-title' }, [ _('Modem') ]),
+-							E('div', { 'class': 'cbi-value-field' }, [
+-								E('select', { 'class': 'cbi-input-select',
+-										'id': 'mselect',
+-										'style': 'margin:0px 0; width:100%;',
+-										},
+-									(result || "").trim().split(/;/).map(function(cmd) {
+-										var fields = cmd.split(/#/);
+-										var name = fields[1];
+-										var code = fields[0];
+-									return E('option', { 'value': code }, name ) })
+-
+-								)
+-							]) 
+-						]),
+-						)
+-					),
+-				]),
+-				E('div', { 'class': 'right' }, [
+-					E('button', {
+-						'class': 'btn',
+-						'click': ui.createHandlerFn(this, this.handleDissmis),
+-					}, _('Cancel')),
+-
+-					' ',
+-					E('button', {
+-						'id': 'btn_save',
+-						'class': 'btn cbi-button-positive important',
+-						'click': ui.createHandlerFn(this, this.handleSave),
+-					}, _('Save')),
++	var chips = [];
++	for (var i = 0; i < defs.length; i++) {
++		var key = defs[i][0], label = defs[i][1], unit = defs[i][2];
++		var value = cell.metrics ? cell.metrics[key] : null;
++		if (num(value) === null)
++			continue;
++
++		var q = quality(key, value);
++		chips.push(el('span', {
++			'class': 'tg-chip',
++			'title': _('Reported by %s').format(metricSourceLabel(cell.metric_source))
++		}, [
++			el('span', { 'class': 'tg-chip-label' }, label),
++			el('strong', {}, shown(value) + ' ' + unit),
++			q ? qualityBadge(q) : null
++		]));
++	}
+ 
+-				]),
+-			]);
+-		},
+-
+-		handleSave: function(ev) {
+-
+-			return uci.load('modemdefine').then(function() {
+-
+-				var vx = document.getElementById('mselect').value;
+-				var marr = vx.split('_');
+-
+-				uci.set('modemdefine', '@general[0]', 'main_modem', marr[0].toString());
+-				uci.set('modemdefine', '@general[0]', 'main_network', marr[1].toString());
+-
+-
+-				uci.save();
+-				uci.apply();
+-
+-				window.setTimeout(function() {
+-					if (!poll.active()) poll.start();
+-					location.reload();
+-					//ev.target.blur();
+-				}, 2000).finally();
+-			});
+-
+-		},
+-
+-		handleDissmis: function(ev) {
+-				ui.hideModal();
+-				if (!poll.active()) poll.start();
+-		},
+-
+-		show: function() {
+-			ui.showModal(null,
+-				E('p', { 'class': 'spinning' }, _('Loading'))
+-			);
+-			poll.stop();
+-			this.load().then(content => {
+-				ui.hideModal();
+-				return this.render(content);
+-			}).catch(e => {
+-				ui.hideModal();
+-				return this.error(e);
+-			})
+-		},
+-	}),
+-
+-simDialog: baseclass.extend({
+-		__init__: function(title, description, callback) {
+-			this.title       = title;
+-			this.description = description;
+-			this.callback    = callback;
+-		},
+-
+-		load: function() {
+-			return L.resolveDefault(fs.exec_direct('/usr/share/3ginfo-lite/3ginfo.sh', [ 'json' ]));
+-		},
+-
+-		render: function(content) {
+-
+-			var json = JSON.parse(content);
+-
+-			if (json) {
+-				if (!json.imei.length > 2) {
+-					return false,
+-					       poll.start()
+-				}
+-			}
++	if (chips.length === 0 && cell.role === 'scc')
++		return [ el('span', { 'class': 'tg-muted' }, _('Carrier identity only — no signal measurement reported')) ];
+ 
++	if (chips.length === 0)
++		return [ el('span', { 'class': 'tg-muted' }, _('No signal measurement reported by the modem')) ];
+ 
+-			ui.showModal(this.title, [
+-				E('div', { 'class': 'cbi-section' }, [
+-					E('div', { 'class': 'cbi-section-descr' }, this.description),
+-					E('div', { 'class': 'cbi-section' },
+-						E('p', {},
+-							E('div', { 'class': 'cbi-value' }, [
+-							E('p'),
+-							E('label', { 'class': 'cbi-value-title' }, [ _('SIM IMSI') ]),
+-							E('div', { 'class': 'cbi-value-field' }, [
+-								E('input', {
+-									'class': 'cbi-input-text',
+-									'readonly': 'readonly',
+-									'value': json.imsi
+-								}, null),
+-							]),
+-							E('label', { 'class': 'cbi-value-title' }, [ _('SIM ICCID') ]),
+-							E('div', { 'class': 'cbi-value-field' }, [
+-								E('input', {
+-									'class': 'cbi-input-text',
+-									'readonly': 'readonly',
+-									'value': json.iccid
+-								}, null),
+-							]),
+-							E('label', { 'class': 'cbi-value-title' }, [ _('Modem IMEI') ]),
+-							E('div', { 'class': 'cbi-value-field' }, [
+-								E('input', {
+-									'class': 'cbi-input-text',
+-									'readonly': 'readonly',
+-									'value': json.imei
+-								}, null),
+-							])
++	return chips;
++}
+ 
+-						]),
+-						)
+-					),
+-				]),
+-				E('div', { 'class': 'right' }, [
+-					E('button', {
+-						'class': 'btn',
+-						'click': ui.createHandlerFn(this, this.handleDissmis),
+-					}, _('Close')),
+-				]),
+-			]);
+-		},
+-
+-		handleDissmis: function(ev) {
+-				ui.hideModal();
+-				if (!poll.active()) poll.start();
+-		},
+-
+-		show: function() {
+-			ui.showModal(null,
+-				E('p', { 'class': 'spinning' }, _('Loading'))
+-			);
+-			poll.stop();
+-			this.load().then(content => {
+-				ui.hideModal();
+-				return this.render(content);
+-			}).catch(e => {
+-				ui.hideModal();
+-				return this.error(e);
+-			})
+-		},
+-	}),
+-
+-
+-	formdata: { threeginfo: {} },
+-	
++function cellCard(cell, sccIndex) {
++	var band = bandLabel(cell);
++	var meta = [];
++
++	if (band)
++		meta.push(band);
++	if (num(cell.pci) !== null)
++		meta.push(_('PCI %s').format(cell.pci));
++	if (num(cell.channel) !== null)
++		meta.push('%s %s'.format(cell.channel_label || _('Channel'), cell.channel));
++	if (cell.cell_id)
++		meta.push(_('Cell ID %s').format(cell.cell_id));
++	if (cell.tac)
++		meta.push(_('TAC %s').format(fmtTac(cell.tac)));
++	if (cell.bandwidth && num(cell.bandwidth.dl) !== null)
++		meta.push(_('DL %s MHz').format(cell.bandwidth.dl));
++	if (num(cell.scs) !== null)
++		meta.push(_('SCS %s kHz').format(cell.scs));
++
++	return el('article', { 'class': 'tg-carrier' }, [
++		el('div', { 'class': 'tg-carrier-main' }, [
++			el('span', { 'class': 'tg-carrier-index' }, cellIndex(cell, sccIndex)),
++			el('div', { 'class': 'tg-carrier-copy' }, [
++				el('h4', { 'class': 'tg-carrier-title' }, cellTitle(cell, sccIndex)),
++				el('p', { 'class': 'tg-carrier-meta' }, meta.length ? meta.join(' · ') : _('No identity details reported'))
++			])
++		]),
++		el('div', { 'class': 'tg-chips' }, cellChips(cell))
++	]);
++}
++
++function neighbourRows(snapshot) {
++	var n = snapshot.neighbors || {};
++	var rows = [];
++
++	(Array.isArray(n.lte) ? n.lte : []).forEach(function(cell) {
++		rows.push(cell);
++	});
++	(Array.isArray(n.nr) ? n.nr : []).forEach(function(cell) {
++		rows.push(cell);
++	});
++
++	return rows;
++}
++
++function neighbourType(v) {
++	if (!v)
++		return _('Neighbour');
++	if (/intra/i.test(v))
++		return _('Intra-frequency');
++	if (/inter/i.test(v))
++		return _('Inter-frequency');
++	return v;
++}
++
++function neighbourFilter(rows) {
++	var query = (this._query || '').trim().toLowerCase();
++	var filter = this._filter || 'all';
++
++	return rows.filter(function(cell) {
++		if (filter !== 'all' && cell.rat !== filter)
++			return false;
++		if (!query)
++			return true;
++
++		return [ cell.rat, cell.channel, cell.pci, cell.type, cell.cell_id ]
++			.join(' ').toLowerCase().indexOf(query) !== -1;
++	});
++}
++
++function neighbourSort(rows, sort) {
++	var key = sort.key || 'rsrp';
++	var direction = sort.dir === 'asc' ? 1 : -1;
++
++	return rows.slice().sort(function(a, b) {
++		var av = a[key], bv = b[key];
++		if (key === 'rat' || key === 'type') {
++			av = String(av || '');
++			bv = String(bv || '');
++			return av.localeCompare(bv) * direction;
++		}
++		av = num(av);
++		bv = num(bv);
++		if (av === null && bv === null) return 0;
++		if (av === null) return 1;
++		if (bv === null) return -1;
++		return (av - bv) * direction;
++	});
++}
++
++function neighbourCard(cell) {
++	var q = quality('rsrp', cell.rsrp);
++	var channel = cell.rat === 'nr' ? _('NR-ARFCN') : _('EARFCN');
++
++	return el('article', { 'class': 'tg-neighbour-card' }, [
++		el('div', { 'class': 'tg-neighbour-head' }, [
++			el('strong', {}, '%s · PCI %s'.format(cell.rat === 'nr' ? _('5G NR') : _('LTE'), cell.pci)),
++			q ? qualityBadge(q) : el('span', { 'class': 'tg-muted' }, _('Not reported'))
++		]),
++		el('dl', { 'class': 'tg-neighbour-kv' }, [
++			el('div', {}, [ el('dt', {}, channel), el('dd', {}, num(cell.channel) !== null ? String(cell.channel) : '—') ]),
++			el('div', {}, [ el('dt', {}, _('RSRP')), el('dd', {}, num(cell.rsrp) !== null ? shown(cell.rsrp) + ' dBm' : '—') ]),
++			el('div', {}, [ el('dt', {}, _('RSRQ')), el('dd', {}, num(cell.rsrq) !== null ? shown(cell.rsrq) + ' dB' : '—') ]),
++			el('div', {}, [ el('dt', {}, _('Type')), el('dd', {}, neighbourType(cell.type)) ])
++		])
++	]);
++}
++
++function neighbourTableRow(cell) {
++	var q = quality('rsrp', cell.rsrp);
++
++	return el('tr', {}, [
++		el('td', {}, cell.rat === 'nr' ? _('5G NR') : _('LTE')),
++		el('td', {}, num(cell.channel) !== null ? String(cell.channel) : '—'),
++		el('td', {}, num(cell.pci) !== null ? String(cell.pci) : '—'),
++		el('td', { 'class': q ? qualityClass(q) : '' }, num(cell.rsrp) !== null ? shown(cell.rsrp) + ' dBm' : '—'),
++		el('td', {}, num(cell.rsrq) !== null ? shown(cell.rsrq) + ' dB' : '—'),
++		el('td', {}, num(cell.sinr) !== null ? shown(cell.sinr) + ' dB' : '—'),
++		el('td', {}, cell.cell_id != null ? String(cell.cell_id) : _('Not reported')),
++		el('td', {}, neighbourType(cell.type))
++	]);
++}
++
++function sortButton(key, label, view) {
++	var active = view._sort.key === key;
++	var arrow = active ? (view._sort.dir === 'asc' ? ' ↑' : ' ↓') : ' ↕';
++
++	return el('button', {
++		'type': 'button',
++		'class': 'tg-sort' + (active ? ' tg-sort-active' : ''),
++		'data-key': key,
++		'click': function(ev) {
++			ev.preventDefault();
++			if (view._sort.key === key)
++				view._sort.dir = (view._sort.dir === 'asc') ? 'desc' : 'asc';
++			else
++				view._sort = { key: key, dir: key === 'rat' || key === 'type' ? 'asc' : 'desc' };
++			view.updateNeighbours();
++		}
++	}, label + arrow);
++}
++
++return view.extend({
+ 	load: function() {
+-		return L.resolveDefault(fs.exec_direct('/usr/share/3ginfo-lite/3ginfo.sh', [ 'json' ]));
++		return Promise.all([
++			this.loadSnapshot('json'),
++			L.resolveDefault(uci.load('3ginfo'), null)
++		]).then(L.bind(function(res) {
++			var refresh = 30;
++			try {
++				var v = parseInt(uci.get('3ginfo', '@3ginfo[0]', 'radio_refresh'), 10);
++				if (REFRESH_CHOICES.indexOf(v) !== -1)
++					refresh = v;
++			}
++			catch (e) {}
++
++			return { snapshot: res[0], refresh: refresh };
++		}, this));
++	},
++
++	loadSnapshot: function(mode) {
++		return fs.exec_direct(RADIO, [ mode ]).then(function(res) {
++			var raw = (typeof res === 'string') ? res : (res && res.stdout) || '';
++			raw = raw.trim();
++
++			if (!raw)
++				return { error: _('The radio collector returned no data.') };
++
++			try {
++				var json = JSON.parse(raw);
++				if (json && json.error)
++					return { error: String(json.error) };
++				if (!json || !json.connection || !Array.isArray(json.cells))
++					return { error: _('The radio collector returned an unexpected document.') };
++				return json;
++			}
++			catch (e) {
++				return { error: _('The radio collector returned invalid JSON.') };
++			}
++		}).catch(function(err) {
++			return { error: _('The radio collector could not be started: %s').format(err && err.message ? err.message : _('unknown error')) };
++		});
+ 	},
+ 
+ 	render: function(data) {
+-		var m, s, o;
+-
+-		active_select();
+-
+-		var upModemDialog = new this.modemDialog(
+-			_('Defined modems'),
+-			_('Interface for selecting user defined modems.'),
+-		);
+-
+-		var upSIMDialog = new this.simDialog(
+-			_('SIM card menu'),
+-			_('Information read from the SIM card and device.'),
+-		);
+-
+-
+-		if (data != null){
+-		try {
+-
+-		var json = JSON.parse(data);
+-
+-			if(!json.hasOwnProperty('error')){
+-				
+-				if (json.registration == 'SIM not inserted' || json.registration == '-') { 
+-					ui.addNotification(null, E('p', _('Problem with registering to the network, check the SIM card.')), 'info');
+-				}
+-				if (json.registration == 'SIM PIN required') { 
+-					ui.addNotification(null, E('p', _('SIM PIN required')), 'info');
+-				}
+-				if (json.registration == 'SIM PUK required') { 
+-					ui.addNotification(null, E('p', _('SIM PUK required')), 'info');
+-				}
+-				if (json.registration == 'SIM failure') { 
+-					ui.addNotification(null, E('p', _('SIM failure')), 'info');
+-				}
+-				if (json.registration == 'SIM busy') { 
+-					ui.addNotification(null, E('p', _('SIM busy')), 'info');
+-				}
+-				if (json.registration == 'SIM wrong') { 
+-					ui.addNotification(null, E('p', _('SIM wrong')), 'info');
+-				}
+-				if (json.registration == 'SIM PIN2 required') { 
+-					ui.addNotification(null, E('p', _('SIM PIN2 required')), 'info');
+-				}
+-				if (json.registration == 'SIM PUK2 required') { 
+-					ui.addNotification(null, E('p', _('SIM PUK2 required')), 'info');
+-				}
+-				if (json.signal == '0' || json.signal == '' || json.signal == '-') {
+-					ui.addNotification(null, E('p', _('There is a problem reading data from the modem. \
+-										<br /><br /><b>Please check:</b> \
+-										<ul><li>1. Modem availability in the system.</li><li>2. The correct installation of the SIM card in the modem.</li><li> \
+-										3. Port for communication with the modem.</li><li><ul>')), 'info');
+-				}
+-				else {
+-					if (json.connt == '' || json.connt == '-') {
+-						ui.addNotification(null, E('p', _('There is a problem reading connection data. \
+-											<br /><br /><b>Please check:</b> \
+-											<ul><li>1. Connection of the modem to the internet, the correctness of the entered APN. Some modems need to force the APN on the modem using at commands to connect to internet.</li><li> \
+-											2. Check that the correct interface assigned to the modem is selected. The default name of the interface in the package is wan.</li><li><ul>')), 'info');
+-					}
+-
+-
+-			pollData: poll.add(function() {
+-				return L.resolveDefault(fs.exec_direct('/usr/share/3ginfo-lite/3ginfo.sh', 'json'))
+-					.then(function(res) {
+-					var json = JSON.parse(res);
+-
+-				if (!json.cport.includes('192.')) {
+-					if (json.signal == '0' || json.signal == '') {
+-						fs.exec('sleep 3');
+-							if (json.signal == '0' || json.signal == '' || json.signal == '-') {
+-							L.ui.showModal(_('3ginfo-lite'), [
+-							E('p', { 'class': 'spinning' }, _('Waiting to read data from the modem...'))
+-							]);
+-
+-							window.setTimeout(function() {
+-							location.reload();
+-							}, 5000).finally();
+-							}
+-					}
+-					else {
+-					L.hideModal();
+-					}
+-				}
+-					
+-					var icon, wicon, ticon, t;
+-					var wicon = L.resource('icons/3ginfo-load.gif');
+-					var ticon = L.resource('icons/ctime.png');
+-
+-					var p = (json.signal);
+-					if (p < 0)
+-						icon = L.resource('icons/3ginfo-0.png');
+-					else if (p == 0)
+-						icon = L.resource('icons/3ginfo-0.png');
+-					else if (p < 20)
+-						icon = L.resource('icons/3ginfo-0-20.png');
+-					else if (p < 40)
+-						icon = L.resource('icons/3ginfo-20-40.png');
+-					else if (p < 60)
+-						icon = L.resource('icons/3ginfo-40-60.png');
+-					else if (p < 80)
+-						icon = L.resource('icons/3ginfo-60-80.png');
+-					else
+-						icon = L.resource('icons/3ginfo-80-100.png');
+-
+-
+-					if (document.getElementById('signal')) {
+-						var view = document.getElementById("signal");
+-						view.innerHTML = String.format('<medium>%d%%</medium><br/>' + '<img style="padding-left: 10px;" src="%s"/>', p, icon);
+-					}
+-
+-					if (document.getElementById('connst')) {
+-						var view = document.getElementById("connst");
+-						if (json.conn_time == '' || json.conn_time == '-') {
+-						view.innerHTML = String.format('<img style="width: 16px; height: 16px; vertical-align: middle;" src="%s"/>' + ' ' +_('Waiting for connection data...'), wicon, p);
+-						}
+-						else {
+-						view.innerHTML = String.format('<img style="width: 16px; height: 16px; vertical-align: middle;" src="%s"/>' + ' ' + formatDuration(json.conn_time_sec) + ' ' + ' | \u25bc\u202f' + json.rx + ' \u25b2\u202f' + json.tx, ticon, t);
+-						}
+-					}
+-
+-					if (document.getElementById('operator')) {
+-						var view = document.getElementById("operator");
+-						if (!json.operator_name.length > 1) { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						view.textContent = checkOperatorName(json.operator_name);
+-						}
+-					}
+-
+-					if (document.getElementById('location')) {
+-						var viewloc = document.getElementById("location");
+-						if (!json.location.length > 2) { 
+-						viewloc.style.display = 'none';
+-						}
+-						else {
+-						viewloc.innerHTML = json.location;
+-						}
+-
+-					}
+-
+-					if (document.getElementById('sim')) {
+-						var view = document.getElementById("sim");
+-						var sv = document.getElementById("simv");
+-						if (json.registration == '') { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						sv.style.visibility = "visible";
+-						view.textContent = json.registration;
+-						if (json.registration == '0') { 
+-							view.textContent = _('Not registered');
+-						}
+-						if (json.registration == '1') { 
+-							view.textContent = _('Registered');
+-						}
+-						if (json.registration == '2') { 
+-							view.textContent = _('Searching..');
+-						}
+-						if (json.registration == '3') { 
+-							view.textContent = _('Registering denied');
+-						}
+-						if (json.registration == '5') { 
+-							view.textContent = _('Registered (roaming)');
+-						}
+-						if (json.registration == '6') { 
+-							view.textContent = _('Registered, only SMS');
+-						}
+-						if (json.registration == '7') { 
+-							view.textContent = _('Registered (roaming), only SMS');
+-						}
+-					}
+-					}
+-
+-					if (document.getElementById('mode')) {
+-						var view = document.getElementById("mode");
+-						if (!json.mode.length > 1) { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						view.textContent = json.mode;
+-						}
+-					}
+-
+-					if (document.getElementById('modem')) {
+-						var view = document.getElementById("modem");
+-						if (!json.modem.length > 1) { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						view.textContent = json.modem;
+-						}
+-					}
+-
+-					if (document.getElementById('fw')) {
+-						var view = document.getElementById("fw");
+-						if (!json.firmware.length > 1) { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						view.textContent = json.firmware;
+-						}
+-					}
+-
+-					if (document.getElementById('cport')) {
+-						var view = document.getElementById("cport");
+-						if (!json.cport.length > 1) { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						view.textContent = json.cport;
+-						}
+-					}
+-
+-					if (document.getElementById('protocol')) {
+-						var view = document.getElementById("protocol");
+-						if (!json.protocol.length > 1) { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						view.textContent = json.protocol;
+-						}
+-					}
+-
+-					if (document.getElementById('temp')) {
+-						var view = document.getElementById("temp");
+-						var viewn = document.getElementById("tempn");
+-						var t = json.mtemp;
+-						if (!t.length > 1 && t.includes(' ') || t == '' || t == '-') { 
+-						viewn.style.display = 'none';
+-						}
+-						else {
+-						view.textContent = t.replace('&deg;', '°');
+-						}
+-					}
+-
+-					if (document.getElementById('csq')) {
+-						var view = document.getElementById("csq");
+-						if (json.signal == 0 || json.signal == '-') {
+-						view.style.visibility = 'hidden';
+-						}
+-						else {
+-						if (json.csq == '') { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						csq_bar(json.csq, 31);
+-						}
+-						}
+-					}
+-
+-					if (document.getElementById('rssi')) {
+-						var view = document.getElementById("rssi");
+-						if (json.rssi == '-') { 
+-						view.style.visibility = 'hidden';
+-						}
+-						else {
+-							view.style.visibility = 'visible';
+-							var z = json.rssi;
+-							if (z.includes('dBm')) { 
+-							var rssi_min = -110;
+-							rssi_bar(json.rssi, rssi_min);	
+-							}
+-							else {
+-							var rssi_min = -110;
+-							rssi_bar(json.rssi + " dBm", rssi_min);
+-							}
+-						}
+-					}
+-
+-					if (document.getElementById('rsrp')) {
+-						var view = document.getElementById('rsrp');
+-						if (json.rsrp == '-') { 
+-						view.style.visibility = 'hidden';
+-						}
+-						else {
+-							view.style.visibility = 'visible';
+-							var z = json.rsrp;
+-							if (z.includes('dBm')) { 
+-							var rsrp_min = -140;
+-							rsrp_bar(json.rsrp, rsrp_min);
+-
+-							}
+-							else {
+-							var rsrp_min = -140;
+-							rsrp_bar(json.rsrp + " dBm", rsrp_min);
+-							}
+-						}
+-					}
+-
+-					if (document.getElementById('sinr')) {
+-						var view = document.getElementById("sinr");
+-						if (json.sinr == '-') { 
+-						view.style.visibility = 'hidden';
+-						}
+-						else {
+-							view.style.visibility = 'visible';
+-							var z = json.sinr;
+-							if (z.includes('dB')) { 
+-							view.textContent = json.sinr;
+-							}
+-							else {
+-							var sinr_min = -21;
+-							sinr_bar(json.sinr + " dB", sinr_min);
+-							}
+-						}
+-					}
+-
+-					if (document.getElementById('rsrq')) {
+-						var view = document.getElementById("rsrq");
+-						if (json.rsrq == '-') { 
+-						view.style.visibility = 'hidden';
+-						}
+-						else {
+-							view.style.visibility = 'visible';
+-							var z = json.rsrq;
+-							if (z.includes('dB')) { 
+-							view.textContent = json.rsrq;
+-							}
+-							else {
+-							var rsrq_min = -20;
+-							rsrq_bar(json.rsrq + " dB", rsrq_min);
+-							}
+-						}
+-					}
+-
+-					if (document.getElementById('mccmnc')) {
+-						var view = document.getElementById("mccmnc");
+-						if (json.operator_mcc == '-' & json.operator_mnc == '-') { 
+-						view.textContent = '-';
+-						}
+-						else {
+-						view.textContent = json.operator_mcc + " " + json.operator_mnc;
+-						}
+-					}
+-
+-					if (document.getElementById('lac')) {
+-						var view = document.getElementById("lac");
+-						var viewn = document.getElementById("lacn");
+-						if (json.lac_dec.length < 2 || json.lac_hex.length < 2) { 
+-						viewn.style.display = "none";
+-						}
+-						else {
+-							if (json.lac_dec == '' || json.lac_hex == '') { 
+-							var lc = json.lac_dec   + ' ' + json.lac_hex;
+-							var ld = lc.split(' ').join('');
+-							view.textContent = ld;
+-							}
+-							else {
+-							view.innerHTML = json.lac_dec + ' (' + json.lac_hex + ')';
+-							}
+-						}
+-					}
+-
+-					if (document.getElementById('tac')) {
+-						var view = document.getElementById("tac");
+-						var tac_dh, tac_dec_hex, lac_dec_hex;
+-							if (json.tac_d.length > 1 || json.tac_h.length > 1) {
+-							var tac_dh =  json.tac_d + ' (' + json.tac_h + ')';
+-									view.textContent = tac_dh;
+-							}
+-							else {
+-								if (json.tac_dec.length > 1 || json.tac_hex.length > 1) {
+-									var tac_dh =  json.tac_dec + ' (' + json.tac_hex + ')';
+-									view.textContent = tac_dh;
+-								}
+-								else {
+-									view.textContent = '-';
+-								}
+-							}
+-					}
+-
+-					if (document.getElementById('cid')) {
+-						var view = document.getElementById("cid");
+-						if (json.cid_dec == '' || json.cid_hex == '') { 
+-						var cc = json.cid_hex   + ' ' + json.cid_dec;
+-						var cd = cc.split(' ').join('');
+-						view.textContent = cd;
+-						}
+-						else {
+-						view.innerHTML = json.cid_dec + ' (' + '' + json.cid_hex + ')';
+-						}
+-					}
+-
+-					if (document.getElementById('pband')) {
+-						var view = document.getElementById("pband");
+-						if (json.pband == '-') { 
+-						view.textContent = '-';
+-						}
+-						else {
+-							if (json.pci.length > 0 && json.earfcn.length > 0) { 
+-								view.textContent = json.pband + ' | ' + json.pci + ' ' + json.earfcn;
+-							}
+-							else {
+-								view.textContent = json.pband;
+-							}
+-						}
+-					}
+-
+-					if (document.getElementById('s1band')) {
+-						var view = document.getElementById("s1band");
+-						if (json.s1band == '-') { 
+-						view.textContent = '-';
+-						}
+-						else {
+-							if (json.s1pci.length > 0 && json.s1earfcn.length > 0) { 
+-								view.textContent = json.s1band + ' | ' + json.s1pci + ' ' + json.s1earfcn;
+-							}
+-							else {
+-								view.textContent = json.s1band;
+-							}
+-						}
+-					}
+-					
+-					if (document.getElementById('s2band')) {
+-						var view = document.getElementById("s2band");
+-						if (json.s2band == '-') { 
+-						view.textContent = '-';
+-						}
+-						else {
+-							if (json.s2pci.length > 0 && json.s2earfcn.length > 0) { 
+-								view.textContent = json.s2band + ' | ' + json.s2pci + ' ' + json.s2earfcn;
+-							}
+-							else {
+-								view.textContent = json.s2band;
+-							}
+-						}
+-					}
+-					
+-					if (document.getElementById('s3band')) {
+-						var view = document.getElementById("s3band");
+-						if (json.s3band == '-') { 
+-						view.textContent = '-';
+-						}
+-						else {
+-							if (json.s3pci.length > 0 && json.s3earfcn.length > 0) { 
+-								view.textContent = json.s3band + ' | ' + json.s3pci + ' ' + json.s3earfcn;
+-							}
+-							else {
+-								view.textContent = json.s3band;
+-							}
+-						}
+-					}
+-					
+-					if (document.getElementById('s4band')) {
+-						var view = document.getElementById("s4band");
+-						if (json.s4band == '-') {  
+-						view.textContent = '-';
+-						}
+-						else {
+-							if (json.s4pci.length > 0 && json.s4earfcn.length > 0) { 
+-								view.textContent = json.s4band + ' | ' + json.s4pci + ' ' + json.s4earfcn;
+-							}
+-							else {
+-								view.textContent = json.s4band;
+-							}
+-						}
+-					}
+-					});
+-				});	
+-
+-				}
+-			}	
+-
+-		} catch (err) {
+-				ui.addNotification(null, E('p', _('Error: ') + err.message), 'error');
+-				}
+-		}		
+-
+-		var info = _('More information about the 3ginfo on the %seko.one.pl forum%s.').format('<a href="https://eko.one.pl/?p=openwrt-3ginfo" target="_blank">', '</a>');
+-		m = new form.JSONMap(this.formdata, _('3ginfo-lite'), info);
+-
+-		s = m.section(form.TypedSection, '3ginfo', '', null);
+-		s.anonymous = true;
+-
+-		s.render = L.bind(function(view, section_id) {
+-
+-			return E('div', { 'class': 'cbi-section' }, [
+-
+-			E('div', { 'class': 'right' }, [
+-				E('button', {
+-					'id': 'modc',
+-					'style': 'position:relative; display:block; margin:0 !important; margin-top:-3% !important; left:95%; top:',
+- 					'disabled': 'true',
+-					'data-tooltip': _('Modem selection menu'),
+-					'class': 'btn cbi-button',
+-					'click': ui.createHandlerFn(this, function() {
+-							return upModemDialog.show();
+-					}),
+-				}, _('☰')),
++		this._snapshot = (data.snapshot && !data.snapshot.error) ? data.snapshot : null;
++		this._error = data.snapshot && data.snapshot.error ? data.snapshot.error : null;
++		this._refreshSeconds = data.refresh;
++		this._filter = 'all';
++		this._query = '';
++		this._sort = { key: 'rsrp', dir: 'desc' };
++		this._busy = false;
++		this._lastLoad = Date.now();
++
++		this.injectCss();
++
++		var refreshOptions = [
++			[ 0, _('Off') ],
++			[ 15, _('15 seconds') ],
++			[ 30, _('30 seconds') ],
++			[ 60, _('1 minute') ],
++			[ 120, _('2 minutes') ]
++		].map(L.bind(function(item) {
++			return el('option', { 'value': String(item[0]), 'selected': item[0] === this._refreshSeconds ? 'selected' : null }, item[1]);
++		}, this));
++
++		var root = el('div', { 'class': 'tg-page cbi-map' }, [
++			el('div', { 'class': 'tg-page-head' }, [
++				el('div', {}, [
++					el('h2', { 'class': 'tg-page-title' }, _('Cellular connection')),
++					el('p', { 'class': 'tg-page-sub' }, _('Radio status and serving-cell telemetry'))
++				]),
++				el('div', { 'class': 'tg-page-actions' }, [
++					el('label', { 'class': 'tg-refresh-label' }, [
++						_('Auto refresh'),
++						el('select', {
++							'id': 'tg-refresh-rate',
++							'class': 'cbi-input-select tg-select',
++							'change': L.bind(this.handleRefreshChange, this)
++						}, refreshOptions)
++					]),
++					el('button', {
++						'id': 'tg-refresh',
++						'type': 'button',
++						'class': 'btn cbi-button cbi-button-action tg-button',
++						'click': L.bind(this.handleRefresh, this)
++					}, [ el('span', { 'class': 'tg-refresh-glyph', 'aria-hidden': 'true' }, '↻'), ' ', _('Refresh now') ])
++				])
++			]),
++			el('div', { 'id': 'tg-banner', 'class': 'tg-banner', 'role': 'status', 'hidden': 'hidden' }),
++
++			el('section', { 'id': 'tg-summary', 'class': 'cbi-section tg-summary', 'aria-live': 'polite' }, [
++				el('div', { 'class': 'tg-summary-top' }, [
++					el('span', { 'id': 'tg-summary-dot', 'class': 'tg-dot tg-muted', 'aria-hidden': 'true' }),
++					el('strong', { 'id': 'tg-summary-status' }, _('Loading')),
++					el('span', { 'id': 'tg-summary-meta', 'class': 'tg-muted' }, ''),
++					el('span', { 'id': 'tg-summary-age', 'class': 'tg-age' }, '')
++				]),
++				el('p', { 'id': 'tg-summary-line', 'class': 'tg-summary-line' }, _('Reading modem telemetry…')),
++				el('div', { 'id': 'tg-summary-badges', 'class': 'tg-badges' })
+ 			]),
+ 
+-			E('h4', {}, [ _('General Information') ]),
+-			E('table', { 'class': 'table' }, [
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Signal strength')]),
+-					E('td', { 'class': 'td left', 'id': 'signal' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Operator')]),
+-					E('td', { 'class': 'td left' }, [
+-						E('div', { 'class': 'right' }, [
+-							E('div', { 'style': 'text-align:left;font-size:100%', 'id': 'operator' }, [ '-' ]),
+-							E('div', { 'style': 'text-align:left;font-size:66%', 'id': 'location' }, [ '-' ]),
+-						]),
+-					]),
++			el('nav', { 'class': 'tg-nav', 'aria-label': _('Cellular details') }, [
++				navLink('tg-signal', _('Signal')),
++				navLink('tg-serving', _('Serving cells')),
++				navLink('tg-neighbours', _('Neighbours')),
++				navLink('tg-diagnostics', _('Diagnostics'))
++			]),
++
++			el('div', { 'class': 'tg-overview' }, [
++				card('tg-signal', _('Signal health'), _('LTE anchor and 5G NR are measured separately'), el('span', { 'id': 'tg-signal-badge' }), [
++					el('div', { 'id': 'tg-signal-grid', 'class': 'tg-signal-grid' })
+ 				]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('SIM status')]),
+-					E('td', { 'class': 'td left'}, [
+-						E('span', {
+-							'class': 'ifacebadge',
+-							'title': null,
+-							'id': 'simv',
+-							'style': 'visibility: hidden; margin:0 auto; padding: 4px;',
+-							'click': ui.createHandlerFn(this, function() {
+-									return upSIMDialog.show();
+-							}),
+-							
+-						}, [
+-							E('div', { 'class': 'ifacebox-body' }, [
+-							E('div', { 'class': 'cbi-tooltip-container' }, [
+-							E('img', {
+-								'src': L.resource('icons/sim1m.png'),
+-								'style': 'width:24px; height:auto; padding: 1%; margin:0 auto;',
+-								'title': _(''),
+-								'class': 'middle',
+-							}),
+-							E('span', { 'class': 'cbi-tooltip', 'style': 'text-align:left;font-size:80%' }, SIMdata(data)),
+-								]),
+-							]),
+-						]),
+-						E('normal', { 'id': 'sim', 'style': 'margin-left: 0.5em;'}, [ '-' ]),
++				card('tg-serving', _('Serving cells'), _('Connected carriers currently carrying the link'), el('span', { 'id': 'tg-cells-badge' }), [
++					el('div', { 'id': 'tg-cells', 'class': 'tg-carrier-stack' })
++				]),
++				card('tg-network', _('Network details'), _('Registration and connection information'), null, [
++					el('dl', { 'id': 'tg-network-grid', 'class': 'tg-kv' })
++				])
++			]),
++
++			card('tg-neighbours', _('Neighbour cells'), _('Cells detected nearby, not currently carrying your connection'), el('button', {
++				'id': 'tg-neighbour-scan',
++				'type': 'button',
++				'class': 'btn cbi-button tg-button',
++				'click': L.bind(this.handleNeighbourScan, this)
++			}, [ el('span', { 'class': 'tg-refresh-glyph', 'aria-hidden': 'true' }, '↻'), ' ', _('Scan neighbours') ]), [
++				el('div', { 'id': 'tg-neighbour-note', 'class': 'tg-inline-note', 'hidden': 'hidden' }),
++				el('div', { 'class': 'tg-neighbour-tools' }, [
++					el('div', { 'id': 'tg-neighbour-filters', 'class': 'tg-filters', 'role': 'group', 'aria-label': _('Filter neighbour cells') }),
++					el('input', {
++						'id': 'tg-neighbour-search',
++						'class': 'cbi-input-text tg-search',
++						'type': 'search',
++						'placeholder': _('Filter by channel, PCI or cell ID'),
++						'aria-label': _('Filter neighbour cells'),
++						'input': L.bind(this.handleNeighbourSearch, this)
++					})
++				]),
++				el('div', { 'id': 'tg-neighbour-cards', 'class': 'tg-neighbour-cards' }),
++				el('div', { 'class': 'tg-table-wrap' }, [
++					el('table', { 'class': 'tg-table', 'aria-label': _('Neighbour cell measurements') }, [
++						el('thead', {}, [
++							el('tr', {}, [
++								el('th', {}, sortButton('rat', _('RAT'), this)),
++								el('th', {}, sortButton('channel', _('Channel'), this)),
++								el('th', {}, sortButton('pci', _('PCI'), this)),
++								el('th', {}, sortButton('rsrp', _('RSRP'), this)),
++								el('th', {}, sortButton('rsrq', _('RSRQ'), this)),
++								el('th', {}, sortButton('sinr', _('SINR'), this)),
++								el('th', {}, _('Cell ID')),
++								el('th', {}, sortButton('type', _('Type'), this))
++							])
+ 						]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Connection statistics')]),
+-					E('td', { 'class': 'td left', 'id': 'connst' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Technology')]),
+-					E('td', { 'class': 'td left', 'id': 'mode' }, [ '-' ]),
+-					]),
++						el('tbody', { 'id': 'tg-neighbour-body' })
++					])
++				]),
++				el('div', { 'id': 'tg-neighbour-empty' })
+ 			]),
+-			E('h4', {}, [ _('Modem Information') ]),
+-			E('table', { 'class': 'table' }, [
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Modem type')]),
+-					E('td', { 'class': 'td left', 'id': 'modem' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Revision / Firmware')]),
+-					E('td', { 'class': 'td left', 'id': 'fw' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('IP adress / Communication Port')]),
+-					E('td', { 'class': 'td left', 'id': 'cport' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Protocol')]),
+-					E('td', { 'class': 'td left', 'id': 'protocol' }, [ '-' ]),
+-					]),
+-				E('tr', { 'id': 'tempn', 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Chip Temperature')]),
+-					E('td', { 'class': 'td left', 'id': 'temp' }, [ '-' ]),
+-					]),
++
++			el('div', { 'class': 'tg-lower' }, [
++				card('tg-diagnostics', _('Collection status'), _('Where this snapshot came from and how fresh it is'), null, [
++					el('dl', { 'id': 'tg-diagnostics-grid', 'class': 'tg-kv tg-kv-compact' }),
++					el('div', { 'id': 'tg-warnings', 'class': 'tg-warnings' })
++				]),
++				card('tg-identity', _('SIM & device identifiers'), _('Shown only to signed-in administrators'), null, [
++					el('div', { 'id': 'tg-identity-body' })
++				])
+ 			]),
+-			E('h4', {}, [ _('Cell / Signal Information') ]),
+-			E('table', { 'class': 'table' }, [
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('MCC MNC')]),
+-					E('td', { 'class': 'td left', 'id': 'mccmnc' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Cell ID')]),
+-					E('td', { 'class': 'td left', 'id': 'cid' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('TAC')]),
+-					E('td', { 'class': 'td left', 'id': 'tac' }, [ '-' ]),
+-					]),
+-				E('tr', { 'id': 'lacn', 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('LAC')]),
+-					E('td', { 'class': 'td left', 'id': 'lac' }, [ '-' ]),
+-					]),
+ 
+-				E('tr', { 'id': 'csqn', 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [
+-					_('CSQ'),
+-					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Signal Strength)') ]),
+-					]),
+-					E('td', { 'class': 'td' }, E('div', {
+-							'id': 'csq',
+-							'class': 'cbi-progressbar',
+-							'title': '-'
+-							}, E('div')
+-						))
+-					]),
+-				E('tr', { 'id': 'rssin', 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [
+-					_('RSSI'),
+-					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Received Signal Strength Indicator)') ]),
+-					]),
+-					E('td', { 'class': 'td' }, E('div', {
+-							'id': 'rssi',
+-							'class': 'cbi-progressbar',
+-							'title': '-'
+-							}, E('div')
+-						))
+-					]),
+-				E('tr', { 'id': 'rsrpn', 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [
+-					_('RSRP'),
+-					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Reference Signal Receive Power)') ]),
+-					]),
+-					E('td', { 'class': 'td' }, E('div', {
+-							'id': 'rsrp',
+-							'class': 'cbi-progressbar',
+-							'title': '-'
+-							}, E('div')
+-						))
+-					]),
+-				E('tr', { 'id': 'sinrn', 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [
+-					_('SINR'),
+-					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Signal to Interference plus Noise Ratio)') ]),
+-					]),
+-					E('td', { 'class': 'td' }, E('div', {
+-							'id': 'sinr',
+-							'class': 'cbi-progressbar',
+-							'title': '-'
+-							}, E('div')
+-						))
+-					]),
+-				E('tr', { 'id': 'rsrqn', 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [
+-					_('RSRQ'),
+-					E('div', { 'style': 'text-align:left;font-size:66%' }, [ _('(Reference Signal Received Quality)') ]),
+-					]),
+-					E('td', { 'class': 'td' }, E('div', {
+-							'id': 'rsrq',
+-							'class': 'cbi-progressbar',
+-							'title': '-'
+-							}, E('div')
+-						))
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('Primary band (PCC) | PCI & EARFCN')]),
+-					E('td', { 'class': 'td left', 'id': 'pband' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (SCC1)')]),
+-					E('td', { 'class': 'td left', 'id': 's1band' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (SCC2)')]),
+-					E('td', { 'class': 'td left', 'id': 's2band' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (SCC3)')]),
+-					E('td', { 'class': 'td left', 'id': 's3band' }, [ '-' ]),
+-					]),
+-				E('tr', { 'class': 'tr' }, [
+-					E('td', { 'class': 'td left', 'width': '33%' }, [ _('CA band (SCC4)')]),
+-					E('td', { 'class': 'td left', 'id': 's4band' }, [ '-' ]),
+-					]),
++			el('p', { 'class': 'tg-foot' }, _('Signal labels are a guide, not a guarantee from the carrier. A dash or “Not reported” means the modem did not supply that field.'))
++		]);
+ 
+-				])
+-			]);
+-		}, o, this);
++		// render() returns the tree before LuCI attaches it. Defer the first
++		// data pass and the poll registration until the elements exist.
++		window.setTimeout(L.bind(function() {
++			if (this._snapshot)
++				this.update(this._snapshot);
++			else
++				this.showBanner(this._error || _('Waiting for the modem.'), 'error');
++
++			activeView = this;
++			if (!pollRegistered) {
++				pollRegistered = true;
++				poll.add(pollHandler, 5);
++				poll.start();
++			}
++		}, this), 0);
+ 
+-		s = m.section(form.TypedSection, 'threeginfo', null);
+-		s.anonymous = true;
+-		s.addremove = false;
++		return root;
++	},
+ 
+-		s.tab('opt1', _('BTS Search'));
+-		s.anonymous = true;
++	injectCss: function() {
++		if (document.querySelector('link[data-3ginfo-radio]'))
++			return;
++		document.head.appendChild(el('link', {
++			'rel': 'stylesheet',
++			'href': L.resource('3ginfo/radio.css'),
++			'data-3ginfo-radio': '1'
++		}));
++	},
++
++	pollTick: function() {
++		if (this._busy || this._refreshSeconds <= 0)
++			return;
++
++		if (Date.now() - this._lastLoad < this._refreshSeconds * 1000)
++			return;
++
++		this._busy = true;
++		this.loadSnapshot('json').then(L.bind(function(snapshot) {
++			this._busy = false;
++			this._lastLoad = Date.now();
++			if (snapshot.error) {
++				this.showBanner(snapshot.error, 'error');
++			}
++			else {
++				this.update(snapshot);
++				this.hideBanner();
++			}
++		}, this));
++	},
+ 
+-		o = s.taboption('opt1', form.Button, '_search');
+-		o.title      = _('Search BTS using Cell ID');
+-		o.inputtitle = _('Search');
+-		o.onclick = function() {
++	handleRefreshChange: function(ev) {
++		this._refreshSeconds = parseInt(ev.target.value, 10) || 0;
++		this._lastLoad = Date.now();
++	},
+ 
+-		return uci.load('3ginfo').then(function() {
+-		var searchsite = uci.get('3ginfo', '@3ginfo[0]', 'website');
++	handleRefresh: function(ev) {
++		ev.preventDefault();
++		if (this._busy)
++			return;
+ 
+-			if (!searchsite) {
+-				ui.addNotification(null, E('p', _('Search URL is not configured in 3ginfo.')), 'error');
++		this._busy = true;
++		var button = document.getElementById('tg-refresh');
++		if (button) {
++			button.disabled = true;
++			button.classList.add('tg-busy');
++		}
++
++		this.loadSnapshot('refresh').then(L.bind(function(snapshot) {
++			this._busy = false;
++			this._lastLoad = Date.now();
++
++			var button = document.getElementById('tg-refresh');
++			if (button) {
++				button.disabled = false;
++				button.classList.remove('tg-busy');
++			}
++
++			if (snapshot.error) {
++				this.showBanner(snapshot.error, 'error');
+ 				return;
+ 			}
++			this.update(snapshot);
++			if (snapshot.meta && snapshot.meta.rate_limited)
++				this.showBanner(_('A fresh sample was taken moments ago; showing it.'), 'info');
++			else
++				this.hideBanner();
++		}, this));
++	},
+ 
+-			// Safe parsing to prevent 'undefined.length' and 'undefined.slice' crashes
+-			var id_dec = (json && json.cid_dec) ? String(json.cid_dec) : "";
+-			var id_hex = (json && json.cid_hex) ? String(json.cid_hex) : "";
+-			var zzmnc = (json && json.operator_mnc) ? String(json.operator_mnc) : "";
+-			var zzopmcc = (json && json.operator_mcc) ? String(json.operator_mcc) : "";
+-
+-			if (searchsite.includes('btsearch')) {
+-			//http://www.btsearch.pl/szukaj.php?mode=std&search=CellID
+-			
+-				var id_dec_conv = parseInt(id_hex, 16);
+-
+-				if ( id_dec.length > 2 ) {
+-					window.open(searchsite + id_dec);
+-				}
+-				else if (!isNaN(id_dec_conv)) {
+-					window.open(searchsite + id_dec_conv);
+-				}
++	handleNeighbourSearch: function(ev) {
++		this._query = ev.target.value || '';
++		this.updateNeighbours();
++	},
++
++	handleFilter: function(filter, ev) {
++		ev.preventDefault();
++		this._filter = filter;
++		this.updateNeighbours();
++	},
++
++	handleNeighbourScan: function(ev) {
++		ev.preventDefault();
++		if (this._busy)
++			return;
++
++		this._busy = true;
++		var button = document.getElementById('tg-neighbour-scan');
++		if (button) {
++			button.disabled = true;
++			button.classList.add('tg-busy');
++			button.textContent = _('Scanning…');
++		}
++
++		this.loadSnapshot('neighbors').then(L.bind(function(snapshot) {
++			this._busy = false;
++			this._lastLoad = Date.now();
++
++			var button = document.getElementById('tg-neighbour-scan');
++			if (button) {
++				button.disabled = false;
++				button.classList.remove('tg-busy');
++				button.textContent = '↻ ' + _('Scan neighbours');
+ 			}
+ 
+-			if (searchsite.includes('lteitaly')) {
+-			//https://lteitaly.it/internal/map.php#bts=MCCMNC.CellIDdiv256
+-
+-			var first = zzmnc.slice(0, 1);
+-			var second = zzmnc.slice(1, 2);
+-			var zzcid = Math.round(parseInt(id_dec || '0') / 256);
+-			var cutmnc = zzmnc;
+-
+-				if ( zzmnc.length == 3 ) {
+-					if (first === '0') {
+-					cutmnc = zzmnc.slice(1, 3);
+-					}
+-					if (first === '0' && second === '0') {
+-					cutmnc = zzmnc.slice(2, 3);
+-					}
+-				}
+-				else if ( zzmnc.length == 2 ) {
+-					if (first === '0') {
+-						cutmnc = zzmnc.slice(1, 2);
+-						}
+-					}
+-
+-			window.open(searchsite + zzopmcc + cutmnc + '.' + zzcid);
++			if (snapshot.error) {
++				this.showBanner(snapshot.error, 'error');
++				return;
+ 			}
+-    		}).catch(function(e) {
+-				console.error('BTS search error:', e);
+-			});
++
++			this.update(snapshot);
++			if (snapshot.meta && snapshot.meta.neighbor_rate_limited)
++				this.showBanner(_('The last scan is still recent; showing the cached report.'), 'info');
++			else if (snapshot.neighbors && snapshot.neighbors.error)
++				this.showBanner(snapshot.neighbors.error, 'warning');
++			else
++				this.hideBanner();
++		}, this));
++	},
++
++	update: function(snapshot) {
++		// A poll or a scan can land after the user left the page; the nodes are
++		// gone then, so there is nothing to update.
++		if (!document.getElementById('tg-summary'))
++			return;
++
++		this._snapshot = snapshot;
++		this._error = null;
++		this.updateSummary();
++		this.updateSignal();
++		this.updateCells();
++		this.updateNetwork();
++		this.updateNeighbours();
++		this.updateDiagnostics();
++		this.updateIdentity();
++	},
++
++	updateSummary: function() {
++		var s = this._snapshot;
++		var c = s.connection;
++		var statusClass = 'tg-muted';
++
++		if (c.status === 'registered')
++			statusClass = 'tg-good';
++		else if (c.status === 'searching' || c.status === 'not_registered')
++			statusClass = 'tg-warn';
++		else if (c.status === 'sim_missing' || c.status === 'denied')
++			statusClass = 'tg-bad';
++
++		var dot = document.getElementById('tg-summary-dot');
++		dot.className = 'tg-dot ' + statusClass;
++
++		document.getElementById('tg-summary-status').textContent = c.label || _('Unknown');
++		document.getElementById('tg-summary-meta').textContent =
++			[ c.operator, [ c.mcc, c.mnc ].filter(function(v) { return v; }).join('/') ]
++				.filter(function(v) { return v; }).join(' · ');
++
++		var line = [];
++		if (c.mode)
++			line.push(c.mode);
++		if (c.endc)
++			line.push(_('LTE anchor + NR leg · EN-DC'));
++		else if (c.mode_group === 'sa')
++			line.push(_('Standalone 5G'));
++		else if (c.ca_active)
++			line.push(_('%d component carriers active').format(c.carrier_count));
++
++		document.getElementById('tg-summary-line').textContent = line.join(' · ') || _('No serving cell reported');
++
++		var age = document.getElementById('tg-summary-age');
++		if (s.meta && s.meta.cached)
++			age.textContent = _('Cached · %s').format(fmtAge(s.meta.age_seconds));
++		else
++			age.textContent = _('Updated %s').format(fmtClock(s.meta ? s.meta.generated : null));
++
++		var badges = [];
++		if (c.mode)
++			badges.push(badge(c.mode, c.mode_group === 'sa' || c.mode_group === 'nsa' ? 'accent' : null));
++		if (c.ca_active)
++			badges.push(badge(_('CA active · %d carriers').format(c.carrier_count), 'good'));
++		if (s.meta && s.meta.source === 'qmodem')
++			badges.push(badge(_('QModem telemetry'), 'muted'));
++		else
++			badges.push(badge(_('3gInfo direct'), 'muted'));
++
++		dom.content(document.getElementById('tg-summary-badges'), badges);
++	},
++
++	updateSignal: function() {
++		var cells = this._snapshot.cells || [];
++		var tiles = signalTiles(cells);
++		var host = document.getElementById('tg-signal-grid');
++
++		if (tiles.length === 0) {
++			dom.content(host, emptyState(_('No signal measurement available'), _('The modem did not report a serving cell.')));
++			dom.content(document.getElementById('tg-signal-badge'), []);
++			return;
++		}
++
++		dom.content(host, tiles.map(function(tile) {
++			var label = tile[0], metric = tile[1], value = tile[2], unit = tile[3];
++			var q = quality(metric, value);
++			return el('article', { 'class': 'tg-tile' }, [
++				el('div', { 'class': 'tg-tile-head' }, [
++					el('span', { 'class': 'tg-tile-label' }, label),
++					q ? qualityBadge(q) : el('span', { 'class': 'tg-muted' }, _('Not reported'))
++				]),
++				el('div', { 'class': 'tg-tile-value' }, metricValue(value, unit))
++			]);
++		}));
++
++		var q = overallQuality(cells);
++		dom.content(document.getElementById('tg-signal-badge'), [
++			badge(q ? _('Overall · %s').format(qualityLabel(q)) : _('Overall · Unknown'),
++			      q === 'weak' ? 'bad' : (q === 'fair' ? 'warn' : (q ? 'good' : 'muted')))
++		]);
++	},
++
++	updateCells: function() {
++		var cells = this._snapshot.cells || [];
++		var host = document.getElementById('tg-cells');
++		var scc = 0;
++
++		if (cells.length === 0) {
++			var reason = this._snapshot.connection.status === 'sim_missing'
++				? _('The SIM is missing.')
++				: (this._snapshot.connection.status === 'not_registered' || this._snapshot.connection.status === 'searching'
++					? _('The modem is not registered to a cell yet.')
++					: _('The modem did not report a serving cell.'));
++			dom.content(host, emptyState(_('No serving cell reported'), reason));
++			dom.content(document.getElementById('tg-cells-badge'), []);
++			return;
++		}
++
++		dom.content(host, cells.map(L.bind(function(cell) {
++			if (cell.role === 'scc')
++				scc++;
++			return cellCard(cell, scc);
++		}, this)));
++
++		var text = _('%d serving carrier(s)').format(cells.length);
++		if (this._snapshot.connection.ca_active)
++			text = _('CA active · %d carriers').format(this._snapshot.connection.carrier_count);
++		dom.content(document.getElementById('tg-cells-badge'), [ badge(text, this._snapshot.connection.ca_active ? 'good' : 'muted') ]);
++	},
++
++	updateNetwork: function() {
++		var c = this._snapshot.connection;
++		var cells = this._snapshot.cells || [];
++		var pcc = findCell(cells, 'lte', 'pcc') || findCell(cells, 'nr', 'pcc') || findCell(cells, '3g');
++		var nsa = findCell(cells, 'nr', 'nsa');
++		var tac = pcc && pcc.tac ? pcc.tac : (nsa && nsa.tac ? nsa.tac : null);
++		var items = [
++			kvItem(_('Registration'), c.label, c.status),
++			kvItem(_('Radio mode'), c.mode),
++			kvItem(_('Operator'), c.operator),
++			kvItem(_('MCC / MNC'), [ c.mcc, c.mnc ].filter(function(v) { return v; }).join(' / ') || null),
++			kvItem(_('TAC'), fmtTac(tac)),
++			kvItem(_('Connection time'), fmtDuration(c.uptime)),
++			kvItem(_('Received'), fmtBytes(c.rx_bytes)),
++			kvItem(_('Transmitted'), fmtBytes(c.tx_bytes)),
++			kvItem(_('Interface'), c.iface),
++			kvItem(_('Modem'), c.model),
++			kvItem(_('Firmware'), c.firmware),
++			kvItem(_('Temperature'), c.temperature)
++		];
++
++		dom.content(document.getElementById('tg-network-grid'), items);
++	},
++
++	updateNeighbours: function() {
++		var n = this._snapshot.neighbors || {};
++		var rows = neighbourRows(this._snapshot);
++		var filtered = neighbourSort(neighbourFilter.call(this, rows), this._sort);
++		var counts = {
++			all: rows.length,
++			lte: rows.filter(function(c) { return c.rat === 'lte'; }).length,
++			nr: rows.filter(function(c) { return c.rat === 'nr'; }).length
+ 		};
+ 
+-		return m.render();
++		this.updateNeighbourFilters(counts);
++
++		var desc = document.querySelector('#tg-neighbours .tg-card-desc');
++		if (desc) {
++			var when = n.scanned ? fmtAge(this._snapshot.meta.neighbor_age_seconds) : _('no scan yet');
++			desc.textContent = _('Cells detected nearby, not currently carrying your connection · last scan %s').format(when);
++		}
++
++		var note = document.getElementById('tg-neighbour-note');
++		var noteText = '';
++		if (this._snapshot.meta && this._snapshot.meta.neighbor_rate_limited)
++			noteText = _('The previous scan is still recent. Wait a moment before scanning again.');
++		else if (n.error)
++			noteText = n.error;
++		else if (!n.available && !n.scanned)
++			noteText = _('Neighbour information is not available from this telemetry source.');
++
++		note.hidden = !noteText;
++		note.textContent = noteText;
++
++		var scan = document.getElementById('tg-neighbour-scan');
++		scan.disabled = !(this._snapshot.capabilities && this._snapshot.capabilities.neighbors);
++		scan.title = scan.disabled ? _('QModem is required for neighbour scans') : '';
++
++		this.updateSortButtons();
++
++		dom.content(document.getElementById('tg-neighbour-cards'), filtered.map(neighbourCard));
++		dom.content(document.getElementById('tg-neighbour-body'), filtered.map(neighbourTableRow));
++
++		var empty = document.getElementById('tg-neighbour-empty');
++		if (filtered.length === 0) {
++			var title = rows.length === 0 ? _('No neighbour cells reported') : _('No cells match the filter');
++			var detail = rows.length === 0
++				? (scan.disabled ? _('QModem is required to scan for neighbour cells.') : _('Run a scan, or wait for the modem to report nearby cells.'))
++				: _('Change the filter or search text.');
++			dom.content(empty, emptyState(title, detail));
++		}
++		else {
++			dom.content(empty, []);
++		}
++	},
++
++	// The filter buttons are updated in place: recreating them on every poll
++	// would drop keyboard focus and detach a click that is already underway.
++	updateNeighbourFilters: function(counts) {
++		var host = document.getElementById('tg-neighbour-filters');
++		var defs = [
++			[ 'all', _('All · %d').format(counts.all) ],
++			[ 'lte', _('LTE · %d').format(counts.lte) ],
++			[ 'nr', _('5G NR · %d').format(counts.nr) ]
++		];
++
++		if (host.children.length !== defs.length) {
++			dom.content(host, defs.map(L.bind(function(item) {
++				return el('button', {
++					'type': 'button',
++					'class': 'tg-filter',
++					'data-filter': item[0],
++					'click': L.bind(this.handleFilter, this, item[0])
++				}, item[1]);
++			}, this)));
++		}
++
++		for (var i = 0; i < defs.length; i++) {
++			var button = host.children[i];
++			var active = this._filter === defs[i][0];
++			button.textContent = defs[i][1];
++			button.classList.toggle('tg-filter-active', active);
++			button.setAttribute('aria-pressed', active ? 'true' : 'false');
++		}
++	},
++
++	updateSortButtons: function() {
++		var labels = {
++			rat: _('RAT'),
++			channel: _('Channel'),
++			pci: _('PCI'),
++			rsrp: _('RSRP'),
++			rsrq: _('RSRQ'),
++			sinr: _('SINR'),
++			type: _('Type')
++		};
++		var sort = this._sort;
++
++		document.querySelectorAll('.tg-sort').forEach(function(button) {
++			var key = button.getAttribute('data-key');
++			var active = key === sort.key;
++			var arrow = active ? (sort.dir === 'asc' ? ' ↑' : ' ↓') : ' ↕';
++			button.textContent = (labels[key] || key) + arrow;
++			button.classList.toggle('tg-sort-active', active);
++			var th = button.closest ? button.closest('th') : null;
++			if (th)
++				th.setAttribute('aria-sort', active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none');
++		});
++	},
++
++	updateDiagnostics: function() {
++		var s = this._snapshot;
++		var m = s.meta || {};
++		var n = s.neighbors || {};
++		var warnings = (m.warnings || []).slice();
++		var items = [
++			kvItem(_('Source'), m.source === 'qmodem' ? _('QModem (serialized modem access)') : _('3gInfo direct')),
++			kvItem(_('QModem section'), m.qmodem_section),
++			kvItem(_('Last successful sample'), m.cached ? fmtAge(m.age_seconds) : _('just now')),
++			kvItem(_('Collection duration'), fmtMillis(m.duration_ms)),
++			kvItem(_('Last error'), warnings.length ? warnings[0] : _('None')),
++			kvItem(_('Per-carrier metrics'), s.capabilities && s.capabilities.per_carrier_metrics ? _('Available') : _('Not available')),
++			kvItem(_('Neighbour scans'), s.capabilities && s.capabilities.neighbors ? _('Available') : _('Not available')),
++			kvItem(_('Last neighbour scan'), n.scanned ? fmtAge(m.neighbor_age_seconds) : _('never'))
++		];
++
++		dom.content(document.getElementById('tg-diagnostics-grid'), items);
++
++		if (m.rate_limited)
++			warnings.push(_('The refresh was rate-limited; the previous sample is shown.'));
++		if (m.neighbor_rate_limited)
++			warnings.push(_('The neighbour scan was rate-limited; the previous report is shown.'));
++		if (m.busy)
++			warnings.push(_('Another collection was in progress; a cached snapshot is shown.'));
++
++		var host = document.getElementById('tg-warnings');
++		if (warnings.length === 0) {
++			dom.content(host, [ el('p', { 'class': 'tg-muted' }, _('No collection warnings.')) ]);
++			return;
++		}
++
++		dom.content(host, [
++			el('ul', { 'class': 'tg-warning-list' }, warnings.map(function(w) {
++				return el('li', {}, w);
++			}))
++		]);
++	},
++
++	updateIdentity: function() {
++		var id = this._snapshot.identity || {};
++		var body = document.getElementById('tg-identity-body');
++
++		if (!id.imei && !id.imsi && !id.iccid) {
++			dom.content(body, [ el('p', { 'class': 'tg-muted' }, _('The modem did not report SIM or device identifiers.')) ]);
++			return;
++		}
++
++		dom.content(body, [
++			el('details', { 'class': 'tg-details' }, [
++				el('summary', {}, _('Show identifiers')),
++				el('dl', { 'class': 'tg-kv tg-kv-compact' }, [
++					kvItem(_('IMEI'), id.imei),
++					kvItem(_('IMSI'), id.imsi),
++					kvItem(_('ICCID'), id.iccid),
++					kvItem(_('SIM slot'), id.sim_slot)
++				])
++			]),
++			el('p', { 'class': 'tg-foot' }, _('These identifiers identify the modem and SIM. The page does not put them in the overview.'))
++		]);
++	},
++
++	showBanner: function(text, kind) {
++		var b = document.getElementById('tg-banner');
++		if (!b)
++			return;
++		b.className = 'tg-banner tg-banner-' + (kind || 'info');
++		b.textContent = text;
++		b.hidden = false;
++	},
++
++	hideBanner: function() {
++		var b = document.getElementById('tg-banner');
++		if (!b)
++			return;
++		b.hidden = true;
++		b.textContent = '';
+ 	},
+ 
+ 	handleSaveApply: null,
+diff --git a/luci-app-3ginfo-lite/root/etc/config/3ginfo b/luci-app-3ginfo-lite/root/etc/config/3ginfo
+index f47d385..1e2911b 100644
+--- a/luci-app-3ginfo-lite/root/etc/config/3ginfo
++++ b/luci-app-3ginfo-lite/root/etc/config/3ginfo
+@@ -2,3 +2,5 @@
+ config 3ginfo
+ 	option device ''
+ 	option website 'http://www.btsearch.pl/szukaj.php?mode=std&search='
++	option radio_refresh '30'
++	option radio_neighbor_interval '60'
+diff --git a/luci-app-3ginfo-lite/root/etc/uci-defaults/set_3ginfo_port.sh b/luci-app-3ginfo-lite/root/etc/uci-defaults/set_3ginfo_port.sh
+index d3fd50d..6f9f55e 100644
+--- a/luci-app-3ginfo-lite/root/etc/uci-defaults/set_3ginfo_port.sh
++++ b/luci-app-3ginfo-lite/root/etc/uci-defaults/set_3ginfo_port.sh
+@@ -3,6 +3,7 @@
+ # MIT License
+ 
+ chmod +x /usr/share/3ginfo-lite/3ginfo.sh 2>&1 &
++chmod +x /usr/share/3ginfo-lite/radiodata.sh 2>&1 &
+ chmod +x /usr/share/3ginfo-lite/detect.sh 2>&1 &
+ chmod +x /usr/share/3ginfo-lite/check.gcom 2>&1 &
+ chmod +x /usr/share/3ginfo-lite/info.gcom 2>&1 &
+diff --git a/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-neighbors.jq b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-neighbors.jq
+new file mode 100644
+index 0000000..ece7e02
+--- /dev/null
++++ b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-neighbors.jq
+@@ -0,0 +1,95 @@
++# Normalize QModem's get_neighborcell reply.
++#
++# QModem has already done the vendor-specific AT parsing. It exposes LTE and NR
++# arrays with arfcn, pci, rsrp and rsrq. A neighbour report never carries a
++# global cell id on the Quectel firmware this app targets, so cell_id stays null
++# rather than being guessed from a PCI.
++#
++# OpenWrt builds jq without the Oniguruma regex engine, so this file uses no
++# regex builtins. Values are range-checked before they reach the page: some
++# firmware revisions shift AT+QENG neighbour columns, and a value outside the
++# 3GPP range is dropped rather than shown as an excellent signal.
++#
++# GPL-3.0. Part of luci-app-3ginfo-lite.
++
++def space_char: . == 32 or . == 9 or . == 10 or . == 13 or . == 11 or . == 12 or . == 160;
++
++def trim:
++  explode
++  | [ to_entries[] | select(.value | space_char | not) ] as $keep
++  | if ($keep | length) == 0 then ""
++    else ($keep[0].key) as $s
++    | ($keep[-1].key) as $e
++    | .[$s:$e + 1]
++    | implode
++    end;
++
++def dash_normalize:
++  explode
++  | map(if . == 8722 or . == 8211 or . == 8212 then 45 else . end)
++  | implode;
++
++def text:
++  if . == null then null
++  else (tostring | trim | dash_normalize) as $s
++  | if ($s == "" or $s == "-" or $s == "N/A" or $s == "n/a") then null
++    else $s end
++  end;
++
++def number:
++  if . == null then null
++  else (tostring | trim | dash_normalize) as $s
++  | if ($s == "" or $s == "-" or $s == "N/A" or $s == "n/a") then null
++    else (tonumber? // null) end
++  end;
++
++# RSRP/RSRQ/SINR/RSCP/Ec-N0 ranges from 3GPP TS 36.133/38.133. A value outside
++# them is not a weak signal, it is a misparsed field, so it becomes "not
++# reported" instead of colouring the row.
++def within($lo; $hi):
++  if . == null then null elif . >= $lo and . <= $hi then . else null end;
++
++# QModem 25.x reads AT+QENG's LTE neighbour row as rsrp=<RSRQ>, rsrq=<RSRP>,
++# while the AT command reports <RSRQ> then <RSRP> (QModem vendor/quectel.sh).
++# The two fields are therefore swapped on LTE rows for some firmware. Repair
++# the row only when exactly one assignment is physically possible; a pair that
++# is valid as written is never touched, and a pair valid as neither is dropped.
++def repair_lte_pair($rsrp; $rsrq):
++  if ($rsrp | within(-156; -30)) != null and ($rsrq | within(-30; 3)) != null then
++    { rsrp: $rsrp, rsrq: $rsrq }
++  elif ($rsrp | within(-30; 3)) != null and ($rsrq | within(-156; -30)) != null then
++    { rsrp: ($rsrq | within(-156; -30)), rsrq: ($rsrp | within(-30; 3)) }
++  else
++    { rsrp: ($rsrp | within(-156; -30)), rsrq: ($rsrq | within(-30; 3)) }
++  end;
++
++def rows($rat):
++  [ $raw[0].neighborcell[$rat][]?
++    | (.rsrp | number) as $rsrp
++    | (.rsrq | number) as $rsrq
++    | (if $rat == "LTE" then repair_lte_pair($rsrp; $rsrq)
++       else { rsrp: ($rsrp | within(-156; -30)), rsrq: ($rsrq | within(-43; 20)) }
++       end) as $m
++    | { rat: ($rat | ascii_downcase),
++        type: (.neighbourcell | text),
++        channel: (.arfcn | number),
++        pci: (.pci | number),
++        rsrp: $m.rsrp,
++        rsrq: $m.rsrq,
++        sinr: (.sinr | number | within(-30; 50)),
++        rscp: (.rscp | number | within(-130; -20)),
++        ecno: (.ecno | number | within(-30; 5)),
++        cell_id: (.cell_id | text) }
++    | select(.channel != null and .pci != null) ]
++  | unique_by([.channel, .pci])
++  | sort_by([if .rsrp == null then 1 else 0 end, ((.rsrp // 0) * -1)])
++  | .[0:40];
++
++{
++  lte: rows("LTE"),
++  nr: rows("NR"),
++  scanned: $now,
++  available: $available,
++  error: (if $error == "" then null else $error end),
++  cached: false
++}
+diff --git a/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-normalize.jq b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-normalize.jq
+new file mode 100644
+index 0000000..c11d720
+--- /dev/null
++++ b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-normalize.jq
+@@ -0,0 +1,467 @@
++# Normalize 3gInfo-lite's telemetry sources into one stable document.
++#
++# Inputs are files produced by radiodata.sh. QModem is authoritative when it is
++# present: its ubus methods already serialize access to the modem's AT port.
++# Without QModem the collector falls back to 3ginfo.sh, which is why every field
++# below is allowed to be absent.
++#
++# OpenWrt builds jq without the Oniguruma regex engine, so this file uses no
++# regex builtins (test/match/scan/gsub/sub/splits). All string work is done on
++# codepoints, which keeps the normalizer identical on the router and on a laptop.
++#
++# GPL-3.0. Part of luci-app-3ginfo-lite.
++
++# Space characters as Unicode sees them; trims NBSP too, which some modems send.
++def space_char: . == 32 or . == 9 or . == 10 or . == 13 or . == 11 or . == 12 or . == 160;
++
++def trim:
++  explode
++  | [ to_entries[] | select(.value | space_char | not) ] as $keep
++  | if ($keep | length) == 0 then ""
++    else ($keep[0].key) as $s
++    | ($keep[-1].key) as $e
++    | .[$s:$e + 1]
++    | implode
++    end;
++
++# Modems mix U+2212 MINUS SIGN (and the en/em dashes) with ASCII '-' in
++# measurement fields; fold them to ASCII before any number is parsed.
++def dash_normalize:
++  explode
++  | map(if . == 8722 or . == 8211 or . == 8212 then 45 else . end)
++  | implode;
++
++# Every run of ASCII digits in a string, in order. Replaces scan("[0-9]+").
++def digit_groups:
++  explode
++  | reduce .[] as $c ({ cur: [], out: [] };
++      if ($c >= 48 and $c <= 57) then .cur += [ $c ]
++      else (if (.cur | length) > 0 then .out += [ (.cur | implode) ] | .cur = [] else . end)
++      end)
++  | if (.cur | length) > 0 then .out + [ (.cur | implode) ] else .out end;
++
++def first_digits: digit_groups | (.[0] // null);
++
++# Alphanumeric words, in order.
++def word_tokens:
++  explode
++  | reduce .[] as $c ({ cur: [], out: [] };
++      if (($c >= 48 and $c <= 57) or ($c >= 65 and $c <= 90) or ($c >= 97 and $c <= 122))
++      then .cur += [ $c ]
++      else (if (.cur | length) > 0 then .out += [ (.cur | implode) ] | .cur = [] else . end)
++      end)
++  | if (.cur | length) > 0 then .out + [ (.cur | implode) ] else .out end;
++
++def text:
++  if . == null then null
++  else (tostring | trim | dash_normalize) as $s
++  | if ($s == "" or $s == "-" or $s == "N/A" or $s == "n/a") then null
++    else $s end
++  end;
++
++def number:
++  if . == null then null
++  else (tostring | trim | dash_normalize) as $s
++  | if ($s == "" or $s == "-" or $s == "N/A" or $s == "n/a") then null
++    else (tonumber? // null) end
++  end;
++
++def first_number:
++  if . == null then null
++  else (tostring | dash_normalize | split("/")[0]
++        | explode
++        | map(select((. >= 48 and . <= 57) or . == 43 or . == 45 or . == 46))
++        | implode) as $s
++  | if ($s == "" or $s == "-" or $s == ".") then null else (tonumber? // null) end
++  end;
++
++# Cell Information's Band is a bare number. Legacy handlers produce "B3", "n78"
++# or "B7 @20 MHz", so take the first run of digits for those.
++def band_number:
++  text as $s
++  | if $s == null then null
++    else ($s | first_digits) as $n
++    | if $n == null then null else ($n | tonumber) end
++    end;
++
++# AT+QCAINFO names the band in a sentence ("LTE BAND 3", "NR5G BAND 78").
++def qca_band:
++  text as $s
++  | if $s == null then null
++    else ($s | ascii_upcase) as $u
++    | (($u | index("BAND")) as $p
++       | if $p != null then ($u | .[$p + 4:] | first_digits)
++         elif ($u | length) > 0 and (($u[0:1]) == "B" or ($u[0:1]) == "N")
++         then ($u | .[1:] | first_digits)
++         else null end) as $n
++    | if $n == null then null else ($n | tonumber) end
++    end;
++
++def present($m): $m | with_entries(select(.value != null));
++
++def info_entries($group):
++  [ .modem_info[]?
++    | select(if $group == "root"
++             then ((.extra_info // "") == "")
++             else ((.extra_info // "") == $group) end)
++    | { key: (.key | tostring), value } ]
++  | reduce .[] as $x ({}; .[$x.key] = $x.value);
++
++def base_entries:
++  [ .modem_info[]? | { key: (.key | tostring), value } ]
++  | reduce .[] as $x ({}; .[$x.key] = $x.value);
++
++def role_rank: if . == "pcc" then 0 elif . == "nsa" then 1 else 2 end;
++
++# Cell Information groups its fields by RAT in extra_info. Some firmware also
++# leaves the serving RSSI/CQI at the root, so every read falls back to the root
++# group ($f) before it becomes "not reported".
++def pick_group($a; $b):
++  if ($a | length) > 0 and
++     (($a.Band // $a.EARFCN // $a.ARFCN // $a.UARFCN // $a."Physical Cell ID" // $a.PSC) != null)
++  then $a else $b end;
++
++def lte_cell($i; $f; $role):
++  if ($i | length) == 0 then empty else
++    { role: $role,
++      rat: "lte",
++      band: (($i.Band // $f.Band) | band_number),
++      channel: (($i.EARFCN // $f.EARFCN) | number),
++      channel_label: "EARFCN",
++      pci: (($i."Physical Cell ID" // $f."Physical Cell ID") | first_number),
++      cell_id: (($i."Cell ID" // $f."Cell ID") | text),
++      tac: (($i.TAC // $f.TAC) | text),
++      bandwidth: { dl: (($i."DL Bandwidth" // $f."DL Bandwidth") | number),
++                   ul: (($i."UL Bandwidth" // $f."UL Bandwidth") | number) },
++      metrics: present({ rsrp: (($i.RSRP // $f.RSRP) | number),
++                         rsrq: (($i.RSRQ // $f.RSRQ) | number),
++                         rssi: (($i.RSSI // $f.RSSI) | number),
++                         sinr: (($i.SINR // $f.SINR) | number) }),
++      metric_source: "cell" }
++  end;
++
++def nr_cell($i; $f; $role):
++  if ($i | length) == 0 then empty else
++    { role: $role,
++      rat: "nr",
++      band: (($i.Band // $f.Band) | band_number),
++      channel: (($i.ARFCN // $f.ARFCN) | number),
++      channel_label: "NR-ARFCN",
++      pci: (($i."Physical Cell ID" // $f."Physical Cell ID") | first_number),
++      cell_id: (($i."Cell ID" // $f."Cell ID") | text),
++      tac: (($i.TAC // $f.TAC) | text),
++      bandwidth: { dl: (($i."DL Bandwidth" // $f."DL Bandwidth") | number), ul: null },
++      scs: (($i.SCS // $f.SCS) | number),
++      metrics: present({ rsrp: (($i.RSRP // $f.RSRP) | number),
++                         rsrq: (($i.RSRQ // $f.RSRQ) | number),
++                         sinr: (($i.SINR // $f.SINR) | number) }),
++      metric_source: "cell" }
++  end;
++
++def wcdma_cell($i; $f):
++  if ($i | length) == 0 then empty else
++    { role: "pcc",
++      rat: "3g",
++      band: (($i.Band // $f.Band) | band_number),
++      channel: (($i.UARFCN // $f.UARFCN) | number),
++      channel_label: "UARFCN",
++      pci: (($i.PSC // $f.PSC) | first_number),
++      cell_id: (($i."Cell ID" // $f."Cell ID") | text),
++      lac: (($i.LAC // $f.LAC) | text),
++      metrics: present({ rscp: (($i.RSCP // $f.RSCP) | number),
++                         ecio: (($i."Ec/Io" // $f."Ec/Io") | number) }),
++      metric_source: "cell" }
++  end;
++
++# One row for each QCAINFO line the awk parser accepted.
++def qca_rows:
++  [ $qca | split("\n")[]
++    | select((trim) != "")
++    | split("\t")
++    | { channel: (.[0] | number),
++        pci: (.[1] | number),
++        rsrp: (.[2] | number),
++        rsrq: (.[3] | number),
++        rssi: (.[4] | number),
++        sinr: (.[5] | number),
++        rat: (.[6] | text),
++        band: (.[7] | text),
++        type: (.[8] | text) }
++    | select(.channel != null) ];
++
++def qca_match($rat; $channel; $pci):
++  [ qca_rows[] | select(.rat == $rat and .channel == $channel) ] as $same
++  | (($same | map(select($pci != null and .pci == $pci)) | first) // ($same | first));
++
++def attach_metrics($cell):
++  qca_match($cell.rat; $cell.channel; $cell.pci) as $q
++  | if $q == null then $cell
++    else $cell + {
++      metrics: (present({ rsrp: ($q.rsrp), rsrq: ($q.rsrq),
++                          rssi: ($q.rssi), sinr: ($q.sinr) })
++                + ($cell.metrics // {})),
++      metric_source: (if (($cell.metrics // {}) | length) > 0
++                      then $cell.metric_source else "qca" end)
++    }
++    end;
++
++# Combine cells that describe the same carrier. A primary role wins over a
++# secondary one, and a measurement from Cell Information wins over QCAINFO.
++def merge_cells($a; $b):
++  (($a + $b)
++   | group_by("\(.rat):\(.channel // "-"):\(.pci // "-")"))
++  | map(. as $g
++    | (($g | map(select(.role == "pcc")))
++       + ($g | map(select(.role == "nsa")))
++       + $g) as $ordered
++    | ($ordered[0]) as $first
++    | $first + {
++        role: ($g | map(.role) | map(select(. != null)) | sort_by(role_rank) | .[0]),
++        band: ($g | map(.band) | map(select(. != null)) | first),
++        channel: ($g | map(.channel) | map(select(. != null)) | first),
++        pci: ($g | map(.pci) | map(select(. != null)) | first),
++        cell_id: ($g | map(.cell_id) | map(select(. != null)) | first),
++        tac: ($g | map(.tac) | map(select(. != null)) | first),
++        lac: ($g | map(.lac) | map(select(. != null)) | first),
++        scs: ($g | map(.scs) | map(select(. != null)) | first),
++        bandwidth: {
++          dl: ($g | map(.bandwidth.dl?) | map(select(. != null)) | first),
++          ul: ($g | map(.bandwidth.ul?) | map(select(. != null)) | first)
++        },
++        metrics: (reduce ($g | sort_by(
++                    if .metric_source == "qca" then 0
++                    elif .metric_source == "current_band" then 1
++                    elif .metric_source == "cell" then 3
++                    else 2 end)[]) as $c ({}; . + ($c.metrics // {}))),
++        metric_source: (if any($g[]; .metric_source == "cell") then "cell"
++                        elif any($g[]; .metric_source == "qca") then "qca"
++                        else ($g[0].metric_source) end)
++      })
++  | sort_by((.role | role_rank), .rat, (.channel // 0));
++
++($base[0] // {}) as $base0
++| ($cell[0] // {}) as $cell0
++| ($band[0] // {}) as $band0
++| ($sim[0] // {}) as $sim0
++| ($legacy[0] // {}) as $legacy0
++| ($iface[0] // {}) as $iface0
++| ($base0 | base_entries) as $basei
++| ($sim0 | base_entries) as $simi
++| ($cell0 | info_entries("root")) as $root
++| ($cell0 | info_entries("LTE")) as $lte
++| ($cell0 | info_entries("NR")) as $nr
++| ($root.network_mode // "") as $qmode
++| ($legacy0.mode // "") as $lmode
++| ($qmode | ascii_upcase) as $qu
++| ($lmode | ascii_upcase) as $lu
++| ($qu | contains("EN-DC")) as $is_endc
++| ($qu | contains("NR5G-SA")) as $is_sa
++| ($qu | contains("LTE") or contains("CAT-M") or contains("CAT-NB")) as $is_lte
++| ($qu | contains("WCDMA")) as $is_3g
++| ($lu | contains("NSA")) as $legacy_endc
++| ($lu | contains("5G SA") or contains("NR5G-SA")) as $legacy_sa
++| ($lu | contains("LTE")) as $legacy_lte
++| ($lu | contains("UMTS") or contains("HSPA") or contains("WCDMA") or contains("3G")) as $legacy_3g
++
++| (if $source == "qmodem" then
++     (if $is_endc then
++        ([ lte_cell(pick_group($lte; $root); $root; "pcc") ]
++         + [ nr_cell(pick_group($nr; $root); $root; "nsa") ])
++      elif $is_sa then [ nr_cell(pick_group($nr; $root); $root; "pcc") ]
++      elif $is_lte then [ lte_cell(pick_group($lte; $root); $root; "pcc") ]
++      elif $is_3g then [ wcdma_cell(pick_group($lte; $root); $root) ]
++      else [] end)
++   else
++       (if ($legacy0 | length) == 0 then []
++        elif $legacy_endc or $legacy_sa then
++          [ { role: "pcc",
++              rat: (if $legacy_sa then "nr" else "lte" end),
++              band: ($legacy0.pband | band_number),
++              channel: ($legacy0.earfcn | number),
++              channel_label: (if $legacy_sa then "NR-ARFCN" else "EARFCN" end),
++              pci: ($legacy0.pci | first_number),
++              cell_id: ($legacy0.cid_dec | text),
++              tac: (($legacy0.tac_d // $legacy0.tac_dec) | text),
++              metrics: present({ rsrp: ($legacy0.rsrp | number),
++                                 rsrq: ($legacy0.rsrq | number),
++                                 rssi: ($legacy0.rssi | number),
++                                 sinr: ($legacy0.sinr | number) }),
++              metric_source: "legacy" } ]
++          + (if $legacy_endc then
++               ([ (($lu | word_tokens)[]) | select(startswith("N") and length >= 2 and length <= 4)
++                  | .[1:] | (tonumber? // null)
++                  | select(. != null and . >= 1 and . <= 1024) ] | first) as $nrb
++               | if $nrb == null then [] else
++                   [ { role: "nsa", rat: "nr", band: ($nrb | tonumber),
++                       channel: null, channel_label: "NR-ARFCN", pci: null,
++                       metrics: {}, metric_source: "legacy" } ]
++                 end
++             else [] end)
++        elif $legacy_lte or $legacy_3g then
++          [ { role: "pcc",
++              rat: (if $legacy_3g then "3g" else "lte" end),
++              band: ($legacy0.pband | band_number),
++              channel: ($legacy0.earfcn | number),
++              channel_label: (if $legacy_3g then "UARFCN" else "EARFCN" end),
++              pci: ($legacy0.pci | first_number),
++              cell_id: ($legacy0.cid_dec | text),
++              tac: (($legacy0.tac_d // $legacy0.tac_dec) | text),
++              lac: ($legacy0.lac_dec | text),
++              metrics: present({ rsrp: ($legacy0.rsrp | number),
++                                 rsrq: ($legacy0.rsrq | number),
++                                 rssi: ($legacy0.rssi | number),
++                                 sinr: ($legacy0.sinr | number) }),
++              metric_source: "legacy" } ]
++      else [] end)
++   end) as $primary
++| [ $band0.current_band.cells[]?
++    | . as $c
++    | { role: (($c.role | text) // "scc"),
++        rat: (if ((($c.rat | text) // "") | ascii_upcase | contains("NR")) then "nr" else "lte" end),
++        band: ($c.band | band_number),
++        channel: ($c.channel | number),
++        channel_label: (($c.channel_type | text) //
++                        (if ((($c.rat | text) // "") | ascii_upcase | contains("NR")) then "NR-ARFCN" else "EARFCN" end)),
++        pci: ($c.pci | first_number),
++        bandwidth: { dl: ($c.dl_bandwidth | number), ul: ($c.ul_bandwidth | number) },
++        scs: ($c.scs | number),
++        metrics: {},
++        metric_source: "current_band" }
++    | select(.band != null or .channel != null or .pci != null) ] as $bandcells
++| [ qca_rows[]
++    | { role: (if (.type // "") == "pcc" then "pcc" else "scc" end),
++        rat: (.rat // "lte"),
++        band: (.band | qca_band),
++        channel: .channel,
++        channel_label: (if (.rat // "lte") == "nr" then "NR-ARFCN" else "EARFCN" end),
++        pci: .pci,
++        metrics: present({ rsrp: .rsrp, rsrq: .rsrq, rssi: .rssi, sinr: .sinr }),
++        metric_source: "qca" }
++    | select(.channel != null or .pci != null) ] as $qcacells
++| (if $source != "qmodem" then
++     [ range(1; 5) as $i
++       | ($legacy0["s\($i)band"] | text) as $b
++       | select($b != null)
++       | { role: "scc",
++           rat: (if ($b | startswith("n") or startswith("N")) then "nr" else "lte" end),
++           band: ($b | band_number),
++           channel: ($legacy0["s\($i)earfcn"] | number),
++           channel_label: (if ($b | startswith("n") or startswith("N")) then "NR-ARFCN" else "EARFCN" end),
++           pci: ($legacy0["s\($i)pci"] | first_number),
++           metrics: {},
++           metric_source: "legacy" } ]
++   else [] end) as $legacycells
++| (if $source == "qmodem" then
++     (if $is_endc then "nsa" elif $is_sa then "sa" elif $is_lte then "lte"
++      elif $is_3g then "3g" else "unknown" end)
++   else
++     (if $legacy_endc then "nsa" elif $legacy_sa then "sa"
++      elif $legacy_lte then "lte" elif $legacy_3g then "3g" else "unknown" end)
++   end) as $mode_group
++| (($primary | map(attach_metrics(.))) as $p
++   | ($bandcells | map(attach_metrics(.))) as $b
++   | ($qcacells | map(attach_metrics(.))) as $q
++   | ($legacycells | map(attach_metrics(.))) as $l
++   | merge_cells(merge_cells(merge_cells($p; $b); $q); $l)
++   | map(if $mode_group == "nsa" and .rat == "nr" and .role != "scc"
++         then .role = "nsa" else . end)) as $cells
++| ($cells | map(select(.role == "scc")) | length) as $scc_count
++| ($cells | map(select(.rat == "nr")) | length) as $nr_count
++| ($cells | length) as $carrier_count
++| (($scc_count > 0)) as $ca_active
++| ($simi."SIM Status" | text) as $sim_status
++| ($iface0.up // false) as $iface_up
++| (if $source == "qmodem" then
++     (if $sim_status == "miss" then "sim_missing"
++      elif ($cells | length) > 0 then "registered"
++      elif $sim_status == "ready" then "not_registered"
++      else "unavailable" end)
++   else
++     (($legacy0.registration | text) as $reg
++      | if ($reg == "1" or $reg == "5" or $reg == "6" or $reg == "7") then "registered"
++        elif $reg == "2" then "searching"
++        elif $reg == "3" then "denied"
++        elif $reg == "0" then "not_registered"
++        else "unavailable" end)
++   end) as $status
++| ($cells | map(select(.role == "pcc")) | first) as $pcc
++| ($cells | map(select(.rat == "nr" and .role != "scc")) | first) as $nr_serving
++| (if $mode_group == "nsa" then "5G NSA"
++   elif $mode_group == "sa" then "5G SA"
++   elif $mode_group == "lte" then (if $ca_active then "LTE-A" else "LTE" end)
++   elif $mode_group == "3g" then "3G"
++   else "Unknown" end) as $mode_label
++| (($primary | length) > 0 or ($bandcells | length) > 0 or ($qcacells | length) > 0
++   or ($legacycells | length) > 0) as $has_cells
++# The collector passes 1/0, JSON fixtures often pass true/false; accept both so a
++# caller can never claim a capability the data does not support.
++| (($qca_ok == 1) or ($qca_ok == true)) as $qca_avail
++| (($has_neighbors == 1) or ($has_neighbors == true)) as $neighbors_avail
++| {
++    meta: {
++      generated: $generated,
++      cached: false,
++      age_seconds: 0,
++      source: $source,
++      qmodem_section: (($section | text) // null),
++      sample_ttl: $sample_ttl,
++      duration_ms: ($ARGS.named.duration_ms // null),
++      neighbor_min_interval: $neighbor_min,
++      neighbor_ttl: $neighbor_ttl,
++      neighbor_age_seconds: null,
++      qca_ok: $qca_avail,
++      warnings: ([ $warnings | split("\n")[] | text | select(. != null) ])
++    },
++    connection: {
++      status: $status,
++      registered: ($status == "registered"),
++      label: (if $status == "registered" then "Registered"
++              elif $status == "sim_missing" then "SIM missing"
++              elif $status == "searching" then "Searching for network"
++              elif $status == "not_registered" then "Not registered"
++              elif $status == "denied" then "Registration denied"
++              else "Modem not ready" end),
++      mode: $mode_label,
++      mode_group: $mode_group,
++      endc: ($mode_group == "nsa"),
++      ca_active: $ca_active,
++      carrier_count: $carrier_count,
++      operator: (($simi.ISP | text) // ($legacy0.operator_name | text)),
++      mcc: (($lte.MCC | text) // ($root.MCC | text) // ($legacy0.operator_mcc | text)),
++      mnc: (($lte.MNC | text) // ($root.MNC | text) // ($legacy0.operator_mnc | text)),
++      sim_status: $sim_status,
++      iface: (($iface0.interface | text) // ($legacy0.network | text)),
++      l3_device: (($iface0.l3_device | text) // null),
++      iface_up: $iface_up,
++      uptime: (($iface0.uptime | number) // ($legacy0.conn_time_sec | number)),
++      rx_bytes: (($iface0.rx_bytes | number) // ($legacy0.rx | number)),
++      tx_bytes: (($iface0.tx_bytes | number) // ($legacy0.tx | number)),
++      model: (($basei.name | text) // ($legacy0.modem | text)),
++      manufacturer: ($basei.manufacturer | text),
++      firmware: (($basei.revision | text) // ($legacy0.firmware | text)),
++      temperature: (($basei.temperature | text) // ($legacy0.mtemp | text)),
++      protocol: ($legacy0.protocol | text)
++    },
++    identity: {
++      imei: (($simi.IMEI | text) // ($legacy0.imei | text)),
++      imsi: (($simi.IMSI | text) // ($legacy0.imsi | text)),
++      iccid: (($simi.ICCID | text) // ($legacy0.iccid | text)),
++      sim_slot: (($simi."SIM Slot" | text) // ($legacy0.simslot | text))
++    },
++    cells: $cells,
++    capabilities: {
++      per_carrier_metrics: $qca_avail,
++      neighbors: $neighbors_avail,
++      nr: ($nr_count > 0),
++      ca: $ca_active,
++      source: $source
++    },
++    neighbors: {
++      lte: [],
++      nr: [],
++      scanned: null,
++      available: $neighbors_avail,
++      error: (if $neighbors_avail then null else "Neighbour scans require QModem on this router." end),
++      cached: false
++    }
++  }
+diff --git a/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-qca.awk b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-qca.awk
+new file mode 100644
+index 0000000..651dc5f
+--- /dev/null
++++ b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radio-qca.awk
+@@ -0,0 +1,85 @@
++# Parse the measurement fields AT+QCAINFO reports for one component carrier.
++#
++# Quectel firmware does not keep one field order across LTE and NR, and several
++# releases print "-" for a measurement they do not expose. The parser therefore
++# takes the type, channel, band, and PCI by position, then accepts the remaining
++# numbers only when they fall inside the range 3GPP defines for RSRP, RSRQ, RSSI
++# or SINR. A missing field stays empty; nothing is inferred.
++#
++# Output is one tab-separated row per carrier:
++#   channel pci rsrp rsrq rssi sinr rat band type
++#
++# GPL-3.0. Part of luci-app-3ginfo-lite.
++
++BEGIN {
++    FS = ","
++    OFS = "\t"
++}
++
++function trim(v) {
++    gsub(/^[ \t\r"]+|[ \t\r"]+$/, "", v)
++    return v
++}
++
++function numeric(v) {
++    v = trim(v)
++    if (v == "" || v == "-" || v !~ /^-?[0-9]+(\.[0-9]+)?$/)
++        return ""
++    return v
++}
++
++/\+QCAINFO:/ {
++    line = $0
++    sub(/^.*\+QCAINFO:[ \t]*/, "", line)
++    n = split(line, f, ",")
++    if (n < 6)
++        next
++
++    type = tolower(trim(f[1]))
++    channel = numeric(f[2])
++    band = trim(f[4])
++    rat = (band ~ /NR/ ? "nr" : (band ~ /LTE/ ? "lte" : ""))
++    if (channel == "" || rat == "")
++        next
++
++    pci = numeric(f[6])
++    if (pci != "" && (pci + 0 < 0 || pci + 0 > 1007))
++        pci = ""
++    start = 7
++
++    # NR QCAINFO places the subcarrier spacing between PCI and RSRP. It is a
++    # configuration value (0/15/30/60/120), not a signal measurement.
++    if (rat == "nr" && start == 7) {
++        scs = numeric(f[7])
++        if (scs == "0" || scs == "15" || scs == "30" || scs == "60" || scs == "120")
++            start = 8
++    }
++
++    rsrp = rsrq = rssi = sinr = ""
++    for (i = start; i <= n; i++) {
++        v = numeric(f[i])
++        if (v == "")
++            continue
++        x = v + 0
++        if (rsrp == "" && x >= -140 && x <= -44) {
++            rsrp = v
++            continue
++        }
++        if (rsrq == "" && x >= -19.5 && x <= -3) {
++            rsrq = v
++            continue
++        }
++        if (rssi == "" && x >= -120 && x <= -25) {
++            rssi = v
++            continue
++        }
++        if (sinr == "" && x >= -20 && x <= 40) {
++            sinr = v
++            continue
++        }
++    }
++
++    print channel, (pci == "" ? "-" : pci), (rsrp == "" ? "-" : rsrp),
++          (rsrq == "" ? "-" : rsrq), (rssi == "" ? "-" : rssi),
++          (sinr == "" ? "-" : sinr), rat, band, (type == "" ? "scc" : type)
++}
+diff --git a/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh
+new file mode 100755
+index 0000000..f1dcbe1
+--- /dev/null
++++ b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh
+@@ -0,0 +1,501 @@
++#!/bin/sh
++# radiodata.sh - one cached, normalized radio snapshot for 3gInfo-lite.
++#
++# The LuCI page must not run a fresh batch of modem commands on every browser
++# poll. This collector builds one document, keeps it in /tmp for a short time,
++# and serializes its own runs with a lock. When QModem is installed its ubus
++# methods are used: QModem owns the modem's AT port and already queues access
++# to it. Without QModem the collector falls back to 3ginfo.sh, which is the same
++# path this package used before; fields that source cannot supply stay absent.
++#
++# Usage: radiodata.sh [json|refresh|neighbors]
++#   json       reuse a snapshot younger than SAMPLE_TTL, otherwise collect one
++#   refresh    collect unless the snapshot is younger than REFRESH_MIN
++#   neighbors  collect if needed, then ask QModem for a neighbour scan
++#
++# Output: one JSON object on stdout. Errors are JSON too, never a bare string.
++#
++# GPL-3.0. Part of luci-app-3ginfo-lite.
++
++set -u
++
++RES=${RADIO_RES:-/usr/share/3ginfo-lite}
++CACHE=${RADIO_CACHE:-/tmp/3ginfo-radio.json}
++ID_CACHE=${RADIO_ID_CACHE:-/tmp/3ginfo-radio-identity.json}
++LOCKDIR=${RADIO_LOCKDIR:-/var/lock/3ginfo-radio.lock}
++SAMPLE_TTL=25
++NEIGHBOR_SAMPLE_MAX=60
++REFRESH_MIN=5
++NEIGHBOR_DEFAULT=60
++NEIGHBOR_TTL_DEFAULT=120
++ID_TTL=300
++LOCK_WAIT=${RADIO_LOCK_WAIT:-20}
++MODE="${1:-json}"
++
++umask 077
++
++json_error() {
++	if command -v jq >/dev/null 2>&1; then
++		jq -n --arg e "$1" '{error:$e}'
++	else
++		printf '{"error":"%s"}\n' "$(printf '%s' "$1" | tr -d '"\\\n')"
++	fi
++	exit 0
++}
++
++command -v jq >/dev/null 2>&1 || json_error "jq is required by the radio collector"
++[ -r "$RES/radio-normalize.jq" ] || json_error "radio-normalize.jq is missing"
++[ -r "$RES/radio-qca.awk" ] || json_error "radio-qca.awk is missing"
++[ -r "$RES/radio-neighbors.jq" ] || json_error "radio-neighbors.jq is missing"
++
++case "$MODE" in
++	json|refresh|neighbors) ;;
++	*) json_error "unknown mode: $MODE" ;;
++esac
++
++now=$(date +%s)
++TMP=$(mktemp -d /tmp/3ginfo-radio.XXXXXX) || json_error "cannot create a temporary directory"
++WARN="$TMP/warnings"
++: > "$WARN"
++
++LOCK_HELD=0
++cleanup() {
++	rm -rf "$TMP"
++	[ "$LOCK_HELD" = 1 ] && rm -rf "$LOCKDIR"
++}
++trap cleanup EXIT
++trap 'exit 1' HUP INT TERM
++
++warn() {
++	printf '%s\n' "$1" >> "$WARN"
++}
++
++# A tiny mkdir lock: no dependency on util-linux flock, and a dead collector's
++# pid is detected so a power cut cannot leave the page permanently busy.
++acquire_lock() {
++	i=0
++	while ! mkdir "$LOCKDIR" 2>/dev/null; do
++		pid=$(cat "$LOCKDIR/pid" 2>/dev/null || true)
++		if [ -n "$pid" ] && ! kill -0 "$pid" 2>/dev/null; then
++			rm -rf "$LOCKDIR"
++			continue
++		fi
++		i=$((i + 1))
++		# BusyBox sleep has no fractional seconds, so wait in whole seconds and
++		# keep the count small: a snapshot takes about one second, a neighbour
++		# scan at most the ubus timeout.
++		[ "$i" -ge "$LOCK_WAIT" ] && return 1
++		sleep 1
++	done
++	printf '%s\n' "$$" > "$LOCKDIR/pid"
++	LOCK_HELD=1
++}
++
++# Whole milliseconds from /proc/uptime. date(1) on OpenWrt has no %N, and the
++# collection duration is reported to the page, so read the kernel's clock.
++now_ms() {
++	awk '{ printf "%d\n", $1 * 1000 }' /proc/uptime 2>/dev/null || echo 0
++}
++
++cache_age() {
++	[ -s "$CACHE" ] || { echo 999999; return; }
++	jq -r --argjson now "$now" '
++		((.meta.generated // 0) | tonumber) as $g
++		| if $g > 0 then ($now - $g) else 999999 end
++	' "$CACHE" 2>/dev/null || echo 999999
++}
++
++neighbor_age() {
++	[ -s "$CACHE" ] || { echo 999999; return; }
++	jq -r --argjson now "$now" '
++		(.neighbors.scanned // 0) as $g
++		| if $g > 0 then ($now - $g) else 999999 end
++	' "$CACHE" 2>/dev/null || echo 999999
++}
++
++emit_cache() {
++	jq --argjson now "$now" '
++		.meta.cached = true
++		| .meta.age_seconds = ([0, ($now - (.meta.generated // $now))] | max)
++		| .meta.neighbor_age_seconds =
++			(if (.neighbors.scanned // null) != null
++			 then ([0, ($now - .neighbors.scanned)] | max)
++			 else null end)
++	' "$CACHE"
++}
++
++emit_new() {
++	local out="$1"
++	jq --argjson now "$now" '
++		.meta.cached = false
++		| .meta.age_seconds = ([0, ($now - (.meta.generated // $now))] | max)
++		| .meta.neighbor_age_seconds =
++			(if (.neighbors.scanned // null) != null
++			 then ([0, ($now - .neighbors.scanned)] | max)
++			 else null end)
++	' "$out"
++}
++
++iface_name() {
++	local i
++	i=$(uci -q get 3ginfo.@3ginfo[0].network 2>/dev/null || true)
++	[ -n "$i" ] || i=$(uci show network 2>/dev/null |
++		sed -n 's/^network\.\([^.=]*\)\.modem_config=.*/\1/p' | head -n 1)
++	[ -n "$i" ] || i=wan
++	printf '%s' "$i"
++}
++
++qmodem_section() {
++	local s
++	if [ -n "$IFACE" ]; then
++		s=$(uci -q get "network.$IFACE.modem_config" 2>/dev/null || true)
++	fi
++	[ -n "$s" ] || s=$(uci show qmodem 2>/dev/null |
++		sed -n 's/^qmodem\.\([^.=]*\)=modem-device$/\1/p' | head -n 1)
++	printf '%s' "$s"
++}
++
++read_neighbor_interval() {
++	local v
++	v=$(uci -q get 3ginfo.@3ginfo[0].radio_neighbor_interval 2>/dev/null || true)
++	case "$v" in
++		''|*[!0-9]*) echo "$NEIGHBOR_DEFAULT" ;;
++		*)
++			[ "$v" -lt 30 ] && v=30
++			[ "$v" -gt 3600 ] && v=3600
++			echo "$v"
++			;;
++	esac
++}
++
++qmodem_section_args() {
++	jq -nc --arg s "$1" '{config_section:$s}'
++}
++
++qmodem_call() {
++	local method="$1" out="$2" req
++	req=$(qmodem_section_args "$SECTION")
++	if timeout 15 ubus -t 12 call qmodem "$method" "$req" > "$out" 2>/dev/null &&
++	   jq -e 'type == "object"' "$out" >/dev/null 2>&1; then
++		return 0
++	fi
++	echo '{}' > "$out"
++	warn "QModem did not answer $method."
++	return 1
++}
++
++# Identity changes rarely. Cache it separately so a 25-second sample does not
++# read the SIM on every collection.
++collect_identity() {
++	local out="$TMP/sim.json" fresh="$TMP/sim.fresh.json" age=999999
++	if [ -s "$ID_CACHE" ]; then
++		age=$(jq -r --argjson now "$now" '
++			((.generated // 0) | tonumber) as $g
++			| if $g > 0 then ($now - $g) else 999999 end
++		' "$ID_CACHE" 2>/dev/null || echo 999999)
++	fi
++	if [ "$age" -le "$ID_TTL" ]; then
++		jq '.data // {}' "$ID_CACHE" > "$out" 2>/dev/null || echo '{}' > "$out"
++		return 0
++	fi
++	if qmodem_call sim_info "$fresh" &&
++	   jq -e '.modem_info | type == "array" and length > 0' "$fresh" >/dev/null 2>&1; then
++		jq --argjson now "$now" '{generated:$now, data:.}' "$fresh" > "$ID_CACHE" 2>/dev/null || true
++		chmod 600 "$ID_CACHE" 2>/dev/null || true
++		cp "$fresh" "$out"
++		return 0
++	fi
++	warn "SIM identity could not be read; keeping the last known values."
++	if [ -s "$ID_CACHE" ]; then
++		jq '.data // {}' "$ID_CACHE" > "$out" 2>/dev/null || echo '{}' > "$out"
++	else
++		echo '{}' > "$out"
++	fi
++}
++
++collect_qca() {
++	local raw="$TMP/qca.raw" text="$TMP/qca.txt" req status
++	: > "$text"
++	QCA_OK=0
++	[ "$HAVE_QMODEM" = 1 ] || return 0
++	[ -n "$AT_PORT" ] || { warn "QModem has no AT port configured; per-carrier measurements are unavailable."; return 0; }
++	command -v ubus >/dev/null 2>&1 || return 0
++	ubus -v list qmodem 2>/dev/null | grep -q '"send_at"' || {
++		warn "QModem does not expose send_at; per-carrier measurements are unavailable."
++		return 0
++	}
++	req=$(jq -nc --arg s "$SECTION" --arg at "AT+QCAINFO" \
++		--arg p "$AT_PORT" --arg ub "$USE_UBUS" \
++		'{config_section:$s,params:{at:$at,port:$p,use_ubus_flag:$ub}}')
++	if ! timeout 15 ubus -t 12 call qmodem send_at "$req" > "$raw" 2>/dev/null; then
++		warn "AT+QCAINFO did not answer; secondary-carrier measurements are unavailable."
++		return 0
++	fi
++	status=$(jq -r '.at_cfg.status // "0"' "$raw" 2>/dev/null || echo 0)
++	if [ "$status" != "1" ]; then
++		warn "AT+QCAINFO was refused; secondary-carrier measurements are unavailable."
++		return 0
++	fi
++	jq -r '.at_cfg.res // empty' "$raw" > "$TMP/qca.text" 2>/dev/null || true
++	awk -f "$RES/radio-qca.awk" "$TMP/qca.text" > "$text" 2>/dev/null || true
++	QCA_OK=1
++}
++
++collect_iface() {
++	local st="$TMP/ifstatus.json" l3 up uptime rx tx
++	echo '{}' > "$st"
++	if command -v ifstatus >/dev/null 2>&1 && [ -n "$IFACE" ]; then
++		ifstatus "$IFACE" > "$st" 2>/dev/null || echo '{}' > "$st"
++	fi
++	up=$(jq -r '.up // false' "$st" 2>/dev/null || echo false)
++	l3=$(jq -r '.l3_device // empty' "$st" 2>/dev/null || true)
++	uptime=$(jq -r '.uptime // empty' "$st" 2>/dev/null || true)
++	rx=
++	tx=
++	if [ -n "$l3" ] && [ -r "/sys/class/net/$l3/statistics/rx_bytes" ]; then
++		rx=$(cat "/sys/class/net/$l3/statistics/rx_bytes" 2>/dev/null || true)
++		tx=$(cat "/sys/class/net/$l3/statistics/tx_bytes" 2>/dev/null || true)
++	fi
++	[ -n "$rx" ] || rx=null
++	[ -n "$tx" ] || tx=null
++	[ -n "$uptime" ] || uptime=null
++	jq -n --arg interface "$IFACE" --arg l3 "$l3" \
++		--argjson up "$up" --argjson uptime "$uptime" \
++		--argjson rx "$rx" --argjson tx "$tx" \
++		'{interface:$interface, l3_device:$l3, up:$up, uptime:$uptime, rx_bytes:$rx, tx_bytes:$tx}' \
++		> "$TMP/iface.json"
++}
++
++collect_legacy() {
++	: > "$TMP/legacy.json"
++	if [ -r "$RES/3ginfo.sh" ] &&
++	   timeout 25 sh "$RES/3ginfo.sh" json > "$TMP/legacy.json" 2>/dev/null &&
++	   jq -e 'type == "object"' "$TMP/legacy.json" >/dev/null 2>&1; then
++		return 0
++	fi
++	echo '{}' > "$TMP/legacy.json"
++	warn "3ginfo.sh did not return a readable snapshot."
++	return 1
++}
++
++collect_sample() {
++	local out="$TMP/snapshot.json" base="$TMP/base.json" cell="$TMP/cell.json" band="$TMP/band.json"
++	local started finished
++
++	started=$(now_ms)
++	IFACE=$(iface_name)
++	SECTION=$(qmodem_section)
++	HAVE_QMODEM=0
++	if command -v ubus >/dev/null 2>&1 &&
++	   timeout 5 ubus -t 5 list qmodem >/dev/null 2>&1 && [ -n "$SECTION" ]; then
++		HAVE_QMODEM=1
++	fi
++
++	AT_PORT=$(uci -q get "qmodem.$SECTION.at_port" 2>/dev/null || true)
++	override=$(uci -q get "qmodem.$SECTION.override_at_port" 2>/dev/null || true)
++	[ -n "$override" ] && AT_PORT=$override
++	USE_UBUS=$(uci -q get "qmodem.$SECTION.use_ubus" 2>/dev/null || true)
++	USE_UBUS=${USE_UBUS:-1}
++
++	echo '{}' > "$base"
++	echo '{}' > "$cell"
++	echo '{}' > "$band"
++	echo '{}' > "$TMP/sim.json"
++	echo '{}' > "$TMP/legacy.json"
++
++	if [ "$HAVE_QMODEM" = 1 ]; then
++		SOURCE=qmodem
++		qmodem_call base_info "$base" || true
++		qmodem_call cell_info "$cell" || true
++		qmodem_call get_current_band "$band" || true
++
++		# A configured QModem whose daemon is stopped answers neither method.
++		# Fall back to the package's own collector rather than claiming the
++		# modem is absent.
++		if ! jq -e '.modem_info | type == "array" and length > 0' "$base" >/dev/null 2>&1 &&
++		   ! jq -e '.modem_info | type == "array" and length > 0' "$cell" >/dev/null 2>&1; then
++			warn "QModem returned no modem data; falling back to 3ginfo."
++			HAVE_QMODEM=0
++			SOURCE=legacy
++			collect_legacy || true
++		else
++			collect_identity
++		fi
++	else
++		SOURCE=legacy
++		collect_legacy || true
++		warn "QModem was not found; detailed carrier and neighbour telemetry is unavailable."
++	fi
++
++	collect_qca
++	collect_iface
++
++	HAS_NEIGHBORS=0
++	if [ "$HAVE_QMODEM" = 1 ]; then
++		if ubus -v list qmodem 2>/dev/null | grep -q '"get_neighborcell"'; then
++			HAS_NEIGHBORS=1
++		else
++			warn "QModem does not expose neighbour-cell scans on this router."
++		fi
++	fi
++
++	finished=$(now_ms)
++	DURATION_MS=$((finished - started))
++	[ "$DURATION_MS" -ge 0 ] 2>/dev/null || DURATION_MS=0
++
++	if ! jq -n \
++		--arg source "$SOURCE" \
++		--arg section "$SECTION" \
++		--argjson generated "$now" \
++		--argjson duration_ms "$DURATION_MS" \
++		--argjson qca_ok "$QCA_OK" \
++		--argjson has_neighbors "$HAS_NEIGHBORS" \
++		--argjson sample_ttl "$SAMPLE_TTL" \
++		--argjson neighbor_min "$NEIGHBOR_MIN" \
++		--argjson neighbor_ttl "$NEIGHBOR_TTL" \
++		--rawfile warnings "$WARN" \
++		--slurpfile base "$base" \
++		--slurpfile cell "$cell" \
++		--slurpfile band "$band" \
++		--slurpfile sim "$TMP/sim.json" \
++		--slurpfile legacy "$TMP/legacy.json" \
++		--slurpfile iface "$TMP/iface.json" \
++		--rawfile qca "$TMP/qca.txt" \
++		-f "$RES/radio-normalize.jq" > "$out"; then
++		json_error "Telemetry normalization failed"
++	fi
++
++	# Preserve the last neighbour table when this collection did not scan. A
++	# neighbour scan is a separate, slower action and must not disappear just
++	# because the 25-second sample refreshed.
++	if [ -s "$CACHE" ] && jq -e '.neighbors | type == "object"' "$CACHE" >/dev/null 2>&1; then
++		jq --slurpfile old "$CACHE" '.neighbors = ($old[0].neighbors // .neighbors)' "$out" > "$out.tmp" &&
++			mv "$out.tmp" "$out"
++	fi
++
++	# QModem does not always carry an operator name in cell_info: its SIM "ISP"
++	# field is often just the numeric MCC/MNC. The MCC/MNC table this package
++	# already ships fills that gap without another AT call.
++	op=$(jq -r '.connection.operator // empty' "$out")
++	case "$op" in
++		''|*[!0-9]*) ;;
++		*) op='' ;;
++	esac
++	if [ -z "$op" ]; then
++		key=$(jq -r '(.connection.mcc // "") + (.connection.mnc // "")' "$out")
++		case "$key" in
++			''|*[!0-9]*) ;;
++			*)
++				# The table ships with CRLF line endings (upstream format), so
++				# the third field keeps a stray \r unless it is stripped here.
++				op=$(awk -F';' -v k="$key" '$1 == k { sub(/\r$/, "", $3); print $3; exit }' "$RES/mccmnc.dat" 2>/dev/null || true)
++				[ -n "$op" ] && jq --arg op "$op" '.connection.operator = $op' "$out" > "$out.tmp" &&
++					mv "$out.tmp" "$out"
++				;;
++		esac
++	fi
++
++	chmod 600 "$out" 2>/dev/null || true
++	mv "$out" "$TMP/final.json"
++	cp "$TMP/final.json" "$CACHE.tmp"
++	chmod 600 "$CACHE.tmp" 2>/dev/null || true
++	mv "$CACHE.tmp" "$CACHE"
++}
++
++scan_neighbors() {
++	local raw="$TMP/neighbors.raw" norm="$TMP/neighbors.json" req available=false error=""
++
++	# A cached sample skips collect_sample, so establish the QModem facts here
++	# before deciding whether a scan is possible.
++	IFACE=${IFACE:-$(iface_name)}
++	SECTION=${SECTION:-$(qmodem_section)}
++	if [ -z "${HAVE_QMODEM:-}" ]; then
++		HAVE_QMODEM=0
++		if command -v ubus >/dev/null 2>&1 &&
++		   timeout 5 ubus -t 5 list qmodem >/dev/null 2>&1 && [ -n "$SECTION" ]; then
++			HAVE_QMODEM=1
++		fi
++	fi
++
++	if [ "$HAVE_QMODEM" != 1 ] ||
++	   ! ubus -v list qmodem 2>/dev/null | grep -q '"get_neighborcell"'; then
++		error="Neighbour scans require QModem on this router."
++	else
++		req=$(qmodem_section_args "$SECTION")
++		if timeout 30 ubus -t 25 call qmodem get_neighborcell "$req" > "$raw" 2>/dev/null &&
++		   jq -e '.neighborcell | type == "object"' "$raw" >/dev/null 2>&1; then
++			available=true
++		else
++			error="The modem did not return a neighbour-cell report."
++			echo '{}' > "$raw"
++		fi
++	fi
++	[ -n "$error" ] && warn "$error"
++
++	jq -n --argjson available "$available" --arg error "$error" --argjson now "$now" \
++		--slurpfile raw "$raw" -f "$RES/radio-neighbors.jq" > "$norm" ||
++		json_error "Neighbour normalization failed"
++
++	if jq -e '.available == true' "$norm" >/dev/null 2>&1; then
++		jq --slurpfile n "$norm" '.neighbors = $n[0]' "$TMP/final.json" > "$CACHE.tmp"
++	else
++		jq --slurpfile n "$norm" '
++			.neighbors = ((.neighbors // {}) + {
++				available: ((.neighbors.available // false) or ((.neighbors.lte // []) | length) > 0 or ((.neighbors.nr // []) | length) > 0),
++				error: $n[0].error,
++				cached: false
++			})
++		' "$TMP/final.json" > "$CACHE.tmp"
++	fi
++	chmod 600 "$CACHE.tmp" 2>/dev/null || true
++	mv "$CACHE.tmp" "$CACHE"
++}
++
++NEIGHBOR_MIN=$(read_neighbor_interval)
++NEIGHBOR_TTL=$NEIGHBOR_MIN
++[ "$NEIGHBOR_TTL" -lt "$NEIGHBOR_TTL_DEFAULT" ] && NEIGHBOR_TTL=$NEIGHBOR_TTL_DEFAULT
++
++if ! acquire_lock; then
++	if [ -s "$CACHE" ]; then
++		jq --argjson now "$now" '.meta.busy = true | .meta.cached = true
++			| .meta.age_seconds = ([0, ($now - (.meta.generated // $now))] | max)' "$CACHE"
++	else
++		json_error "The radio collector is busy; try again."
++	fi
++	exit 0
++fi
++
++case "$MODE" in
++	json)
++		if [ "$(cache_age)" -le "$SAMPLE_TTL" ]; then
++			emit_cache
++			exit 0
++		fi
++		collect_sample
++		emit_new "$TMP/final.json"
++		;;
++	refresh)
++		if [ "$(cache_age)" -le "$REFRESH_MIN" ]; then
++			emit_cache | jq '.meta.rate_limited = true'
++			exit 0
++		fi
++		collect_sample
++		emit_new "$TMP/final.json"
++		;;
++	neighbors)
++		# A scan may wait on the modem itself. Reuse a slightly older serving
++		# snapshot rather than spending the request budget on a full resample
++		# first; the page still shows that snapshot's age.
++		if [ "$(cache_age)" -gt "$NEIGHBOR_SAMPLE_MAX" ]; then
++			collect_sample
++		else
++			cp "$CACHE" "$TMP/final.json"
++		fi
++		if [ "$(neighbor_age)" -lt "$NEIGHBOR_MIN" ]; then
++			emit_new "$TMP/final.json" | jq '.meta.neighbor_rate_limited = true'
++			exit 0
++		fi
++		scan_neighbors
++		emit_new "$CACHE"
++		;;
++esac
+diff --git a/luci-app-3ginfo-lite/root/usr/share/luci/menu.d/luci-app-3ginfo-lite.json b/luci-app-3ginfo-lite/root/usr/share/luci/menu.d/luci-app-3ginfo-lite.json
+index c854cb0..6844b99 100644
+--- a/luci-app-3ginfo-lite/root/usr/share/luci/menu.d/luci-app-3ginfo-lite.json
++++ b/luci-app-3ginfo-lite/root/usr/share/luci/menu.d/luci-app-3ginfo-lite.json
+@@ -22,7 +22,7 @@
+ 	},
+ 	
+ 	"admin/modem/3ginfo-lite/3gdetail": {
+-		"title": "Details",
++		"title": "Radio",
+ 		"order": 10,
+ 		"action": {
+ 			"type": "view",
+diff --git a/luci-app-3ginfo-lite/root/usr/share/rpcd/acl.d/luci-app-3ginfo-lite.json b/luci-app-3ginfo-lite/root/usr/share/rpcd/acl.d/luci-app-3ginfo-lite.json
+index 2b1493d..d1d9173 100644
+--- a/luci-app-3ginfo-lite/root/usr/share/rpcd/acl.d/luci-app-3ginfo-lite.json
++++ b/luci-app-3ginfo-lite/root/usr/share/rpcd/acl.d/luci-app-3ginfo-lite.json
+@@ -5,6 +5,10 @@
+    			"cgi-io": [ "exec" ],
+     			"file": {
+ 				"/usr/share/3ginfo-lite/3ginfo.sh": [ "exec" ],
++				"/usr/share/3ginfo-lite/radiodata.sh": [ "exec" ],
++				"/usr/share/3ginfo-lite/radio-normalize.jq": [ "read" ],
++				"/usr/share/3ginfo-lite/radio-qca.awk": [ "read" ],
++				"/usr/share/3ginfo-lite/radio-neighbors.jq": [ "read" ],
+ 				"/usr/share/3ginfo-lite/detect.sh": [ "exec" ],
+ 				"/usr/share/3ginfo-lite/check.gcom": [ "exec" ],
+ 				"/usr/share/3ginfo-lite/info.gcom": [ "exec" ],
+@@ -18,6 +22,7 @@
+ 			"file": {
+ 				"/bin/cat": [ "exec" ],
+ 				"/bin/sh -x /usr/share/3ginfo-lite/3ginfo.sh": [ "exec" ],
++				"/bin/sh -x /usr/share/3ginfo-lite/radiodata.sh": [ "exec" ],
+ 				"/bin/ls /dev": [ "exec" ],
+ 				"/etc/modemdefine": [ "write" ],
+ 				"/tmp/debug_result.txt": [ "write" ],
+diff --git a/luci-app-3ginfo-lite/tests/collector.sh b/luci-app-3ginfo-lite/tests/collector.sh
+new file mode 100755
+index 0000000..9247e4f
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/collector.sh
+@@ -0,0 +1,160 @@
++#!/bin/sh
++# Offline checks for radiodata.sh's cache, rate limits, locking and fallback.
++#
++# The modem is replaced by a tiny fake ubus, so this runs on a laptop and never
++# touches a router. Run from the package directory: sh tests/collector.sh
++# GPL-3.0. Part of luci-app-3ginfo-lite.
++
++set -eu
++
++ROOT=$(cd "$(dirname "$0")/.." && pwd)
++RES="$ROOT/root/usr/share/3ginfo-lite"
++FIX="$ROOT/tests/fixtures"
++TMP=$(mktemp -d /tmp/3ginfo-collector.XXXXXX)
++trap 'rm -rf "$TMP"' EXIT INT TERM
++
++fail() {
++	echo "FAIL: $1" >&2
++	exit 1
++}
++
++check() {
++	[ "$2" = "$3" ] || fail "$1 (expected '$3', got '$2')"
++}
++
++mode_of() {
++	stat -c '%a' "$1" 2>/dev/null || stat -f '%Lp' "$1" 2>/dev/null || echo unknown
++}
++
++mkdir -p "$TMP/bin" "$TMP/legacy-bin" "$TMP/fixtures" "$TMP/legacy-res"
++cp "$FIX/qmodem/base.json" "$FIX/qmodem/cell_endc.json" "$FIX/qmodem/band_endc.json" \
++	"$FIX/qmodem/sim.json" "$FIX/qmodem/iface.json" "$FIX/qmodem/qca.txt" \
++	"$FIX/qmodem/neighbors.json" "$TMP/fixtures/"
++cp "$FIX/legacy/lte_ca.json" "$TMP/fixtures/legacy.json"
++
++cat > "$TMP/bin/timeout" <<'EOS'
++#!/bin/sh
++shift
++exec "$@"
++EOS
++cat > "$TMP/bin/uci" <<'EOS'
++#!/bin/sh
++case "$*" in
++	"-q get 3ginfo.@3ginfo[0].network") echo wwan0 ;;
++	"-q get network.wwan0.modem_config") echo 4_1 ;;
++	"-q get qmodem.4_1.at_port") echo /dev/ttyUSB3 ;;
++	"-q get qmodem.4_1.use_ubus") echo 1 ;;
++	"-q get 3ginfo.@3ginfo[0].radio_neighbor_interval") echo 60 ;;
++	"show network") echo "network.wwan0.modem_config='4_1'" ;;
++	"show qmodem") echo "qmodem.4_1=modem-device" ;;
++	*) exit 1 ;;
++esac
++EOS
++cat > "$TMP/bin/ifstatus" <<'EOS'
++#!/bin/sh
++cat "$FIXTURE_DIR/iface.json"
++EOS
++cat > "$TMP/bin/ubus" <<'EOS'
++#!/bin/sh
++if [ "$1" = "-v" ] && [ "$2" = "list" ]; then
++	echo '"send_at":{}'
++	echo '"get_neighborcell":{}'
++	exit 0
++fi
++if [ "$1" = "-t" ]; then shift 2; fi
++case "$1" in
++	list) echo qmodem ;;
++	call)
++		case "$3" in
++			base_info) cat "$FIXTURE_DIR/base.json" ;;
++			cell_info) cat "$FIXTURE_DIR/cell_endc.json" ;;
++			get_current_band) cat "$FIXTURE_DIR/band_endc.json" ;;
++			sim_info) cat "$FIXTURE_DIR/sim.json" ;;
++			send_at) jq -n --rawfile r "$FIXTURE_DIR/qca.txt" '{at_cfg:{status:"1",res:$r}}' ;;
++			get_neighborcell) cat "$FIXTURE_DIR/neighbors.json" ;;
++			*) echo '{}' ;;
++		esac
++		;;
++	*) exit 1 ;;
++esac
++EOS
++cp "$TMP/bin/timeout" "$TMP/bin/uci" "$TMP/bin/ifstatus" "$TMP/legacy-bin/"
++chmod +x "$TMP/bin/"* "$TMP/legacy-bin/"*
++
++FIXTURE_DIR="$TMP/fixtures"
++export FIXTURE_DIR
++# Whole-second lock waits are fine on a router but slow a laptop test down.
++export RADIO_LOCK_WAIT=1
++
++# The legacy tree deliberately has no ubus, so the collector must take the
++# 3ginfo.sh path and say so.
++cp "$RES/radiodata.sh" "$RES/radio-normalize.jq" "$RES/radio-qca.awk" \
++	"$RES/radio-neighbors.jq" "$RES/mccmnc.dat" "$TMP/legacy-res/"
++cat > "$TMP/legacy-res/3ginfo.sh" <<EOS
++#!/bin/sh
++cat "$FIXTURE_DIR/legacy.json"
++EOS
++
++export PATH="$TMP/bin:$PATH"
++export RADIO_RES="$RES"
++export RADIO_CACHE="$TMP/cache.json"
++export RADIO_ID_CACHE="$TMP/id.json"
++export RADIO_LOCKDIR="$TMP/lock"
++
++first=$(sh "$RES/radiodata.sh" json)
++check "first sample is live" "$(printf '%s' "$first" | jq -r '.meta.cached')" "false"
++check "first sample source" "$(printf '%s' "$first" | jq -r '.meta.source')" "qmodem"
++check "first sample mode" "$(printf '%s' "$first" | jq -r '.connection.mode')" "5G NSA"
++check "first sample records a duration" "$(printf '%s' "$first" | jq -r '.meta.duration_ms >= 0')" "true"
++check "first sample carriers" "$(printf '%s' "$first" | jq -r '.connection.carrier_count')" "3"
++check "first sample neighbour capability" "$(printf '%s' "$first" | jq -r '.capabilities.neighbors')" "true"
++check "snapshot is private" "$(mode_of "$TMP/cache.json")" "600"
++
++second=$(sh "$RES/radiodata.sh" json)
++check "second sample is cached" "$(printf '%s' "$second" | jq -r '.meta.cached')" "true"
++
++refresh=$(sh "$RES/radiodata.sh" refresh)
++check "refresh obeys the floor" "$(printf '%s' "$refresh" | jq -r '.meta.rate_limited')" "true"
++
++neighbours=$(sh "$RES/radiodata.sh" neighbors)
++check "neighbour LTE count" "$(printf '%s' "$neighbours" | jq -r '.neighbors.lte | length')" "2"
++check "neighbour NR count" "$(printf '%s' "$neighbours" | jq -r '.neighbors.nr | length')" "1"
++check "neighbour scan timestamp" "$(printf '%s' "$neighbours" | jq -r '.meta.neighbor_age_seconds')" "0"
++
++again=$(sh "$RES/radiodata.sh" neighbors)
++check "neighbour scan is rate limited" "$(printf '%s' "$again" | jq -r '.meta.neighbor_rate_limited')" "true"
++
++# A live pid in the lock directory must not be mistaken for a stale lock.
++mkdir "$TMP/lock"
++printf '%s\n' "$$" > "$TMP/lock/pid"
++busy=$(sh "$RES/radiodata.sh" json)
++check "lock reports a cached snapshot" "$(printf '%s' "$busy" | jq -r '.meta.busy')" "true"
++rm -rf "$TMP/lock"
++
++# A SIM whose ISP field is only the numeric MCC/MNC must resolve to a name from
++# the table this package ships (41302 -> Dialog), without a stray CR at the end.
++cp -r "$TMP/fixtures" "$TMP/fixtures-num"
++jq '.modem_info |= map(if .key == "ISP" then .value = "41302" else . end)' \
++	"$FIX/qmodem/sim.json" > "$TMP/fixtures-num/sim.json"
++FIXTURE_DIR="$TMP/fixtures-num" RADIO_CACHE="$TMP/num-cache.json" \
++	RADIO_ID_CACHE="$TMP/num-id.json" RADIO_LOCKDIR="$TMP/num-lock" \
++	sh "$RES/radiodata.sh" json > "$TMP/num.json"
++check "numeric ISP resolves through the MCC/MNC table" \
++	"$(jq -r '.connection.operator' "$TMP/num.json")" "Dialog"
++
++# Legacy fallback: no ubus on PATH, only 3ginfo.sh and its fixtures.
++export PATH="$TMP/legacy-bin:/usr/bin:/bin:/usr/sbin:/sbin"
++export RADIO_RES="$TMP/legacy-res"
++export RADIO_CACHE="$TMP/legacy-cache.json"
++export RADIO_ID_CACHE="$TMP/legacy-id.json"
++export RADIO_LOCKDIR="$TMP/legacy-lock"
++legacy=$(sh "$TMP/legacy-res/radiodata.sh" json)
++check "legacy source" "$(printf '%s' "$legacy" | jq -r '.meta.source')" "legacy"
++check "legacy mode" "$(printf '%s' "$legacy" | jq -r '.connection.mode')" "LTE-A"
++check "legacy carrier count" "$(printf '%s' "$legacy" | jq -r '.connection.carrier_count')" "2"
++check "legacy says QModem is absent" "$(printf '%s' "$legacy" | jq -r '[.meta.warnings[] | select(test("QModem was not found"))] | length')" "1"
++
++error=$(sh "$RES/radiodata.sh" nonsense || true)
++check "unknown mode is JSON" "$(printf '%s' "$error" | jq -r '.error' | cut -d: -f1)" "unknown mode"
++
++echo "PASS: collector cache, scan rate limit, locking and legacy fallback"
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/empty.json b/luci-app-3ginfo-lite/tests/fixtures/empty.json
+new file mode 100644
+index 0000000..0967ef4
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/empty.json
+@@ -0,0 +1 @@
++{}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/empty.txt b/luci-app-3ginfo-lite/tests/fixtures/empty.txt
+new file mode 100644
+index 0000000..94775bd
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/empty.txt
+@@ -0,0 +1 @@
++# no QCAINFO rows
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/legacy/lte_ca.json b/luci-app-3ginfo-lite/tests/fixtures/legacy/lte_ca.json
+new file mode 100644
+index 0000000..2203b5f
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/legacy/lte_ca.json
+@@ -0,0 +1 @@
++{"conn_time":"1d, 02:03:04","conn_time_sec":"93784","rx":"12345678","tx":"2345678","modem":"Quectel RG500Q-EA","mtemp":"42 °C","firmware":"RG500QEAAAR13A01M4G","cport":"/dev/ttyUSB2","protocol":"qmi","csq":"20","signal":"64","operator_name":"Example Mobile","operator_mcc":"413","operator_mnc":"02","location":"LK","mode":"LTE_A","registration":"1","simslot":"1","imei":"860000000000001","imsi":"413020000000001","iccid":"8900000000000000001","lac_dec":"0","lac_hex":"0","tac_dec":"2623","tac_hex":"0A3F","tac_h":"","tac_d":"","cid_dec":"18439201","cid_hex":"1194C21","pci":"123","earfcn":"1300","pband":"B3 (1800 MHz)","s1band":"B7 (2600 MHz) @20 MHz","s1pci":"245","s1earfcn":"2850","s2band":"-","s2pci":"-","s2earfcn":"-","s3band":"-","s3pci":"-","s3earfcn":"-","s4band":"-","s4pci":"-","s4earfcn":"-","rsrp":"-91","rsrq":"-10","rssi":"-65","sinr":"18"}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/legacy/nsa.json b/luci-app-3ginfo-lite/tests/fixtures/legacy/nsa.json
+new file mode 100644
+index 0000000..0765986
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/legacy/nsa.json
+@@ -0,0 +1 @@
++{"conn_time":"0d, 00:01:00","conn_time_sec":"60","rx":"1000","tx":"2000","modem":"Quectel RG500Q-EA","mtemp":"-","firmware":"FW","cport":"/dev/ttyUSB2","protocol":"qmi","csq":"20","signal":"64","operator_name":"Example Mobile","operator_mcc":"413","operator_mnc":"02","location":"LK","mode":"5G NSA | n78 (3500 MHz)","registration":"1","simslot":"1","imei":"1","imsi":"2","iccid":"3","lac_dec":"0","lac_hex":"0","tac_dec":"2623","tac_hex":"0A3F","tac_h":"","tac_d":"","cid_dec":"18439201","cid_hex":"1194C21","pci":"123","earfcn":"1300","pband":"B3 (1800 MHz)","s1band":"B7 (2600 MHz)","s1pci":"245","s1earfcn":"2850","s2band":"-","s2pci":"-","s2earfcn":"-","s3band":"-","s3pci":"-","s3earfcn":"-","s4band":"-","s4pci":"-","s4earfcn":"-","rsrp":"-91","rsrq":"-10","rssi":"-65","sinr":"18"}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qca/missing.txt b/luci-app-3ginfo-lite/tests/fixtures/qca/missing.txt
+new file mode 100644
+index 0000000..68047b7
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qca/missing.txt
+@@ -0,0 +1,4 @@
+++QCAINFO: "SCC",2850,100,"LTE BAND 7",1,110,-,-
+++QCAINFO: "SCC",640000,100,"NR5G BAND 78",1,293,0,-,-
+++not a QCAINFO line
++++QCAINFO: "SCC",bad,100,"LTE BAND 3",1,999,-91,-10
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qca/nr_variants.txt b/luci-app-3ginfo-lite/tests/fixtures/qca/nr_variants.txt
+new file mode 100644
+index 0000000..976bb2d
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qca/nr_variants.txt
+@@ -0,0 +1,2 @@
+++QCAINFO: "SCC",627264,12,"NR5G BAND 78",1,293,0,-,-
+++QCAINFO: "SCC",633984,100,"NR5G BAND 78",1,702,-89,-8,-,15
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qca/nsa_nr_pcc.txt b/luci-app-3ginfo-lite/tests/fixtures/qca/nsa_nr_pcc.txt
+new file mode 100644
+index 0000000..b4059b0
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qca/nsa_nr_pcc.txt
+@@ -0,0 +1,2 @@
+++QCAINFO: "PCC",1300,100,"LTE BAND 3",1,123,-91,-10,-65,18
+++QCAINFO: "PCC",640000,100,"NR5G BAND 78",1,512,30,-86,-11,-,16
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_endc.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_endc.json
+new file mode 100644
+index 0000000..59d66e1
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_endc.json
+@@ -0,0 +1,4 @@
++{"current_band":{"status":"ok","vendor":"Quectel","network_mode":"EN-DC","cells":[
++ {"role":"pcc","rat":"LTE","band":"3","band_name":"LTE B3","channel":"1300","channel_type":"EARFCN","pci":"123","ul_bandwidth":"20","dl_bandwidth":"20","scs":""},
++ {"role":"nsa","rat":"NR","band":"78","band_name":"NR n78","channel":"640000","channel_type":"NR-ARFCN","pci":"512","ul_bandwidth":"","dl_bandwidth":"100","scs":"30"}
++]}}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_lte.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_lte.json
+new file mode 100644
+index 0000000..f6aeda8
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_lte.json
+@@ -0,0 +1,3 @@
++{"current_band":{"status":"ok","vendor":"Quectel","network_mode":"LTE","cells":[
++ {"role":"pcc","rat":"LTE","band":"3","band_name":"LTE B3","channel":"1300","channel_type":"EARFCN","pci":"45","ul_bandwidth":"20","dl_bandwidth":"20","scs":""}
++]}}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_sa.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_sa.json
+new file mode 100644
+index 0000000..2811efb
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/band_sa.json
+@@ -0,0 +1,4 @@
++{"current_band":{"status":"ok","vendor":"Quectel","network_mode":"NR5G-SA","cells":[
++ {"role":"pcc","rat":"NR","band":"78","band_name":"NR n78","channel":"633984","channel_type":"NR-ARFCN","pci":"702","ul_bandwidth":"100","dl_bandwidth":"100","scs":"30"},
++ {"role":"scc","rat":"NR","band":"78","band_name":"NR n78","channel":"640000","channel_type":"NR-ARFCN","pci":"293","ul_bandwidth":"","dl_bandwidth":"100","scs":"30"}
++]}}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/base.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/base.json
+new file mode 100644
+index 0000000..089a25b
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/base.json
+@@ -0,0 +1,6 @@
++{"modem_info":[
++ {"key":"name","value":"RG500Q-EA"},
++ {"key":"manufacturer","value":"Quectel"},
++ {"key":"revision","value":"RG500QEAAAR13A01M4G"},
++ {"key":"temperature","value":"42 °C"}
++]}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_3g.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_3g.json
+new file mode 100644
+index 0000000..cdd3db6
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_3g.json
+@@ -0,0 +1,12 @@
++{"modem_info":[
++ {"key":"network_mode","value":"WCDMA Mode"},
++ {"key":"MCC","value":"413"},
++ {"key":"MNC","value":"02"},
++ {"key":"LAC","value":"1A2B"},
++ {"key":"Cell ID","value":"98765"},
++ {"key":"UARFCN","value":"10638"},
++ {"key":"PSC","value":"123"},
++ {"key":"Band","value":"1"},
++ {"key":"RSCP","value":"-82","unit":"dBm"},
++ {"key":"Ec/Io","value":"-7","unit":"dB"}
++]}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_endc.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_endc.json
+new file mode 100644
+index 0000000..c51dea7
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_endc.json
+@@ -0,0 +1,29 @@
++{"modem_info":[
++ {"key":"network_mode","value":"EN-DC Mode","class":"Cell Information"},
++ {"key":"LTE","value":"LTE","extra_info":"LTE"},
++ {"key":"Duplex Mode","value":"FDD","extra_info":"LTE"},
++ {"key":"MCC","value":"413","extra_info":"LTE"},
++ {"key":"MNC","value":"02","extra_info":"LTE"},
++ {"key":"TAC","value":"0A3F","extra_info":"LTE"},
++ {"key":"Cell ID","value":"18439201","extra_info":"LTE"},
++ {"key":"Physical Cell ID","value":"123","extra_info":"LTE"},
++ {"key":"EARFCN","value":"1300","extra_info":"LTE"},
++ {"key":"Band","value":"3","extra_info":"LTE"},
++ {"key":"UL Bandwidth","value":"20","extra_info":"LTE"},
++ {"key":"DL Bandwidth","value":"20","extra_info":"LTE"},
++ {"key":"RSRP","value":"-91","unit":"dBm","extra_info":"LTE"},
++ {"key":"RSRQ","value":"-10","unit":"dB","extra_info":"LTE"},
++ {"key":"RSSI","value":"-65","unit":"dBm","extra_info":"LTE"},
++ {"key":"SINR","value":"18","unit":"dB","extra_info":"LTE"},
++ {"key":"NR5G-NSA","value":"NR5G-NSA","extra_info":"NR"},
++ {"key":"MCC","value":"413","extra_info":"NR"},
++ {"key":"MNC","value":"02","extra_info":"NR"},
++ {"key":"Physical Cell ID","value":"512","extra_info":"NR"},
++ {"key":"ARFCN","value":"640000","extra_info":"NR"},
++ {"key":"Band","value":"78","extra_info":"NR"},
++ {"key":"DL Bandwidth","value":"100","extra_info":"NR"},
++ {"key":"RSRP","value":"-86","unit":"dBm","extra_info":"NR"},
++ {"key":"RSRQ","value":"-11","unit":"dB","extra_info":"NR"},
++ {"key":"SINR","value":"16","unit":"dB","extra_info":"NR"},
++ {"key":"SCS","value":"30","extra_info":"NR"}
++]}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_lte.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_lte.json
+new file mode 100644
+index 0000000..64855a2
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_lte.json
+@@ -0,0 +1,17 @@
++{"modem_info":[
++ {"key":"network_mode","value":"LTE Mode"},
++ {"key":"Duplex Mode","value":"FDD"},
++ {"key":"MCC","value":"310"},
++ {"key":"MNC","value":"260"},
++ {"key":"TAC","value":"1A2B"},
++ {"key":"Cell ID","value":"123456789"},
++ {"key":"Physical Cell ID","value":"45"},
++ {"key":"EARFCN","value":"1300"},
++ {"key":"Band","value":"3"},
++ {"key":"UL Bandwidth","value":"20"},
++ {"key":"DL Bandwidth","value":"20"},
++ {"key":"RSRP","value":"-104","unit":"dBm"},
++ {"key":"RSRQ","value":"-14","unit":"dB"},
++ {"key":"RSSI","value":"-78","unit":"dBm"},
++ {"key":"SINR","value":"4","unit":"dB"}
++]}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_sa.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_sa.json
+new file mode 100644
+index 0000000..6940ff7
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/cell_sa.json
+@@ -0,0 +1,16 @@
++{"modem_info":[
++ {"key":"network_mode","value":"NR5G-SA Mode with 2 CA"},
++ {"key":"Duplex Mode","value":"TDD"},
++ {"key":"MCC","value":"460"},
++ {"key":"MNC","value":"11"},
++ {"key":"TAC","value":"76010F"},
++ {"key":"Cell ID","value":"760BF0114"},
++ {"key":"Physical Cell ID","value":"702"},
++ {"key":"ARFCN","value":"633984"},
++ {"key":"Band","value":"78"},
++ {"key":"RSRP","value":"-89","unit":"dBm"},
++ {"key":"RSRQ","value":"-8","unit":"dB"},
++ {"key":"SINR","value":"15","unit":"dB"},
++ {"key":"SCS","value":"30"},
++ {"key":"ARFCN (CA)","value":"640000","extra_info":"CA-5G"}
++]}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/iface.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/iface.json
+new file mode 100644
+index 0000000..9f9f177
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/iface.json
+@@ -0,0 +1 @@
++{"interface":"wwan0","up":true,"l3_device":"wwan0","uptime":183000,"rx_bytes":13314398617,"tx_bytes":1932735283}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors.json
+new file mode 100644
+index 0000000..6ef13d9
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors.json
+@@ -0,0 +1 @@
++{"result":{},"neighborcell":{"NR":[{"neighbourcell":"neighbourcell","arfcn":"633984","pci":"262","rsrp":"-102","rsrq":"-17"}],"LTE":[{"neighbourcell":"neighbourcell intra","arfcn":"1300","pci":"321","rsrp":"-98","rsrq":"-12"},{"neighbourcell":"neighbourcell inter","arfcn":"2850","pci":"110","rsrp":"-108","rsrq":"-"}],"lockcell_status":{"LTE":"unlock","NR":"unlock"}}}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors_missing_rsrp.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors_missing_rsrp.json
+new file mode 100644
+index 0000000..eb65899
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors_missing_rsrp.json
+@@ -0,0 +1 @@
++{"neighborcell":{"LTE":[{"neighbourcell":"neighbourcell intra","arfcn":"1300","pci":"321","rsrp":"-98","rsrq":"-12"},{"neighbourcell":"neighbourcell inter","arfcn":"2850","pci":"110","rsrp":"-","rsrq":"-"}],"NR":[]}}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors_out_of_range.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors_out_of_range.json
+new file mode 100644
+index 0000000..ad8a525
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/neighbors_out_of_range.json
+@@ -0,0 +1 @@
++{"result":{},"neighborcell":{"NR":[],"LTE":[{"neighbourcell":"neighbourcell intra","arfcn":"1725","pci":"227","rsrp":"-9","rsrq":"-92"},{"neighbourcell":"neighbourcell inter","arfcn":"1300","pci":"321","rsrp":"-98","rsrq":"-12"},{"neighbourcell":"neighbourcell intra","arfcn":"1725","pci":"400","rsrp":"50","rsrq":"100"}],"lockcell_status":{"LTE":"unlock","NR":"unlock"}}}
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca.txt b/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca.txt
+new file mode 100644
+index 0000000..e6d9673
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca.txt
+@@ -0,0 +1,3 @@
+++QCAINFO: "PCC",1300,100,"LTE BAND 3",1,123,-91,-10,-65,18
+++QCAINFO: "SCC",2850,100,"LTE BAND 7",1,245,-103,-13,-77,9
+++QCAINFO: "SCC",640000,100,"NR5G BAND 78",1,512,30,-86,-11,-
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca_lte.txt b/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca_lte.txt
+new file mode 100644
+index 0000000..3348d35
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca_lte.txt
+@@ -0,0 +1,2 @@
+++QCAINFO: "PCC",1300,100,"LTE BAND 3",1,45,-104,-14,-78,4
+++QCAINFO: "SCC",2850,100,"LTE BAND 7",1,110,-108,-,-
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca_sa.txt b/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca_sa.txt
+new file mode 100644
+index 0000000..13aec7c
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/qca_sa.txt
+@@ -0,0 +1,2 @@
+++QCAINFO: "PCC",633984,100,"NR5G BAND 78",1,702,30,-89,-8,-,15
+++QCAINFO: "SCC",640000,100,"NR5G BAND 78",1,293,30,-95,-11,-,-
+diff --git a/luci-app-3ginfo-lite/tests/fixtures/qmodem/sim.json b/luci-app-3ginfo-lite/tests/fixtures/qmodem/sim.json
+new file mode 100644
+index 0000000..3f97a37
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/fixtures/qmodem/sim.json
+@@ -0,0 +1,8 @@
++{"modem_info":[
++ {"key":"SIM Status","value":"ready"},
++ {"key":"ISP","value":"Example Mobile"},
++ {"key":"SIM Slot","value":"1"},
++ {"key":"IMEI","value":"860000000000001"},
++ {"key":"IMSI","value":"413020000000001"},
++ {"key":"ICCID","value":"8900000000000000001"}
++]}
+diff --git a/luci-app-3ginfo-lite/tests/run.sh b/luci-app-3ginfo-lite/tests/run.sh
+new file mode 100755
+index 0000000..7d840b1
+--- /dev/null
++++ b/luci-app-3ginfo-lite/tests/run.sh
+@@ -0,0 +1,167 @@
++#!/bin/sh
++# Offline checks for the radio normalizer and AT+QCAINFO parser.
++#
++# Run from the package directory: sh tests/run.sh
++# GPL-3.0. Part of luci-app-3ginfo-lite.
++
++set -eu
++
++ROOT=$(cd "$(dirname "$0")/.." && pwd)
++RES="$ROOT/root/usr/share/3ginfo-lite"
++FIX="$ROOT/tests/fixtures"
++TMP=$(mktemp -d /tmp/3ginfo-tests.XXXXXX)
++trap 'rm -rf "$TMP"' EXIT INT TERM
++
++fail() {
++	echo "FAIL: $1" >&2
++	exit 1
++}
++
++check() {
++	[ "$2" = "$3" ] || fail "$1 (expected '$3', got '$2')"
++}
++
++qca_parse() {
++	awk -f "$RES/radio-qca.awk" "$1"
++}
++
++normalize() {
++	source=$1
++	cell=$2
++	band=$3
++	qca=$4
++	legacy=$5
++	sim=${6:-"$FIX/qmodem/sim.json"}
++	iface=${7:-"$FIX/qmodem/iface.json"}
++	awk -f "$RES/radio-qca.awk" "$qca" > "$TMP/qca.tsv"
++	jq -n --arg source "$source" --argjson generated 1760000000 \
++		--argjson qca_ok "$([ -s "$TMP/qca.tsv" ] && echo true || echo false)" \
++		--argjson has_neighbors true --arg warnings '' \
++		--argjson sample_ttl 25 --argjson neighbor_min 60 --argjson neighbor_ttl 120 \
++		--arg section 4_1 \
++		--slurpfile base "$FIX/qmodem/base.json" \
++		--slurpfile cell "$cell" --slurpfile band "$band" \
++		--slurpfile sim "$sim" --slurpfile legacy "$legacy" \
++		--slurpfile iface "$iface" --rawfile qca "$TMP/qca.tsv" \
++		-f "$RES/radio-normalize.jq"
++}
++
++# --- parser ----------------------------------------------------------------
++qca_parse "$FIX/qmodem/qca.txt" > "$TMP/qca-endc"
++check "QCA LTE PCC RSRP" "$(awk -F '\t' 'NR==1 {print $3}' "$TMP/qca-endc")" "-91"
++check "QCA LTE SCC RSRQ" "$(awk -F '\t' 'NR==2 {print $4}' "$TMP/qca-endc")" "-13"
++check "QCA NR SCS is not SINR" "$(awk -F '\t' 'NR==3 {print $6}' "$TMP/qca-endc")" "-"
++
++qca_parse "$FIX/qca/missing.txt" > "$TMP/qca-missing"
++check "QCA keeps a missing RSRP empty" "$(awk -F '\t' 'NR==1 {print $3}' "$TMP/qca-missing")" "-"
++check "QCA ignores malformed channels" "$(wc -l < "$TMP/qca-missing" | tr -d ' ')" "2"
++
++qca_parse "$FIX/qca/nr_variants.txt" > "$TMP/qca-nr"
++check "QCA NR with SCS 0 keeps metrics empty" "$(awk -F '\t' 'NR==1 {print $3}' "$TMP/qca-nr")" "-"
++check "QCA NR without SCS reads RSRP" "$(awk -F '\t' 'NR==2 {print $3}' "$TMP/qca-nr")" "-89"
++
++# --- EN-DC ----------------------------------------------------------------
++normalize qmodem "$FIX/qmodem/cell_endc.json" "$FIX/qmodem/band_endc.json" \
++	"$FIX/qmodem/qca.txt" "$FIX/empty.json" > "$TMP/endc.json"
++check "EN-DC mode" "$(jq -r '.connection.mode' "$TMP/endc.json")" "5G NSA"
++check "EN-DC carrier count" "$(jq -r '.connection.carrier_count' "$TMP/endc.json")" "3"
++check "EN-DC CA flag" "$(jq -r '.connection.ca_active' "$TMP/endc.json")" "true"
++check "EN-DC LTE PCC band" "$(jq -r '.cells[] | select(.role=="pcc") | .band' "$TMP/endc.json")" "3"
++check "EN-DC NR leg band" "$(jq -r '.cells[] | select(.role=="nsa") | .band' "$TMP/endc.json")" "78"
++check "EN-DC LTE SCC RSRP" "$(jq -r '.cells[] | select(.role=="scc") | .metrics.rsrp' "$TMP/endc.json")" "-103"
++check "EN-DC per-carrier metrics capability" "$(jq -r '.capabilities.per_carrier_metrics' "$TMP/endc.json")" "true"
++check "EN-DC neighbour capability" "$(jq -r '.capabilities.neighbors' "$TMP/endc.json")" "true"
++
++# Some Quectel firmware labels the NR leg PCC in QCAINFO. In EN-DC it is still
++# the NSA leg, never a standalone serving cell.
++normalize qmodem "$FIX/qmodem/cell_endc.json" "$FIX/qmodem/band_endc.json" \
++	"$FIX/qca/nsa_nr_pcc.txt" "$FIX/empty.json" > "$TMP/endc-nr-pcc.json"
++check "NR leg stays NSA when QCAINFO calls it PCC" "$(jq -r '.cells[] | select(.rat=="nr") | .role' "$TMP/endc-nr-pcc.json")" "nsa"
++
++# --- SA -------------------------------------------------------------------
++normalize qmodem "$FIX/qmodem/cell_sa.json" "$FIX/qmodem/band_sa.json" \
++	"$FIX/qmodem/qca_sa.txt" "$FIX/empty.json" > "$TMP/sa.json"
++check "SA mode" "$(jq -r '.connection.mode' "$TMP/sa.json")" "5G SA"
++check "SA carrier count" "$(jq -r '.connection.carrier_count' "$TMP/sa.json")" "2"
++check "SA PCC RAT" "$(jq -r '.cells[] | select(.role=="pcc") | .rat' "$TMP/sa.json")" "nr"
++check "SA SCC RSRP" "$(jq -r '.cells[] | select(.role=="scc") | .metrics.rsrp' "$TMP/sa.json")" "-95"
++check "SA SCC has no invented SINR" "$(jq -r '.cells[] | select(.role=="scc") | .metrics.sinr // "missing"' "$TMP/sa.json")" "missing"
++
++# --- LTE ------------------------------------------------------------------
++normalize qmodem "$FIX/qmodem/cell_lte.json" "$FIX/qmodem/band_lte.json" \
++	"$FIX/qmodem/qca_lte.txt" "$FIX/empty.json" > "$TMP/lte.json"
++check "LTE-A mode" "$(jq -r '.connection.mode' "$TMP/lte.json")" "LTE-A"
++check "LTE-A SCC present" "$(jq -r '[.cells[] | select(.role=="scc")] | length' "$TMP/lte.json")" "1"
++
++# --- 3G -------------------------------------------------------------------
++normalize qmodem "$FIX/qmodem/cell_3g.json" "$FIX/empty.json" \
++	"$FIX/empty.txt" "$FIX/empty.json" > "$TMP/3g.json"
++check "3G mode" "$(jq -r '.connection.mode' "$TMP/3g.json")" "3G"
++check "3G RSCP" "$(jq -r '.cells[0].metrics.rscp' "$TMP/3g.json")" "-82"
++
++# --- legacy fallback ------------------------------------------------------
++normalize legacy "$FIX/empty.json" "$FIX/empty.json" "$FIX/empty.txt" \
++	"$FIX/legacy/lte_ca.json" > "$TMP/legacy-lte.json"
++check "legacy source" "$(jq -r '.meta.source' "$TMP/legacy-lte.json")" "legacy"
++check "legacy LTE-A mode" "$(jq -r '.connection.mode' "$TMP/legacy-lte.json")" "LTE-A"
++check "legacy SCC identity only" "$(jq -r '[.cells[] | select(.role=="scc")][0].metrics | length' "$TMP/legacy-lte.json")" "0"
++
++normalize legacy "$FIX/empty.json" "$FIX/empty.json" "$FIX/empty.txt" \
++	"$FIX/legacy/nsa.json" > "$TMP/legacy-nsa.json"
++check "legacy NSA anchor is LTE" "$(jq -r '.cells[] | select(.role=="pcc") | .rat' "$TMP/legacy-nsa.json")" "lte"
++check "legacy NSA leg is NR" "$(jq -r '.cells[] | select(.role=="nsa") | .rat' "$TMP/legacy-nsa.json")" "nr"
++
++# --- missing everything ---------------------------------------------------
++normalize legacy "$FIX/empty.json" "$FIX/empty.json" "$FIX/empty.txt" \
++	"$FIX/empty.json" > "$TMP/empty.json"
++check "empty snapshot is unavailable" "$(jq -r '.connection.status' "$TMP/empty.json")" "unavailable"
++check "empty snapshot has no cells" "$(jq -r '.cells | length' "$TMP/empty.json")" "0"
++
++# --- neighbours -----------------------------------------------------------
++jq -n --argjson available true --arg error '' --argjson now 1760000000 \
++	--slurpfile raw "$FIX/qmodem/neighbors.json" \
++	-f "$RES/radio-neighbors.jq" > "$TMP/neighbours.json"
++check "neighbour LTE count" "$(jq -r '.lte | length' "$TMP/neighbours.json")" "2"
++check "neighbour NR count" "$(jq -r '.nr | length' "$TMP/neighbours.json")" "1"
++check "neighbour strongest first" "$(jq -r '.lte[0].pci' "$TMP/neighbours.json")" "321"
++check "neighbour missing RSRQ stays null" "$(jq -r '.lte[1].rsrq // "missing"' "$TMP/neighbours.json")" "missing"
++
++jq -n --argjson available true --arg error '' --argjson now 1760000000 \
++	--slurpfile raw "$FIX/qmodem/neighbors_missing_rsrp.json" \
++	-f "$RES/radio-neighbors.jq" > "$TMP/neighbours-missing.json"
++check "neighbour with no RSRP sorts last" "$(jq -r '.lte[1].pci' "$TMP/neighbours-missing.json")" "110"
++
++# --- neighbours: implausible firmware values ------------------------------
++# Some QModem firmware revisions shift the AT+QENG neighbour columns, so a row
++# can carry RSRP -9 / RSRQ -92. Out-of-range values are misparsed fields, not a
++# strong signal: they must be dropped while the sane row survives.
++jq -n --argjson available true --arg error '' --argjson now 1760000000 \
++	--slurpfile raw "$FIX/qmodem/neighbors_out_of_range.json" \
++	-f "$RES/radio-neighbors.jq" > "$TMP/neighbours-range.json"
++check "swapped RSRP/RSRQ pair is repaired" \
++	"$(jq -r '.lte[] | select(.pci==227) | "\(.rsrp)/\(.rsrq)"' "$TMP/neighbours-range.json")" "-92/-9"
++check "valid pair is left untouched" \
++	"$(jq -r '.lte[] | select(.pci==321) | "\(.rsrp)/\(.rsrq)"' "$TMP/neighbours-range.json")" "-98/-12"
++check "impossible pair is dropped" \
++	"$(jq -r '.lte[] | select(.pci==400) | "\(.rsrp // "missing")/\(.rsrq // "missing")"' "$TMP/neighbours-range.json")" "missing/missing"
++check "strongest neighbour ranks first" \
++	"$(jq -r '.lte[0].pci' "$TMP/neighbours-range.json")" "227"
++
++# --- legacy band parsing --------------------------------------------------
++# "B7 (2600 MHz) @20 MHz" and "5G NSA | n78 (3500 MHz)" are the shapes 3ginfo.sh
++# emits; the band number must come out without a regex engine.
++check "legacy NSA leg band" "$(jq -r '.cells[] | select(.role=="nsa") | .band' "$TMP/legacy-nsa.json")" "78"
++
++# --- jq portability -------------------------------------------------------
++# OpenWrt builds jq without Oniguruma: test/match/scan/gsub/sub/splits/capture
++# fail at run time there. A regex creeping back in breaks the page on the
++# router while passing on a laptop, so guard it here.
++if sed 's/#.*$//' "$RES/radio-normalize.jq" "$RES/radio-neighbors.jq" |
++	grep -nE '\b(test|match|scan|gsub|sub|splits|capture)[[:space:]]*\('; then
++	fail "a jq program uses a regex builtin that OpenWrt's jq does not provide"
++fi
++
++# --- shell syntax ---------------------------------------------------------
++sh -n "$RES/radiodata.sh" || fail "radiodata.sh has a shell syntax error"
++
++echo "PASS: radio normalizer and QCA parser"

@@ -1,0 +1,6 @@
+The collector is executed by cgi-io, so it needs its executable bit even on a
+fresh boot before uci-defaults runs. Same treatment as 0002 for 3ginfo.sh.
+
+diff --git a/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh
+old mode 100644
+new mode 100755
