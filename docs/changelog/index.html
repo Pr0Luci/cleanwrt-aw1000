@@ -2130,6 +2130,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#25125-r21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.12.5-R2.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#25125-r1" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2216,6 +2227,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#25125-r21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.12.5-R2.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#25125-r1" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2285,6 +2307,21 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="25125-r21">25.12.5-R2.1<a class="headerlink" href="#25125-r21" title="Permanent link">&para;</a></h2>
+<p>The second stable release of the OpenWrt 25.12.5 base. The line is quieter, and the new-firmware
+notice works from the first boot:</p>
+<ul>
+<li><strong>AWvoice 1.1.5</strong> (R1 shipped 1.1.3). A refused call no longer leaves the line busy: the audio
+  path stands by again instead of running for silence, which showed on the Health card and in the
+  load average. The step before it made an idle line cost nothing, set a factory modem in PCM
+  master mode to slave by itself, let a call go out on either voice domain, kept the page's send
+  level under its ceiling, and put the serving cell and one signal line on the Health card.</li>
+<li><strong>the new-firmware notice is on out of the box.</strong> Its answer is written by
+  <code>files/etc/uci-defaults/52-cw-upgrade-check</code>; <em>Stop showing upgrade alerts</em> stays the way off.</li>
+<li><strong>that answer is written after the package's own defaults</strong>, so a fresh flash keeps it and an
+  answer you gave is not asked again.</li>
+<li><strong>the Attended Sysupgrade pages are out of the menu</strong>, with the two pages under them.</li>
+</ul>
 <h2 id="25125-r1">25.12.5-R1<a class="headerlink" href="#25125-r1" title="Permanent link">&para;</a></h2>
 <p>The first stable release of the OpenWrt 25.12.5 base. It carries everything <code>25.12.5-rc2.1</code>
 shipped — AWvoice 1.1.3 with the LAN SIP side, the web phone, the code a phone scans and quiet

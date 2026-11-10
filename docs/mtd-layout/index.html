@@ -2346,11 +2346,12 @@ of 256 KiB). UBI reserves part of it for itself:</p>
 <p>So <strong>316 blocks (about 76 MiB)</strong> are left for volumes. The stock firmware's own UBI on that
 partition uses exactly 316 (kernel 24 + rootfs 177 + rootfs_data 115).</p>
 <h2 id="what-cleanwrt-needs">What CleanWRT needs<a class="headerlink" href="#what-cleanwrt-needs" title="Permanent link">&para;</a></h2>
-<p>The <code>25.12.5-R1</code> image needs <strong>514 blocks</strong>. The published <code>25.12.5-rc2.1</code> image measured the
-same 514 and <code>25.12.5-rc2</code> needed 498; R1 carries rc2.1's package set unchanged, so it needs what
-rc2.1 needed. That is more than the stock layout offers (316) and fits the expanded layout (2720
-blocks on a router with a 701 MiB <code>rootfs</code>). The release build prints a line like this and fails
-if the image does not fit the layout it targets:</p>
+<p>The <code>25.12.5-R2.1</code> image needs <strong>514 blocks</strong>, the same as <code>25.12.5-R1</code> and the <code>25.12.5-rc2.1</code>
+candidate before it: the published <code>25.12.5-r2.1</code> factory image is 133,955,584 bytes → 511 volume
+PEBs → 514 by the formula in <code>tools/cw-release-build.sh</code>, and <code>25.12.5-rc2</code> needed 498. That is
+more than the stock layout offers (316) and fits the expanded layout (2720 blocks on a router with
+a 701 MiB <code>rootfs</code>). The release build prints a line like this and fails if the image does not fit
+the layout it targets:</p>
 <div class="highlight"><pre><span></span><code>UBI_PEBS volumes need 514 PEBs; stock 100 MiB layout (316): does NOT fit; gate layout=expanded (capacity 2720)
 </code></pre></div>
 <p>A <code>sysupgrade</code> that cannot create the new volumes after removing the old ones can leave the
