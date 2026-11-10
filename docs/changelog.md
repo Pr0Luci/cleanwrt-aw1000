@@ -5,6 +5,22 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
+## 25.12.5-R2.1
+
+The second stable release of the OpenWrt 25.12.5 base. The line is quieter, and the new-firmware
+notice works from the first boot:
+
+- **AWvoice 1.1.5** (R1 shipped 1.1.3). A refused call no longer leaves the line busy: the audio
+  path stands by again instead of running for silence, which showed on the Health card and in the
+  load average. The step before it made an idle line cost nothing, set a factory modem in PCM
+  master mode to slave by itself, let a call go out on either voice domain, kept the page's send
+  level under its ceiling, and put the serving cell and one signal line on the Health card.
+- **the new-firmware notice is on out of the box.** Its answer is written by
+  `files/etc/uci-defaults/52-cw-upgrade-check`; *Stop showing upgrade alerts* stays the way off.
+- **that answer is written after the package's own defaults**, so a fresh flash keeps it and an
+  answer you gave is not asked again.
+- **the Attended Sysupgrade pages are out of the menu**, with the two pages under them.
+
 ## 25.12.5-R1
 
 The first stable release of the OpenWrt 25.12.5 base. It carries everything `25.12.5-rc2.1`
