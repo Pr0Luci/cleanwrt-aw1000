@@ -87,16 +87,15 @@ the files actually installed rather than trusting a number written down. It runs
 look it applied, and a router whose look has already been saved to the router is left alone - your
 choice always outranks the image's.
 
-## Switching themes
+## Switching back
 
 Footstrap is selected on the first boot. To change it later:
 
 *System → System → Language and Style → Design*
 
-The stock Bootstrap theme stays installed as the fallback. **Argon** and **Alpha** are in the image as
-well, each its own package with its own licence and pin, so the three can be compared on the device.
-Alpha is written for an older LuCI layout, so if choosing it leaves pages that do not look right, that
-is what you are seeing - nothing else about the firmware changes when you switch.
+The stock Bootstrap theme is the only other one in the image. It stays installed as the fallback:
+if Footstrap is ever missing or fails to load, LuCI still renders, and choosing Bootstrap is always
+possible. No other theme is installed.
 
 ## Notes for developers
 

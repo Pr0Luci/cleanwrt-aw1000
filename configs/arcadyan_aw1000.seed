@@ -159,14 +159,10 @@ CONFIG_PACKAGE_luci-base=y
 # 96-cw-default-theme switches a fresh install to Footstrap (bootstrap stays
 # installed as the fallback / user choice).
 CONFIG_PACKAGE_luci-theme-bootstrap=y
-# Themes, each its own package pinned in configs/local-packages.pin (all Apache-2.0):
-# Footstrap is the default; Argon and Alpha ship so the three can be compared through the
-# theme selector in LuCI. Alpha's own Makefile depends on luci-app-alpha-config, so both are
-# named here - the app is what the theme installs against, and neither writes the default.
+# One theme besides the fallback, pinned in configs/local-packages.pin (Apache-2.0):
+# Footstrap is the default and does not write that default itself - the seed selects it and
+# files/etc/uci-defaults/96-cw-default-theme points luci.main.mediaurlbase at it.
 CONFIG_PACKAGE_luci-theme-footstrap=y
-CONFIG_PACKAGE_luci-theme-argon=y
-CONFIG_PACKAGE_luci-theme-alpha=y
-CONFIG_PACKAGE_luci-app-alpha-config=y
 # Transitive deps of the luci-mod-* set that a minimal seed must name explicitly,
 # else `make defconfig` drops the whole admin UI (status/network -> admin-full):
 #   luci-mod-status  needs +libiwinfo +rpcd-mod-iwinfo

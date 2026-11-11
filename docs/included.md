@@ -44,7 +44,6 @@ switch.
 | SQM QoS | Network → SQM QoS | Off (set your speeds) | fix bufferbloat |
 | Web terminal (ttyd) | Tools → Terminal | On | a shell in the browser |
 | Footstrap theme | System → Footstrap | On | the default look ([theme](theme.md)) |
-| Argon, Alpha themes | System → System → Language and Style | installed, not selected | alternatives to compare ([theme](theme.md)) |
 | LED Management | System → LED Management | On | front-panel LEDs ([LEDs](leds.md)) |
 | New-version notice | Status → Overview | On | tells you when a newer CleanWRT is published ([releases](releases.md#the-new-version-notice)) |
 | Quiet hours, recordings, the answering machine | inside AWvoice → Rules and Phone settings | all **off** until you write them | [quiet hours](awvoice/quiet-hours.md), [recordings and the machine](awvoice/recordings-and-machine.md) |

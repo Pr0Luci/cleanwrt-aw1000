@@ -26,21 +26,6 @@ luci-app-cw-led https://github.com/Pr0Luci/luci-app-cw-led.git a65586cf81aff771d
 # from one recipe only, so the feed's link is removed for the pin to win
 # (tools/cw-reset-pinned-package.sh says so on every build).
 luci-theme-footstrap https://github.com/VizzleTF/luci-theme-footstrap.git a1711eda02fefe87a12590bae9eaa80c373a4bd9
-# luci-theme-argon: Apache-2.0, ucode templates (the 25.12 theme mechanism).
-# Pinned at the commit tag v3.1.2 points to. Its own first-boot script is patched
-# (patches/packages/luci-theme-argon) so that installing it does not make it the design a
-# fresh router opens with - registering a theme and choosing the default are two things.
-luci-theme-argon https://github.com/jerrykuku/luci-theme-argon.git 7b77b44b8324ba4939144760ed3f09c1a1d1e833
-# luci-theme-alpha: Apache-2.0, still the luasrc (Lua templates) layout, pinned at the
-# commit tag 3.9.7-beta2 points to. Its Makefile declares `+luci-app-alpha-config`, so the
-# theme cannot be installed without that app: it is a separate repository, and both are
-# pinned here. Whether the Lua layout renders at all on 25.12 is checked on the device.
-luci-theme-alpha https://github.com/derisamedia/luci-theme-alpha.git aed1071054ecc3fdb0cc2368c68197a906f9946a
-# luci-app-alpha-config: Apache-2.0, the settings app the theme above depends on - a menu
-# entry, its rpcd ACL and its browser-side page, and no first-boot script of its own, so it
-# cannot claim a default theme. Pinned at the commit tag v2.1 points to.
-luci-app-alpha-config https://github.com/animegasan/luci-app-alpha-config.git a67b82dd1117ff3792d2f8ea002948a6cda1b809
-
 # luci-app-homeproxy: HomeProxy LuCI app (ImmortalWrt), another proxy app on the same
 # cores the image already ships (sing-box). Single-package repo with the Makefile at
 # the root, so a local pin and not a feed. Ships DISABLED.

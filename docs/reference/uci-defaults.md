@@ -39,13 +39,12 @@ booted can be checked against the source.
 
 ## Scripts that arrive with packages
 
-Three more first-boot scripts matter to this image even though they belong to other packages:
+Two more first-boot scripts matter to this image even though they belong to other packages:
 
 | script | where it comes from | what it does |
 |---|---|---|
 | `90-cw-led` | [`luci-app-cw-led`](https://github.com/Pr0Luci/luci-app-cw-led) | removes from `/etc/config/system` every `led` section whose sysfs node is one the LED daemon owns (`blue:5g`, `green:5g`, `red:5g`, `blue:signal`, `green:signal`, `red:signal`, `green:internet`), reseeds the daemon's own `global` section only if it is missing, enables the service and reloads rpcd. `green:power`, `green:wifi` and the WAN lamp keep their kernel triggers |
 | `89-qmodem-sip-migrate`, `90-qmodem-sip-firewall`, `91-qmodem-sip-voip-off` | the QModem feed's SIP service, the last one added by this build's patch `patches/feeds/qmodem/0009-sip-voip-default-migration.patch` | migrate a configuration that still pointed at the vendor engine, add the service's firewall include, and set both directions' `voip_enabled` to `0` **only when** the media socket path is the phone daemon's — which is how an upgrade from an older image ends up with working audio |
-| `30_luci-theme-argon` | Argon, with one line removed by `patches/packages/luci-theme-argon/0001-argon-registers-itself-and-leaves-the-default.patch` | registers the theme but no longer makes it the default design. An installed theme is offered, not selected |
 
 ## What the image ships as configuration
 
