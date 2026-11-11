@@ -1,7 +1,7 @@
 ---
 title: "OpenWrt for the Arcadyan AW1000 5G router"
 description: "CleanWRT is an independent OpenWrt 25.12.5 build for the Arcadyan AW1000: a working RJ11 phone port, a 5G stack that recovers itself, LEDs and opt-in apps."
-updated: 2026-11-06
+updated: 2026-11-11
 ---
 
 # CleanWRT: OpenWrt for the Arcadyan AW1000
@@ -109,8 +109,8 @@ router supported?" to a flashed, working router, and tell you how to get out if 
 
 ## Status
 
-CleanWRT's current release is `25.12.5-R2.1`, the second stable release of the OpenWrt 25.12.5
-base; `rc1`, `rc2` and `rc2.1` were the candidates before it. The image is built on GitHub
+CleanWRT's current release is `25.12.5-R2.3`, a stable release on the OpenWrt 25.12.5 base; `rc1`,
+`rc2` and `rc2.1` were the candidates before it. The image is built on GitHub
 Actions from the sources pinned in the repository. Read the [known limits](faq.md#known-limits)
 before relying on it for anything important.
 
