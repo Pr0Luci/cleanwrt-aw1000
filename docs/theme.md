@@ -93,9 +93,14 @@ Footstrap is selected on the first boot. To change it later:
 
 *System → System → Language and Style → Design*
 
-The stock Bootstrap theme is the only other one in the image. It stays installed as the fallback:
-if Footstrap is ever missing or fails to load, LuCI still renders, and choosing Bootstrap is always
-possible. No other theme is installed.
+The stock Bootstrap theme is the only other one in the image, and it is there as the fallback: if
+the pinned theme did not install, `files/etc/uci-defaults/96-cw-default-theme` leaves the stock base
+alone, so the web interface still opens, and Bootstrap is always a choice in the selector.
+
+An upgrade from an older image can leave two things naming a theme this image no longer carries: the
+base the interface opens with, and the entry the design selector offers. Both are repaired at the
+first boot after the upgrade - the base moves to Footstrap and the entry is removed - so a router
+that had another design selected does not open on a page with no styles.
 
 ## Notes for developers
 
