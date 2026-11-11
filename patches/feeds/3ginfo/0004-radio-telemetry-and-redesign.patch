@@ -18,10 +18,10 @@ index 1fe2ee2..7404b44 100644
  
 diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/3ginfo/radio.css b/luci-app-3ginfo-lite/htdocs/luci-static/resources/3ginfo/radio.css
 new file mode 100644
-index 0000000..9f3f824
+index 0000000..d44e8f2
 --- /dev/null
 +++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/3ginfo/radio.css
-@@ -0,0 +1,836 @@
+@@ -0,0 +1,821 @@
 +/*
 + * 3gInfo-lite radio view.
 + *
@@ -245,45 +245,6 @@ index 0000000..9f3f824
 +	color: var(--tg-bad);
 +}
 +
-+.tg-nav {
-+	position: sticky;
-+	top: var(--fs-bar-h, 0px);
-+	z-index: 2;
-+	display: flex;
-+	gap: 4px;
-+	overflow-x: auto;
-+	margin: 0 -2px 12px;
-+	padding: 2px 2px 8px;
-+	background: var(--tg-bg);
-+	scrollbar-width: none;
-+}
-+
-+.tg-nav::-webkit-scrollbar {
-+	display: none;
-+}
-+
-+.tg-nav a {
-+	display: inline-flex;
-+	align-items: center;
-+	flex: 0 0 auto;
-+	min-height: 38px;
-+	padding: 0 10px;
-+	border: 1px solid transparent;
-+	border-radius: var(--tg-radius-sm);
-+	color: var(--tg-dim);
-+	font-size: .75rem;
-+	font-weight: 650;
-+	text-decoration: none;
-+}
-+
-+.tg-nav a:hover,
-+.tg-nav a:focus-visible {
-+	border-color: var(--tg-border);
-+	background: var(--tg-bg-soft);
-+	color: var(--tg-text);
-+	text-decoration: none;
-+}
-+
 +.tg-overview,
 +.tg-lower {
 +	display: grid;
@@ -297,11 +258,27 @@ index 0000000..9f3f824
 +
 +.tg-card {
 +	/* A cbi-section, so the theme paints the box. Only what the grid needs
-+	   stays here: no stretched cards, and no double spacing from the theme's
-+	   own section margin. */
++	   stays here, plus the scroll offset. */
 +	min-width: 0;
-+	margin-bottom: 0;
 +	scroll-margin-top: calc(var(--fs-bar-h, 0px) + 3rem);
++}
++
++/* Inside the grids the gap spaces the cards; on its own the card keeps the
++   same rhythm instead of the theme's wider section margin. */
++.tg-overview > .tg-card,
++.tg-lower > .tg-card {
++	margin-bottom: 0;
++}
++
++.tg-page > .tg-card {
++	margin-bottom: var(--tg-gap);
++}
++
++.tg-neighbour-actions {
++	display: flex;
++	flex-wrap: wrap;
++	align-items: center;
++	gap: 8px 12px;
 +}
 +
 +.tg-card-head {
@@ -631,13 +608,21 @@ index 0000000..9f3f824
 +	display: none;
 +	width: 100%;
 +	overflow-x: auto;
-+	border: 1px solid var(--tg-border);
-+	border-radius: var(--tg-radius-sm);
++	/* No box of its own: the card is the container, and a second border would
++	   show a second set of corners inside it. */
 +}
 +
-+.tg-table {
++.tg-table,
++/* LuCI adds its own classes to every <table> and the theme then draws a card
++   around it. Inside our card that is a second set of corners, so the box is
++   removed here and only the rows keep their lines. */
++.tg-page table.tg-table.fs-b {
 +	width: 100%;
 +	min-width: 640px;
++	border: 0;
++	border-radius: 0;
++	background: none;
++	overflow: visible;
 +	border-collapse: collapse;
 +	color: var(--tg-text);
 +	font-size: .75rem;
@@ -859,31 +844,33 @@ index 0000000..9f3f824
 +	}
 +}
 diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js
-index c64dbca..3f4b325 100644
+index c64dbca..9bbcf06 100644
 --- a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js
 +++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gconfig.js
-@@ -57,6 +57,26 @@ return view.extend({
+@@ -57,6 +57,28 @@ return view.extend({
  		o.placeholder = _('Please select a port');
  		o.rmempty = true;
  
 +		o = s.option(form.ListValue, 'radio_refresh',
 +			_('Page refresh'),
-+			_('How often the radio page asks for a new snapshot. The collector still enforces its own minimum interval.'));
-+		o.value('0', _('Off'));
++			_('How often the radio page asks for a new snapshot. The page offers the same choices, and the collector still enforces its own minimum interval.'));
++		o.value('5', _('5 seconds'));
 +		o.value('15', _('15 seconds'));
 +		o.value('30', _('30 seconds'));
 +		o.value('60', _('1 minute'));
-+		o.value('120', _('2 minutes'));
-+		o.default = '30';
++		o.value('300', _('5 minutes'));
++		o.default = '5';
 +		o.rmempty = false;
 +
 +		o = s.option(form.ListValue, 'radio_neighbor_interval',
 +			_('Neighbour scan interval'),
-+			_('The minimum time between neighbour scans. Scans are manual; this prevents a page refresh from triggering them repeatedly.'));
++			_('How often the radio page scans for neighbour cells while it is open, and the shortest gap the collector accepts between scans. The manual scan button stays available.'));
++		o.value('5', _('5 seconds'));
++		o.value('15', _('15 seconds'));
++		o.value('30', _('30 seconds'));
 +		o.value('60', _('1 minute'));
-+		o.value('120', _('2 minutes'));
 +		o.value('300', _('5 minutes'));
-+		o.default = '60';
++		o.default = '5';
 +		o.rmempty = false;
 +
  		s = m.section(form.TypedSection, '3ginfo', null);
@@ -940,10 +927,10 @@ index 8e3684e..15d9a76 100644
  			]);
  
 diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
-index 88ba185..fb34dbc 100644
+index 88ba185..7d6f643 100644
 --- a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
 +++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
-@@ -1,1211 +1,1215 @@
+@@ -1,1211 +1,1305 @@
  'use strict';
 -'require baseclass';
 -'require form';
@@ -1015,27 +1002,6 @@ index 88ba185..fb34dbc 100644
 +function pollHandler() {
 +	if (activeView && document.getElementById('tg-summary'))
 +		activeView.pollTick();
-+}
-+
-+// LuCI's E(tag, attrs, children) appends a children array verbatim: a nested
-+// array or a null entry becomes a text node ("[object HTMLDivElement]" or
-+// "null"). Every element below is built with el(), which flattens nested
-+// arrays and drops empty entries before E() sees them.
-+function normalizeChildren(value) {
-+	var out = [];
-+
-+	function walk(v) {
-+		if (v === null || v === undefined || v === false || v === '')
-+			return;
-+
-+		if (Array.isArray(v))
-+			v.forEach(walk);
-+		else
-+			out.push(v);
-+	}
-+
-+	walk(value);
-+	return out;
  }
  
 -function rssi_bar(v, m) {
@@ -1069,8 +1035,25 @@ index 88ba185..fb34dbc 100644
 -pg.style.width = '33%';
 -pg.firstElementChild.style.animationDirection = "reverse";
 -pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
-+function el(tag, attrs, children) {
-+	return E(tag, attrs, normalizeChildren(children));
++// LuCI's E(tag, attrs, children) appends a children array verbatim: a nested
++// array or a null entry becomes a text node ("[object HTMLDivElement]" or
++// "null"). Every element below is built with el(), which flattens nested
++// arrays and drops empty entries before E() sees them.
++function normalizeChildren(value) {
++	var out = [];
++
++	function walk(v) {
++		if (v === null || v === undefined || v === false || v === '')
++			return;
++
++		if (Array.isArray(v))
++			v.forEach(walk);
++		else
++			out.push(v);
++	}
++
++	walk(value);
++	return out;
  }
  
 -function rsrp_bar(v, m) {
@@ -1104,24 +1087,8 @@ index 88ba185..fb34dbc 100644
 -pg.style.width = '33%';
 -pg.firstElementChild.style.animationDirection = "reverse";
 -pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
-+
-+var REFRESH_CHOICES = [0, 15, 30, 60, 120];
-+
-+function num(v) {
-+	if (v === null || v === undefined || v === '')
-+		return null;
-+
-+	var n = Number(v);
-+	return isFinite(n) ? n : null;
-+}
-+
-+function shown(v, digits) {
-+	var n = num(v);
-+	if (n === null)
-+		return null;
-+
-+	var s = (digits !== undefined) ? n.toFixed(digits) : String(Math.round(n * 10) / 10);
-+	return s.replace('-', '−');
++function el(tag, attrs, children) {
++	return E(tag, attrs, normalizeChildren(children));
  }
  
 -function sinr_bar(v, m) {
@@ -1153,18 +1120,16 @@ index 88ba185..fb34dbc 100644
 -pg.style.width = '33%';
 -pg.firstElementChild.style.animationDirection = "reverse";
 -pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
-+function fmtBytes(v) {
-+	var n = num(v);
-+	if (n === null)
++
++var INTERVAL_CHOICES = [5, 15, 30, 60, 300];
++var DEFAULT_INTERVAL = 5;
++
++function num(v) {
++	if (v === null || v === undefined || v === '')
 +		return null;
 +
-+	var units = [ 'B', 'KiB', 'MiB', 'GiB', 'TiB' ];
-+	var i = 0;
-+	while (n >= 1024 && i < units.length - 1) {
-+		n /= 1024;
-+		i++;
-+	}
-+	return (i === 0 ? String(Math.round(n)) : n.toFixed(1)) + ' ' + units[i];
++	var n = Number(v);
++	return isFinite(n) ? n : null;
  }
  
 -function rsrq_bar(v, m) {
@@ -1197,6 +1162,29 @@ index 88ba185..fb34dbc 100644
 -pg.style.width = '33%';
 -pg.firstElementChild.style.animationDirection = "reverse";
 -pg.setAttribute('title', '%s'.format(v) + ' | ' + tip + ' ');
++function shown(v, digits) {
++	var n = num(v);
++	if (n === null)
++		return null;
++
++	var s = (digits !== undefined) ? n.toFixed(digits) : String(Math.round(n * 10) / 10);
++	return s.replace('-', '−');
++}
++
++function fmtBytes(v) {
++	var n = num(v);
++	if (n === null)
++		return null;
++
++	var units = [ 'B', 'KiB', 'MiB', 'GiB', 'TiB' ];
++	var i = 0;
++	while (n >= 1024 && i < units.length - 1) {
++		n /= 1024;
++		i++;
++	}
++	return (i === 0 ? String(Math.round(n)) : n.toFixed(1)) + ' ' + units[i];
++}
++
 +function fmtDuration(sec) {
 +	var n = num(sec);
 +	if (n === null || n < 0)
@@ -1279,6 +1267,7 @@ index 88ba185..fb34dbc 100644
 -		}
 -		else {
 -			document.getElementById("modc").disabled = false;
+-		}
 +function fmtTac(v) {
 +	if (v === null || v === undefined || v === '')
 +		return null;
@@ -1380,23 +1369,17 @@ index 88ba185..fb34dbc 100644
 +	]);
 +}
 +
-+function badge(text, kind) {
-+	return el('span', { 'class': 'tg-badge' + (kind ? ' tg-badge-' + kind : '') }, text);
++function intervalSeconds(value) {
++	var v = parseInt(value, 10);
++	return INTERVAL_CHOICES.indexOf(v) !== -1 ? v : DEFAULT_INTERVAL;
 +}
 +
-+function navLink(id, label) {
-+	return el('a', {
-+		'href': '#' + id,
-+		'click': function(ev) {
-+			ev.preventDefault();
-+			var target = document.getElementById(id);
-+			if (!target)
-+				return;
-+			var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-+			target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
- 		}
--	});
-+	}, label);
++function intervalOptions(current) {
++	return INTERVAL_CHOICES.map(function(sec) {
++		var label = sec < 60 ? _('%d seconds').format(sec)
++			: _('%d minute').format(sec / 60);
++		return el('option', { 'value': String(sec), 'selected': sec === current ? 'selected' : null }, label);
+ 	});
  }
  
 -function formatDuration(sec) {
@@ -1411,6 +1394,10 @@ index 88ba185..fb34dbc 100644
 -    if (time !== '') { time += m + 'm '; } else { time = m > 0 ? m + 'm ' : ''; }
 -    time += s + 's';
 -    return time;
++function badge(text, kind) {
++	return el('span', { 'class': 'tg-badge' + (kind ? ' tg-badge-' + kind : '') }, text);
++}
++
 +function card(id, title, description, right, children) {
 +	// The card is a plain LuCI section: the theme owns its background, border and
 +	// corner radius, so it follows the active theme and its wallpaper/glass modes
@@ -1432,6 +1419,14 @@ index 88ba185..fb34dbc 100644
 +		el('strong', {}, text),
 +		detail ? el('span', {}, detail) : null
 +	]);
++}
++
++function kvItem(label, value, hint) {
++	var v = (value === null || value === undefined || value === '') ? '—' : value;
++	return el('div', { 'class': 'tg-kv-item', 'title': hint || null }, [
++		el('dt', {}, label),
++		el('dd', {}, String(v))
++	]);
  }
  
 -function formatDateTime(s) {
@@ -1443,14 +1438,6 @@ index 88ba185..fb34dbc 100644
 -		return s.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
 -	} else if (s.length == 6) {
 -		return s.replace(/(\d{4})(\d{2})/, "$1-$2");
-+function kvItem(label, value, hint) {
-+	var v = (value === null || value === undefined || value === '') ? '—' : value;
-+	return el('div', { 'class': 'tg-kv-item', 'title': hint || null }, [
-+		el('dt', {}, label),
-+		el('dd', {}, String(v))
-+	]);
-+}
-+
 +function findCell(cells, rat, role) {
 +	for (var i = 0; i < cells.length; i++) {
 +		if (cells[i].rat === rat && (role === undefined || cells[i].role === role))
@@ -1458,8 +1445,11 @@ index 88ba185..fb34dbc 100644
  	}
 -	return s;
 +	return null;
-+}
-+
+ }
+ 
+-function checkOperatorName(t) {
+-    var w = t.split(" ");
+-    var f = {};
 +function signalTiles(cells) {
 +	var nr = findCell(cells, 'nr', 'nsa') || findCell(cells, 'nr', 'pcc') || findCell(cells, 'nr');
 +	var lte = findCell(cells, 'lte', 'pcc') || findCell(cells, 'lte');
@@ -1483,13 +1473,19 @@ index 88ba185..fb34dbc 100644
 +		tiles.push([ _('3G · RSCP'), 'rscp', g3.metrics ? g3.metrics.rscp : null, 'dBm' ]);
 +		tiles.push([ _('3G · Ec/Io'), 'ecio', g3.metrics ? g3.metrics.ecio : null, 'dB' ]);
 +	}
-+
-+	return tiles;
- }
  
--function checkOperatorName(t) {
--    var w = t.split(" ");
--    var f = {};
+-    for (var i = 0; i < w.length; i++) {
+-        var wo = w[i].toLowerCase(); 
+-        if (!f.hasOwnProperty(wo)) {
+-            f[wo] = i;
+-        }
+-    }
++	return tiles;
++}
+ 
+-    var u = Object.keys(f).map(function(wo) {
+-        return w[f[wo]];
+-    });
 +function overallQuality(cells) {
 +	var nr = findCell(cells, 'nr', 'nsa') || findCell(cells, 'nr', 'pcc') || findCell(cells, 'nr');
 +	var lte = findCell(cells, 'lte', 'pcc') || findCell(cells, 'lte');
@@ -1504,12 +1500,8 @@ index 88ba185..fb34dbc 100644
 +	return null;
 +}
  
--    for (var i = 0; i < w.length; i++) {
--        var wo = w[i].toLowerCase(); 
--        if (!f.hasOwnProperty(wo)) {
--            f[wo] = i;
--        }
--    }
+-    var r = u.join(" ");
+-    return r;
 +function cellIndex(cell, sccIndex) {
 +	if (cell.role === 'pcc')
 +		return 'P';
@@ -1518,11 +1510,9 @@ index 88ba185..fb34dbc 100644
 +	if (cell.rat === '3g')
 +		return '3G';
 +	return 'S' + sccIndex;
-+}
+ }
  
--    var u = Object.keys(f).map(function(wo) {
--        return w[f[wo]];
--    });
+-return view.extend({
 +function cellTitle(cell, sccIndex) {
 +	if (cell.rat === '3g')
 +		return _('3G serving cell');
@@ -1535,8 +1525,6 @@ index 88ba185..fb34dbc 100644
 +	return _('LTE secondary %d').format(sccIndex);
 +}
  
--    var r = u.join(" ");
--    return r;
 +function metricSourceLabel(source) {
 +	switch (source) {
 +	case 'qca': return _('AT+QCAINFO');
@@ -1545,33 +1533,7 @@ index 88ba185..fb34dbc 100644
 +	case 'legacy': return _('3gInfo');
 +	}
 +	return _('Modem');
- }
- 
--return view.extend({
-+function cellChips(cell) {
-+	var defs = [];
- 
-+	if (cell.rat === 'nr') {
-+		defs = [
-+			[ 'rsrp', _('SS-RSRP'), 'dBm' ],
-+			[ 'rsrq', _('SS-RSRQ'), 'dB' ],
-+			[ 'sinr', _('SS-SINR'), 'dB' ]
-+		];
-+	}
-+	else if (cell.rat === '3g') {
-+		defs = [
-+			[ 'rscp', _('RSCP'), 'dBm' ],
-+			[ 'ecio', _('Ec/Io'), 'dB' ]
-+		];
-+	}
-+	else {
-+		defs = [
-+			[ 'rsrp', _('RSRP'), 'dBm' ],
-+			[ 'rsrq', _('RSRQ'), 'dB' ],
-+			[ 'rssi', _('RSSI'), 'dBm' ],
-+			[ 'sinr', _('SINR'), 'dB' ]
-+		];
-+	}
++}
  
 -modemDialog: baseclass.extend({
 -		__init__: function(title, description, callback) {
@@ -1633,23 +1595,8 @@ index 88ba185..fb34dbc 100644
 -						'class': 'btn cbi-button-positive important',
 -						'click': ui.createHandlerFn(this, this.handleSave),
 -					}, _('Save')),
-+	var chips = [];
-+	for (var i = 0; i < defs.length; i++) {
-+		var key = defs[i][0], label = defs[i][1], unit = defs[i][2];
-+		var value = cell.metrics ? cell.metrics[key] : null;
-+		if (num(value) === null)
-+			continue;
-+
-+		var q = quality(key, value);
-+		chips.push(el('span', {
-+			'class': 'tg-chip',
-+			'title': _('Reported by %s').format(metricSourceLabel(cell.metric_source))
-+		}, [
-+			el('span', { 'class': 'tg-chip-label' }, label),
-+			el('strong', {}, shown(value) + ' ' + unit),
-+			q ? qualityBadge(q) : null
-+		]));
-+	}
++function cellChips(cell) {
++	var defs = [];
  
 -				]),
 -			]);
@@ -1719,11 +1666,45 @@ index 88ba185..fb34dbc 100644
 -					       poll.start()
 -				}
 -			}
-+	if (chips.length === 0 && cell.role === 'scc')
-+		return [ el('span', { 'class': 'tg-muted' }, _('Carrier identity only — no signal measurement reported')) ];
++	if (cell.rat === 'nr') {
++		defs = [
++			[ 'rsrp', _('SS-RSRP'), 'dBm' ],
++			[ 'rsrq', _('SS-RSRQ'), 'dB' ],
++			[ 'sinr', _('SS-SINR'), 'dB' ]
++		];
++	}
++	else if (cell.rat === '3g') {
++		defs = [
++			[ 'rscp', _('RSCP'), 'dBm' ],
++			[ 'ecio', _('Ec/Io'), 'dB' ]
++		];
++	}
++	else {
++		defs = [
++			[ 'rsrp', _('RSRP'), 'dBm' ],
++			[ 'rsrq', _('RSRQ'), 'dB' ],
++			[ 'rssi', _('RSSI'), 'dBm' ],
++			[ 'sinr', _('SINR'), 'dB' ]
++		];
++	}
  
-+	if (chips.length === 0)
-+		return [ el('span', { 'class': 'tg-muted' }, _('No signal measurement reported by the modem')) ];
++	var chips = [];
++	for (var i = 0; i < defs.length; i++) {
++		var key = defs[i][0], label = defs[i][1], unit = defs[i][2];
++		var value = cell.metrics ? cell.metrics[key] : null;
++		if (num(value) === null)
++			continue;
++
++		var q = quality(key, value);
++		chips.push(el('span', {
++			'class': 'tg-chip',
++			'title': _('Reported by %s').format(metricSourceLabel(cell.metric_source))
++		}, [
++			el('span', { 'class': 'tg-chip-label' }, label),
++			el('strong', {}, shown(value) + ' ' + unit),
++			q ? qualityBadge(q) : null
++		]));
++	}
  
 -			ui.showModal(this.title, [
 -				E('div', { 'class': 'cbi-section' }, [
@@ -1756,8 +1737,8 @@ index 88ba185..fb34dbc 100644
 -									'value': json.imei
 -								}, null),
 -							])
-+	return chips;
-+}
++	if (chips.length === 0 && cell.role === 'scc')
++		return [ el('span', { 'class': 'tg-muted' }, _('Carrier identity only — no signal measurement reported')) ];
  
 -						]),
 -						)
@@ -1795,6 +1776,12 @@ index 88ba185..fb34dbc 100644
 -
 -	formdata: { threeginfo: {} },
 -	
++	if (chips.length === 0)
++		return [ el('span', { 'class': 'tg-muted' }, _('No signal measurement reported by the modem')) ];
++
++	return chips;
++}
++
 +function cellCard(cell, sccIndex) {
 +	var band = bandLabel(cell);
 +	var meta = [];
@@ -1944,15 +1931,16 @@ index 88ba185..fb34dbc 100644
 +			this.loadSnapshot('json'),
 +			L.resolveDefault(uci.load('3ginfo'), null)
 +		]).then(L.bind(function(res) {
-+			var refresh = 30;
++			var refresh = DEFAULT_INTERVAL;
++			var neighbour = DEFAULT_INTERVAL;
++
 +			try {
-+				var v = parseInt(uci.get('3ginfo', '@3ginfo[0]', 'radio_refresh'), 10);
-+				if (REFRESH_CHOICES.indexOf(v) !== -1)
-+					refresh = v;
++				refresh = intervalSeconds(uci.get('3ginfo', '@3ginfo[0]', 'radio_refresh'));
++				neighbour = intervalSeconds(uci.get('3ginfo', '@3ginfo[0]', 'radio_neighbor_interval'));
 +			}
 +			catch (e) {}
 +
-+			return { snapshot: res[0], refresh: refresh };
++			return { snapshot: res[0], refresh: refresh, neighbour: neighbour };
 +		}, this));
 +	},
 +
@@ -2474,23 +2462,19 @@ index 88ba185..fb34dbc 100644
 +		this._snapshot = (data.snapshot && !data.snapshot.error) ? data.snapshot : null;
 +		this._error = data.snapshot && data.snapshot.error ? data.snapshot.error : null;
 +		this._refreshSeconds = data.refresh;
++		this._neighbourSeconds = data.neighbour;
 +		this._filter = 'all';
 +		this._query = '';
 +		this._sort = { key: 'rsrp', dir: 'desc' };
 +		this._busy = false;
++		this._scanBusy = false;
++		this._scanTimer = null;
++		this._lastScanAt = null;
++		this._scanDueAt = null;
 +		this._lastLoad = Date.now();
++		this._lastPollAt = Date.now();
 +
 +		this.injectCss();
-+
-+		var refreshOptions = [
-+			[ 0, _('Off') ],
-+			[ 15, _('15 seconds') ],
-+			[ 30, _('30 seconds') ],
-+			[ 60, _('1 minute') ],
-+			[ 120, _('2 minutes') ]
-+		].map(L.bind(function(item) {
-+			return el('option', { 'value': String(item[0]), 'selected': item[0] === this._refreshSeconds ? 'selected' : null }, item[1]);
-+		}, this));
 +
 +		var root = el('div', { 'class': 'tg-page cbi-map' }, [
 +			el('div', { 'class': 'tg-page-head' }, [
@@ -2505,7 +2489,7 @@ index 88ba185..fb34dbc 100644
 +							'id': 'tg-refresh-rate',
 +							'class': 'cbi-input-select tg-select',
 +							'change': L.bind(this.handleRefreshChange, this)
-+						}, refreshOptions)
++						}, intervalOptions(this._refreshSeconds))
 +					]),
 +					el('button', {
 +						'id': 'tg-refresh',
@@ -2542,13 +2526,6 @@ index 88ba185..fb34dbc 100644
 -							E('div', { 'style': 'text-align:left;font-size:66%', 'id': 'location' }, [ '-' ]),
 -						]),
 -					]),
-+			el('nav', { 'class': 'tg-nav', 'aria-label': _('Cellular details') }, [
-+				navLink('tg-signal', _('Signal')),
-+				navLink('tg-serving', _('Serving cells')),
-+				navLink('tg-neighbours', _('Neighbours')),
-+				navLink('tg-diagnostics', _('Diagnostics'))
-+			]),
-+
 +			el('div', { 'class': 'tg-overview' }, [
 +				card('tg-signal', _('Signal health'), _('LTE anchor and 5G NR are measured separately'), el('span', { 'id': 'tg-signal-badge' }), [
 +					el('div', { 'id': 'tg-signal-grid', 'class': 'tg-signal-grid' })
@@ -2587,12 +2564,22 @@ index 88ba185..fb34dbc 100644
 +				])
 +			]),
 +
-+			card('tg-neighbours', _('Neighbour cells'), _('Cells detected nearby, not currently carrying your connection'), el('button', {
-+				'id': 'tg-neighbour-scan',
-+				'type': 'button',
-+				'class': 'btn cbi-button tg-button',
-+				'click': L.bind(this.handleNeighbourScan, this)
-+			}, [ el('span', { 'class': 'tg-refresh-glyph', 'aria-hidden': 'true' }, '↻'), ' ', _('Scan neighbours') ]), [
++			card('tg-neighbours', _('Neighbour cells'), _('Cells detected nearby, not currently carrying your connection'), el('div', { 'class': 'tg-neighbour-actions' }, [
++				el('label', { 'class': 'tg-refresh-label' }, [
++					_('Auto scan'),
++					el('select', {
++						'id': 'tg-neighbour-rate',
++						'class': 'cbi-input-select tg-select',
++						'change': L.bind(this.handleNeighbourRateChange, this)
++					}, intervalOptions(this._neighbourSeconds))
++				]),
++				el('button', {
++					'id': 'tg-neighbour-scan',
++					'type': 'button',
++					'class': 'btn cbi-button tg-button',
++					'click': L.bind(this.handleNeighbourScan, this)
++				}, [ el('span', { 'class': 'tg-refresh-glyph', 'aria-hidden': 'true' }, '↻'), ' ', _('Scan now') ])
++			]), [
 +				el('div', { 'id': 'tg-neighbour-note', 'class': 'tg-inline-note', 'hidden': 'hidden' }),
 +				el('div', { 'class': 'tg-neighbour-tools' }, [
 +					el('div', { 'id': 'tg-neighbour-filters', 'class': 'tg-filters', 'role': 'group', 'aria-label': _('Filter neighbour cells') }),
@@ -2786,15 +2773,10 @@ index 88ba185..fb34dbc 100644
 +				poll.start();
 +			}
 +		}, this), 0);
- 
--		s = m.section(form.TypedSection, 'threeginfo', null);
--		s.anonymous = true;
--		s.addremove = false;
++
 +		return root;
 +	},
- 
--		s.tab('opt1', _('BTS Search'));
--		s.anonymous = true;
++
 +	injectCss: function() {
 +		if (document.querySelector('link[data-3ginfo-radio]'))
 +			return;
@@ -2809,11 +2791,29 @@ index 88ba185..fb34dbc 100644
 +		if (this._busy || this._refreshSeconds <= 0)
 +			return;
 +
-+		if (Date.now() - this._lastLoad < this._refreshSeconds * 1000)
++		// A neighbour scan returns the whole snapshot, so while one is running
++		// or about to run this tick stays out of its way instead of queueing a
++		// second collection behind it. At equal intervals that is what turns a
++		// 5-second page into a 5-second page instead of a 10-second one.
++		if (this._scanBusy)
 +			return;
 +
++		var scanIn = this._scanDueAt === null ? null : this._scanDueAt - Date.now();
++		if (scanIn !== null && scanIn >= 0 && scanIn <= 1000)
++			return;
++
++		// Measured from the start of the previous request, not its end: the
++		// request itself takes a second or two, and charging that to the
++		// interval turned "every 5 seconds" into "every other tick".
++		if (this._lastPollAt && Date.now() - this._lastPollAt < this._refreshSeconds * 1000)
++			return;
++
++		this._lastPollAt = Date.now();
 +		this._busy = true;
-+		this.loadSnapshot('json').then(L.bind(function(snapshot) {
++		// refresh, not json: the interval the page offers is the interval the
++		// modem is actually read at. The collector's own minimum still decides
++		// when a request arrives too early.
++		this.loadSnapshot('refresh').then(L.bind(function(snapshot) {
 +			this._busy = false;
 +			this._lastLoad = Date.now();
 +			if (snapshot.error) {
@@ -2825,42 +2825,47 @@ index 88ba185..fb34dbc 100644
 +			}
 +		}, this));
 +	},
- 
--		o = s.taboption('opt1', form.Button, '_search');
--		o.title      = _('Search BTS using Cell ID');
--		o.inputtitle = _('Search');
--		o.onclick = function() {
++
 +	handleRefreshChange: function(ev) {
 +		this._refreshSeconds = parseInt(ev.target.value, 10) || 0;
-+		this._lastLoad = Date.now();
++		this._lastPollAt = 0;
 +	},
  
--		return uci.load('3ginfo').then(function() {
--		var searchsite = uci.get('3ginfo', '@3ginfo[0]', 'website');
+-		s = m.section(form.TypedSection, 'threeginfo', null);
+-		s.anonymous = true;
+-		s.addremove = false;
 +	handleRefresh: function(ev) {
 +		ev.preventDefault();
 +		if (this._busy)
 +			return;
  
--			if (!searchsite) {
--				ui.addNotification(null, E('p', _('Search URL is not configured in 3ginfo.')), 'error');
+-		s.tab('opt1', _('BTS Search'));
+-		s.anonymous = true;
 +		this._busy = true;
 +		var button = document.getElementById('tg-refresh');
 +		if (button) {
 +			button.disabled = true;
 +			button.classList.add('tg-busy');
 +		}
-+
+ 
+-		o = s.taboption('opt1', form.Button, '_search');
+-		o.title      = _('Search BTS using Cell ID');
+-		o.inputtitle = _('Search');
+-		o.onclick = function() {
 +		this.loadSnapshot('refresh').then(L.bind(function(snapshot) {
 +			this._busy = false;
 +			this._lastLoad = Date.now();
-+
+ 
+-		return uci.load('3ginfo').then(function() {
+-		var searchsite = uci.get('3ginfo', '@3ginfo[0]', 'website');
 +			var button = document.getElementById('tg-refresh');
 +			if (button) {
 +				button.disabled = false;
 +				button.classList.remove('tg-busy');
 +			}
-+
+ 
+-			if (!searchsite) {
+-				ui.addNotification(null, E('p', _('Search URL is not configured in 3ginfo.')), 'error');
 +			if (snapshot.error) {
 +				this.showBanner(snapshot.error, 'error');
  				return;
@@ -2872,6 +2877,60 @@ index 88ba185..fb34dbc 100644
 +				this.hideBanner();
 +		}, this));
 +	},
++
++	handleNeighbourRateChange: function(ev) {
++		this._neighbourSeconds = intervalSeconds(ev.target.value);
++		this.maybeAutoScan();
++	},
++
++	// Auto scan: a scan is due when the newest report is older than the chosen
++	// interval, or when nothing has been scanned yet. A timer, not the poll,
++	// decides when: the poll interval and a scan's own duration would otherwise
++	// turn "every 5 seconds" into "every second poll". It runs quietly - no
++	// button flicker, and the rate-limit note is not a banner here because it is
++	// normal at the short intervals.
++	maybeAutoScan: function() {
++		if (this._scanTimer) {
++			clearTimeout(this._scanTimer);
++			this._scanTimer = null;
++		}
++		this._scanDueAt = null;
++
++		if (!document.getElementById('tg-summary'))
++			return;
++
++		// A collection is already running. Look again shortly rather than
++		// dropping the schedule: dropping it used to stall the scan for good.
++		if (!this._neighbourSeconds || this._scanBusy || this._busy) {
++			if (this._neighbourSeconds)
++				this._scanTimer = window.setTimeout(L.bind(this.maybeAutoScan, this), 400);
++			return;
++		}
++
++		var s = this._snapshot;
++		if (!s || !(s.capabilities && s.capabilities.neighbors))
++			return;
++
++		var n = s.neighbors || {};
++
++		// The snapshot carries the age it had when it was collected, which does
++		// not move between polls. Keep a local clock for the schedule instead:
++		// seed it from the first report we see, then move it on each scan.
++		if (this._lastScanAt === null) {
++			var age = num(s.meta && s.meta.neighbor_age_seconds);
++			if (!n.scanned || age === null)
++				this._lastScanAt = 0;
++			else
++				this._lastScanAt = Date.now() - age * 1000;
++		}
++
++		var wait = this._neighbourSeconds - (Date.now() - this._lastScanAt) / 1000;
++
++		if (wait > 0) {
++			this._scanDueAt = Date.now() + Math.ceil(wait * 1000);
++			this._scanTimer = window.setTimeout(L.bind(this.maybeAutoScan, this), Math.ceil(wait * 1000));
++			return;
++		}
  
 -			// Safe parsing to prevent 'undefined.length' and 'undefined.slice' crashes
 -			var id_dec = (json && json.cid_dec) ? String(json.cid_dec) : "";
@@ -2890,6 +2949,23 @@ index 88ba185..fb34dbc 100644
 -				else if (!isNaN(id_dec_conv)) {
 -					window.open(searchsite + id_dec_conv);
 -				}
++		this._scanBusy = true;
++		this._scanDueAt = null;
++		// Stamped at the start, so the interval is the gap between scans rather
++		// than between the end of one and the start of the next.
++		this._lastScanAt = Date.now();
++		this.loadSnapshot('neighbors').then(L.bind(function(snapshot) {
++			this._scanBusy = false;
++			if (snapshot.error || !document.getElementById('tg-summary'))
++				return;
++			this.update(snapshot);
++			if (snapshot.neighbors && snapshot.neighbors.error)
++				this.showBanner(snapshot.neighbors.error, 'warning');
++		}, this), L.bind(function() {
++			this._scanBusy = false;
++		}, this));
++	},
++
 +	handleNeighbourSearch: function(ev) {
 +		this._query = ev.target.value || '';
 +		this.updateNeighbours();
@@ -2922,7 +2998,7 @@ index 88ba185..fb34dbc 100644
 +			if (button) {
 +				button.disabled = false;
 +				button.classList.remove('tg-busy');
-+				button.textContent = '↻ ' + _('Scan neighbours');
++				button.textContent = '↻ ' + _('Scan now');
  			}
  
 -			if (searchsite.includes('lteitaly')) {
@@ -2981,6 +3057,7 @@ index 88ba185..fb34dbc 100644
 +		this.updateNeighbours();
 +		this.updateDiagnostics();
 +		this.updateIdentity();
++		this.maybeAutoScan();
 +	},
 +
 +	updateSummary: function() {
@@ -3124,9 +3201,8 @@ index 88ba185..fb34dbc 100644
 +			all: rows.length,
 +			lte: rows.filter(function(c) { return c.rat === 'lte'; }).length,
 +			nr: rows.filter(function(c) { return c.rat === 'nr'; }).length
- 		};
- 
--		return m.render();
++		};
++
 +		this.updateNeighbourFilters(counts);
 +
 +		var desc = document.querySelector('#tg-neighbours .tg-card-desc');
@@ -3208,7 +3284,7 @@ index 88ba185..fb34dbc 100644
 +			rsrq: _('RSRQ'),
 +			sinr: _('SINR'),
 +			type: _('Type')
-+		};
+ 		};
 +		var sort = this._sort;
 +
 +		document.querySelectorAll('.tg-sort').forEach(function(button) {
@@ -3292,7 +3368,8 @@ index 88ba185..fb34dbc 100644
 +		b.textContent = text;
 +		b.hidden = false;
 +	},
-+
+ 
+-		return m.render();
 +	hideBanner: function() {
 +		var b = document.getElementById('tg-banner');
 +		if (!b)
@@ -3303,15 +3380,15 @@ index 88ba185..fb34dbc 100644
  
  	handleSaveApply: null,
 diff --git a/luci-app-3ginfo-lite/root/etc/config/3ginfo b/luci-app-3ginfo-lite/root/etc/config/3ginfo
-index f47d385..1e2911b 100644
+index f47d385..8ed51d9 100644
 --- a/luci-app-3ginfo-lite/root/etc/config/3ginfo
 +++ b/luci-app-3ginfo-lite/root/etc/config/3ginfo
 @@ -2,3 +2,5 @@
  config 3ginfo
  	option device ''
  	option website 'http://www.btsearch.pl/szukaj.php?mode=std&search='
-+	option radio_refresh '30'
-+	option radio_neighbor_interval '60'
++	option radio_refresh '5'
++	option radio_neighbor_interval '5'
 diff --git a/luci-app-3ginfo-lite/root/etc/uci-defaults/set_3ginfo_port.sh b/luci-app-3ginfo-lite/root/etc/uci-defaults/set_3ginfo_port.sh
 index d3fd50d..6f9f55e 100644
 --- a/luci-app-3ginfo-lite/root/etc/uci-defaults/set_3ginfo_port.sh
@@ -3991,10 +4068,10 @@ index 0000000..651dc5f
 +}
 diff --git a/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh
 new file mode 100755
-index 0000000..f1dcbe1
+index 0000000..fe344b5
 --- /dev/null
 +++ b/luci-app-3ginfo-lite/root/usr/share/3ginfo-lite/radiodata.sh
-@@ -0,0 +1,501 @@
+@@ -0,0 +1,504 @@
 +#!/bin/sh
 +# radiodata.sh - one cached, normalized radio snapshot for 3gInfo-lite.
 +#
@@ -4021,9 +4098,9 @@ index 0000000..f1dcbe1
 +ID_CACHE=${RADIO_ID_CACHE:-/tmp/3ginfo-radio-identity.json}
 +LOCKDIR=${RADIO_LOCKDIR:-/var/lock/3ginfo-radio.lock}
 +SAMPLE_TTL=25
-+NEIGHBOR_SAMPLE_MAX=60
++
 +REFRESH_MIN=5
-+NEIGHBOR_DEFAULT=60
++NEIGHBOR_DEFAULT=5
 +NEIGHBOR_TTL_DEFAULT=120
 +ID_TTL=300
 +LOCK_WAIT=${RADIO_LOCK_WAIT:-20}
@@ -4158,7 +4235,7 @@ index 0000000..f1dcbe1
 +	case "$v" in
 +		''|*[!0-9]*) echo "$NEIGHBOR_DEFAULT" ;;
 +		*)
-+			[ "$v" -lt 30 ] && v=30
++			[ "$v" -lt 5 ] && v=5
 +			[ "$v" -gt 3600 ] && v=3600
 +			echo "$v"
 +			;;
@@ -4472,7 +4549,9 @@ index 0000000..f1dcbe1
 +		emit_new "$TMP/final.json"
 +		;;
 +	refresh)
-+		if [ "$(cache_age)" -le "$REFRESH_MIN" ]; then
++		# -lt, not -le: a 5-second page interval asks exactly at the boundary,
++		# and a request that is exactly at the minimum is not too early.
++		if [ "$(cache_age)" -lt "$REFRESH_MIN" ]; then
 +			emit_cache | jq '.meta.rate_limited = true'
 +			exit 0
 +		fi
@@ -4480,10 +4559,11 @@ index 0000000..f1dcbe1
 +		emit_new "$TMP/final.json"
 +		;;
 +	neighbors)
-+		# A scan may wait on the modem itself. Reuse a slightly older serving
-+		# snapshot rather than spending the request budget on a full resample
-+		# first; the page still shows that snapshot's age.
-+		if [ "$(cache_age)" -gt "$NEIGHBOR_SAMPLE_MAX" ]; then
++		# The page can run scans and refreshes at the same short interval, and
++		# a scan carries the serving snapshot with it. Resample on the same
++		# boundary the refresh uses, so one scan keeps the whole page current
++		# instead of the summary lagging a whole interval behind it.
++		if [ "$(cache_age)" -ge "$REFRESH_MIN" ]; then
 +			collect_sample
 +		else
 +			cp "$CACHE" "$TMP/final.json"
