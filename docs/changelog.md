@@ -5,6 +5,33 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
+## 25.12.5-R2.2
+
+The radio page, *Modem → 3gInfo-lite*, is rebuilt, and one collector now answers every card on it.
+
+- **One page, no tabs.** Signal health, serving cells, network, neighbour cells, diagnostics and
+  identity are cards down a single page. The summary at the top names the registration state, the
+  operator, the mode — LTE, 5G NSA with its LTE anchor, or 5G SA — and whether carrier aggregation
+  is active, with the age of the reading beside it.
+- **Serving cells per carrier.** Each component carrier has its own card with band, EARFCN or NR
+  ARFCN, PCI, RSRP, RSRQ and SINR, and the 5G leg of an EN-DC connection is shown beside its LTE
+  anchor rather than replacing it. The neighbour table keeps its signal filter, search and sort,
+  and says how old the scan is.
+- **Five seconds by default.** The snapshot refresh and the neighbour scan both offer 5, 15 and 30
+  seconds, 1 and 5 minutes, and start at five seconds. Neighbours scan themselves while the page is
+  open; the manual *Scan now* button stays. The collector enforces the same floor, so a page left
+  open cannot turn into a stream of AT commands.
+- **A duration, and a last error.** The diagnostics card reports how long a collection took and what
+  the last one failed with, so a page that stops updating says why instead of going quiet.
+- **The theme draws the boxes.** The cards are the theme's own section container, so the wallpaper
+  and glass modes, the dark scheme and any installed theme apply to them as they do everywhere else
+  in LuCI.
+
+Behind the page is `radiodata.sh`, one script behind a lock with a short cache. It reads QModem over
+`ubus` when the daemon answers, falls back to the package's own `3ginfo.sh` when it does not, and
+keeps the per-carrier `AT+QCAINFO` output as a table. The page presents what it returns and reads no
+modem itself.
+
 ## 25.12.5-R2.1
 
 The second stable release of the OpenWrt 25.12.5 base. The line is quieter, and the new-firmware

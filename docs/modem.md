@@ -27,6 +27,14 @@ vendor QMI dialer, so it dials and recovers on its own.
     *Modem → TTL* — the shipped rule is an `/etc/nftables.d/` fragment, which is what fw4 actually
     applies.
 
+## The radio page
+
+*Modem → 3gInfo-lite* reads the modem through one collector, `radiodata.sh`, and shows what it
+measured: the registration state and the mode, the signal of each serving carrier, the cells around
+you, and how long the last collection took. The refresh and the neighbour scan both start at five
+seconds and can be set to 15 or 30 seconds, 1 or 5 minutes. Neighbours also scan on their own while
+the page is open, and *Scan now* takes a reading at once.
+
 ## AWvoice and the modem
 
 [AWvoice](awvoice.md) uses this modem for voice, over VoLTE, and needs it in **PCM slave mode**. If

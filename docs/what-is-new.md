@@ -16,6 +16,19 @@ other way round: what changes for you if you are on the release before.
     The LuCI login footer shows the same string. The version is also the first line of the
     [Health tab](awvoice/health-and-tests.md)'s log view.
 
+## 25.12.5-R2.2
+
+This release rebuilds the modem page as one page.
+
+| if you are on | you gain |
+|---|---|
+| `R2.1` | the rebuilt *Modem → 3gInfo-lite* page: one scrolling page of cards instead of tabs, serving cells per carrier, a neighbour table that scans itself, five-second defaults for both the refresh and the scan, and the collection duration and last error in the diagnostics card |
+| `R2` | the same, plus the ASU fixes and the version label R2.1 added |
+| `R1` | the same, plus everything between R1 and R2.1 |
+
+The menu name does not change. The data behind the page comes from one collector, so the cards
+cannot disagree with each other about when the reading was taken.
+
 ## 25.12.5-R2.1
 
 The second stable release. The line is quieter, and the update notice works from the first boot.
