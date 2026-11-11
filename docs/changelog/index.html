@@ -2130,6 +2130,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#25125-r22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.12.5-R2.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#25125-r21" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2227,6 +2238,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#25125-r22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25.12.5-R2.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#25125-r21" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2307,6 +2329,31 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="25125-r22">25.12.5-R2.2<a class="headerlink" href="#25125-r22" title="Permanent link">&para;</a></h2>
+<p>The radio page, <em>Modem → 3gInfo-lite</em>, is rebuilt, and one collector now answers every card on it.</p>
+<ul>
+<li><strong>One page, no tabs.</strong> Signal health, serving cells, network, neighbour cells, diagnostics and
+  identity are cards down a single page. The summary at the top names the registration state, the
+  operator, the mode — LTE, 5G NSA with its LTE anchor, or 5G SA — and whether carrier aggregation
+  is active, with the age of the reading beside it.</li>
+<li><strong>Serving cells per carrier.</strong> Each component carrier has its own card with band, EARFCN or NR
+  ARFCN, PCI, RSRP, RSRQ and SINR, and the 5G leg of an EN-DC connection is shown beside its LTE
+  anchor rather than replacing it. The neighbour table keeps its signal filter, search and sort,
+  and says how old the scan is.</li>
+<li><strong>Five seconds by default.</strong> The snapshot refresh and the neighbour scan both offer 5, 15 and 30
+  seconds, 1 and 5 minutes, and start at five seconds. Neighbours scan themselves while the page is
+  open; the manual <em>Scan now</em> button stays. The collector enforces the same floor, so a page left
+  open cannot turn into a stream of AT commands.</li>
+<li><strong>A duration, and a last error.</strong> The diagnostics card reports how long a collection took and what
+  the last one failed with, so a page that stops updating says why instead of going quiet.</li>
+<li><strong>The theme draws the boxes.</strong> The cards are the theme's own section container, so the wallpaper
+  and glass modes, the dark scheme and any installed theme apply to them as they do everywhere else
+  in LuCI.</li>
+</ul>
+<p>Behind the page is <code>radiodata.sh</code>, one script behind a lock with a short cache. It reads QModem over
+<code>ubus</code> when the daemon answers, falls back to the package's own <code>3ginfo.sh</code> when it does not, and
+keeps the per-carrier <code>AT+QCAINFO</code> output as a table. The page presents what it returns and reads no
+modem itself.</p>
 <h2 id="25125-r21">25.12.5-R2.1<a class="headerlink" href="#25125-r21" title="Permanent link">&para;</a></h2>
 <p>The second stable release of the OpenWrt 25.12.5 base. The line is quieter, and the new-firmware
 notice works from the first boot:</p>

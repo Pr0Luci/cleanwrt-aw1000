@@ -2734,6 +2734,14 @@ than shipping a half-applied change.</p>
 <td>the menu title becomes <code>3gInfo-lite</code></td>
 </tr>
 <tr>
+<td><code>3ginfo/0004-radio-telemetry-and-redesign</code></td>
+<td>the radio page and the collector behind it: one locked snapshot per request, serving cells per carrier, a neighbour table that scans itself, and five-second defaults</td>
+</tr>
+<tr>
+<td><code>3ginfo/0005-radio-telemetry-executable</code></td>
+<td><code>radiodata.sh</code> gains its executable bit, for the same reason <code>0002</code> exists: the page runs it through <code>fs.exec</code>, and <code>patch</code> alone does not carry the mode</td>
+</tr>
+<tr>
 <td><code>diskman/0001-disk-manager-menu-rename-services-move</code></td>
 <td>Disk Manager moves from the System menu to Services, with its title and every internal link</td>
 </tr>

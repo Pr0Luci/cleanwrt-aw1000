@@ -1168,6 +1168,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-radio-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The radio page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#awvoice-and-the-modem" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2324,6 +2335,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-radio-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The radio page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#awvoice-and-the-modem" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2532,6 +2554,12 @@ is allowed depends on your carrier's terms. Change the value or switch it off in
 <em>Modem → TTL</em> — the shipped rule is an <code>/etc/nftables.d/</code> fragment, which is what fw4 actually
 applies.</p>
 </div>
+<h2 id="the-radio-page">The radio page<a class="headerlink" href="#the-radio-page" title="Permanent link">&para;</a></h2>
+<p><em>Modem → 3gInfo-lite</em> reads the modem through one collector, <code>radiodata.sh</code>, and shows what it
+measured: the registration state and the mode, the signal of each serving carrier, the cells around
+you, and how long the last collection took. The refresh and the neighbour scan both start at five
+seconds and can be set to 15 or 30 seconds, 1 or 5 minutes. Neighbours also scan on their own while
+the page is open, and <em>Scan now</em> takes a reading at once.</p>
 <h2 id="awvoice-and-the-modem">AWvoice and the modem<a class="headerlink" href="#awvoice-and-the-modem" title="Permanent link">&para;</a></h2>
 <p><a href="../awvoice/">AWvoice</a> uses this modem for voice, over VoLTE, and needs it in <strong>PCM slave mode</strong>. If
 you use the phone port, read that page before you change the modem's audio or IMS settings: AWvoice
