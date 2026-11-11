@@ -147,6 +147,8 @@ than shipping a half-applied change.
 |---|---|
 | `3ginfo/0002-3ginfo-executable-mode` | `3ginfo.sh` gains its executable bit, because LuCI `fs.exec`s it directly and a fresh boot could fail before the chmod script ran |
 | `3ginfo/0003-3ginfo-menu-title` | the menu title becomes `3gInfo-lite` |
+| `3ginfo/0004-radio-telemetry-and-redesign` | the radio page and the collector behind it: one locked snapshot per request, serving cells per carrier, a neighbour table that scans itself, and five-second defaults |
+| `3ginfo/0005-radio-telemetry-executable` | `radiodata.sh` gains its executable bit, for the same reason `0002` exists: the page runs it through `fs.exec`, and `patch` alone does not carry the mode |
 | `diskman/0001-disk-manager-menu-rename-services-move` | Disk Manager moves from the System menu to Services, with its title and every internal link |
 | `passwall_packages/0001-dns2socks-naiveproxy-sources` | two upstream release assets that no longer exist: dns2socks carries its source in the package, naiveproxy points at a prebuilt version |
 | `tree/0001-apk-package-timestamps-zero` | `apk mkpkg` runs with a fixed epoch, so two builds of one commit produce identical images |

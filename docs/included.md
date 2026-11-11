@@ -18,7 +18,7 @@ switch.
 |---|---|---|---|
 | AWvoice | Services → AWvoice(RJ11) | On | phone calls on the RJ11 port, in the browser, or from a soft phone ([the phone port](awvoice.md)) |
 | QModem (+ SMS, TTL) | Modem | On | 5G modem control, SMS, TTL tools |
-| 3ginfo-lite | Modem → 3gInfo-lite | On | SIM and signal details |
+| 3ginfo-lite | Modem → 3gInfo-lite | On | SIM, signal and neighbour cells ([the radio page](modem.md#the-radio-page)) |
 | sms-forwarder | part of QModem | On | forwards received SMS |
 | SIP service for the phone port | no page of its own — the switch is on AWvoice → SIP | Off until the AWvoice SIP switch turns it on | a soft phone on your own network rings and dials through the SIM's line; off means no port is open ([AWvoice](awvoice.md)) |
 | Passwall | Services → PassWall | Off (configure servers) | proxy / bypass suite |
