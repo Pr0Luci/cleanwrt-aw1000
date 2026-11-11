@@ -87,16 +87,20 @@ the files actually installed rather than trusting a number written down. It runs
 look it applied, and a router whose look has already been saved to the router is left alone - your
 choice always outranks the image's.
 
-## Switching themes
+## Switching back
 
 Footstrap is selected on the first boot. To change it later:
 
 *System → System → Language and Style → Design*
 
-The stock Bootstrap theme stays installed as the fallback. **Argon** and **Alpha** are in the image as
-well, each its own package with its own licence and pin, so the three can be compared on the device.
-Alpha is written for an older LuCI layout, so if choosing it leaves pages that do not look right, that
-is what you are seeing - nothing else about the firmware changes when you switch.
+The stock Bootstrap theme is the only other one in the image, and it is there as the fallback: if
+the pinned theme did not install, `files/etc/uci-defaults/96-cw-default-theme` leaves the stock base
+alone, so the web interface still opens, and Bootstrap is always a choice in the selector.
+
+An upgrade from an older image can leave two things naming a theme this image no longer carries: the
+base the interface opens with, and the entry the design selector offers. Both are repaired at the
+first boot after the upgrade - the base moves to Footstrap and the entry is removed - so a router
+that had another design selected does not open on a page with no styles.
 
 ## Notes for developers
 

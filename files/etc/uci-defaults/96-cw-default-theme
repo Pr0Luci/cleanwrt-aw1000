@@ -7,34 +7,59 @@
 #   - the value already names the theme this image ships (nothing to do);
 #   - the value names a theme whose directory is gone from the image: a dangling
 #     base renders a blank web page, so it is repaired to the shipped default.
+# A theme entry whose directory is gone is removed for the same reason: the design
+# selector reads luci.themes, and an entry left behind by a package this image no
+# longer carries is a choice that cannot work.
 # The theme directory must exist before anything points at it: a pin that failed
 # to install must leave the working bootstrap in place rather than break the UI.
-[ -f /etc/config/luci ] || exit 0
+#
+# CW_ROOT prefixes the paths the script inspects. It is unset in the image and set
+# only by tools/tests/cw-default-theme-test.sh.
+ROOT="${CW_ROOT:-}"
+[ -f "$ROOT/etc/config/luci" ] || exit 0
 
 want='footstrap'
 base="/luci-static/$want"
-[ -d "/www$base" ] || exit 0
+[ -d "$ROOT/www$base" ] || exit 0
+
+changed=0
+dropped=
+
+for name in $(uci -q show luci.themes 2>/dev/null | sed -n 's/^luci\.themes\.\([^=]*\)=.*/\1/p'); do
+	dir=$(uci -q get "luci.themes.$name")
+	if [ -z "$dir" ] || [ ! -d "$ROOT/www$dir" ]; then
+		uci -q delete "luci.themes.$name"
+		changed=1
+		dropped="$dropped $name"
+	fi
+done
 
 cur=$(uci -q get luci.main.mediaurlbase)
 need=0
 case "$cur" in
 	''|/luci-static/bootstrap)	need=1 ;;
 	"$base")			need=0 ;;
-	*)	[ -d "/www$cur" ] || need=1 ;;
+	*)	[ -d "$ROOT/www$cur" ] || need=1 ;;
 esac
-[ "$need" = 1 ] || {
-	# already right, or the user's own choice and still installed
-	uci -q delete luci.cw_state && uci commit luci
-	exit 0
-}
 
-# Footstrap registers its own theme entry; naming it here keeps the switch working
-# even if that registration is deferred to a later first-boot script.
-uci set "luci.themes.Footstrap=$base"
-uci set "luci.main.mediaurlbase=$base"
+if [ "$need" = 1 ]; then
+	# Footstrap registers its own theme entry; naming it here keeps the switch
+	# working even if that registration is deferred to a later first-boot script.
+	uci set "luci.themes.Footstrap=$base"
+	uci set "luci.main.mediaurlbase=$base"
+	changed=1
+fi
+
 # A marker left by an older image is dead state: the choice is read from the theme
 # directory itself.
-uci -q delete luci.cw_state
+if uci -q get luci.cw_state >/dev/null 2>&1; then
+	uci -q delete luci.cw_state
+	changed=1
+fi
+
+[ "$changed" = 1 ] || exit 0
+
 uci commit luci
-logger -t cw-firstboot "luci: default theme set to Footstrap"
+[ "$need" = 1 ] && logger -t cw-firstboot "luci: default theme set to Footstrap"
+[ -n "$dropped" ] && logger -t cw-firstboot "luci: dropped theme entries without a directory:$dropped"
 exit 0

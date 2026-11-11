@@ -158,7 +158,6 @@ than shipping a half-applied change.
 | patch | what it changes |
 |---|---|
 | `packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo` | one line: the login page shows the CleanWRT logo where the theme prints the router's hostname. The image file lives outside the theme's own directory, so a theme update can neither overwrite it nor collide with the patch |
-| `packages/luci-theme-argon/0001-argon-registers-itself-and-leaves-the-default` | deletes the line in Argon's first-boot script that made it the default design. An installed theme is offered, not selected |
 
 ## Changing a patch or moving a pin
 

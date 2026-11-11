@@ -23,7 +23,8 @@ relicenses them.
 | ath11k firmware | Qualcomm Atheros firmware licence (`LICENSE.qca_firmware`) | OpenWrt package Makefile |
 | AWvoice (kernel module, phone daemon, LuCI page) | GPL-2.0-only | shipped with the release |
 | `luci-app-cw-led` (this project's LED app) | GPL-2.0-only | <https://github.com/Pr0Luci/luci-app-cw-led> |
-| `luci-theme-footstrap`, `luci-theme-argon`, `luci-theme-alpha` and its `luci-app-alpha-config` (the LuCI themes; Footstrap is the one the image selects) | Apache-2.0, each from its own upstream | pinned commits in `configs/local-packages.pin` |
+| `luci-theme-footstrap` (the theme the image selects) | Apache-2.0, from its own upstream | pinned commit in `configs/local-packages.pin` |
+| `luci-theme-bootstrap` (LuCI's own, the fallback) | Apache-2.0 | LuCI feed @ pinned commit |
 
 Every other package's licence is listed, per package, in the generated
 [licence manifest](#licence-manifest).
@@ -78,12 +79,6 @@ under that licence, and is published here, which is the source of the modified f
 `files/www/luci-static/cw-branding/login-logo.png` - this repository's own file, outside the theme's
 directory, so a theme update can neither overwrite it nor collide with the patch.
 
-`patches/packages/luci-theme-argon/0001-argon-registers-itself-and-leaves-the-default.patch` removes one
-line of `luci-theme-argon/root/etc/uci-defaults/30_luci-theme-argon` at the pinned commit: the line that
-writes `luci.main.mediaurlbase`, the design the web interface opens with. Argon still registers itself as
-a selectable theme; which theme a new router starts on is this image's choice, made after every package's
-own first-boot script has run. Same terms as the patch above: a modification of Apache-2.0 code, published
-here.
 
 ### 3ginfo-lite feed patches
 
