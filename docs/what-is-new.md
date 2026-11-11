@@ -1,7 +1,7 @@
 ---
 title: "What is new in each CleanWRT release"
 description: "Each CleanWRT release for the Arcadyan AW1000 read the other way: what arrived, what changes if you come from the release before, and the page that explains it."
-updated: 2026-11-09
+updated: 2026-11-11
 ---
 
 # What is new
@@ -15,6 +15,20 @@ other way round: what changes for you if you are on the release before.
     ```
     The LuCI login footer shows the same string. The version is also the first line of the
     [Health tab](awvoice/health-and-tests.md)'s log view.
+
+## 25.12.5-R2.3
+
+This release takes the extra themes out of the image.
+
+| if you are on | you gain |
+|---|---|
+| `R2.2` | the image stops carrying Argon and Alpha: Footstrap is the design, Bootstrap is the fallback, and an upgrade removes the entries the design selector would otherwise keep offering |
+| `R2.1` | the same, plus the rebuilt modem page |
+| older | the same, plus everything the releases between changed |
+
+If you had picked Argon or Alpha, the web interface opens on Footstrap after the upgrade. Choosing
+Bootstrap under *System → System → Language and Style → Design* still works; the removed themes are
+no longer offered, because their files are not in the image any more.
 
 ## 25.12.5-R2.2
 

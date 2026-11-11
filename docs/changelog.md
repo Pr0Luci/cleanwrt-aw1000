@@ -5,6 +5,19 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
+## 25.12.5-R2.3
+
+The image carries one third-party theme, and an upgrade repairs a design it no longer has.
+
+- **Two themes, not five.** `luci-theme-argon`, `luci-theme-alpha` and `luci-app-alpha-config` are out
+  of the image. Footstrap is the design a router opens with and LuCI's own Bootstrap stays installed
+  as the fallback, so a page is never left without a theme and the selector always has one that works.
+- **The selector cannot offer a theme that is not there.** `luci.themes` lives in a conffile, so an
+  upgrade keeps the entries the removed packages wrote even though their directories are gone. The
+  first boot after the upgrade drops every entry the image no longer carries and repairs a base that
+  pointed at one - an upgrade from a router that had Argon or Alpha selected opens on Footstrap
+  instead of on a page with no styles.
+
 ## 25.12.5-R2.2
 
 The radio page, *Modem → 3gInfo-lite*, is rebuilt, and one collector now answers every card on it.
