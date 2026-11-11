@@ -927,7 +927,7 @@ index 8e3684e..15d9a76 100644
  			]);
  
 diff --git a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
-index 88ba185..7d6f643 100644
+index 88ba185..91bff70 100644
 --- a/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
 +++ b/luci-app-3ginfo-lite/htdocs/luci-static/resources/view/modem/3gdetail.js
 @@ -1,1211 +1,1305 @@
@@ -2479,7 +2479,7 @@ index 88ba185..7d6f643 100644
 +		var root = el('div', { 'class': 'tg-page cbi-map' }, [
 +			el('div', { 'class': 'tg-page-head' }, [
 +				el('div', {}, [
-+					el('h2', { 'class': 'tg-page-title' }, _('Cellular connection')),
++					el('h2', { 'class': 'tg-page-title' }, _('3gInfo-lite')),
 +					el('p', { 'class': 'tg-page-sub' }, _('Radio status and serving-cell telemetry'))
 +				]),
 +				el('div', { 'class': 'tg-page-actions' }, [
