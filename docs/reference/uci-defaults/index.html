@@ -2355,8 +2355,8 @@ rows.</p>
 </tr>
 <tr>
 <td><code>96-cw-default-theme</code></td>
-<td><code>luci.themes.Footstrap=/luci-static/footstrap</code> and <code>luci.main.mediaurlbase=/luci-static/footstrap</code>, and deletes a dead marker section an older image left</td>
-<td>only if <code>/www/luci-static/footstrap</code> exists <strong>and</strong> the current base is empty, still the stock bootstrap, or names a directory that no longer exists. If you chose another theme, your choice stands</td>
+<td><code>luci.themes.Footstrap=/luci-static/footstrap</code> and <code>luci.main.mediaurlbase=/luci-static/footstrap</code>; removes every <code>luci.themes</code> entry whose directory the image does not carry; deletes a dead marker section an older image left</td>
+<td>the base is set only if <code>/www/luci-static/footstrap</code> exists <strong>and</strong> the current base is empty, still the stock bootstrap, or names a directory that no longer exists. A theme you chose that is still installed stays, and so does its entry in the design selector</td>
 </tr>
 <tr>
 <td><code>97-cw-adguard-enable-bridge</code></td>
@@ -2381,7 +2381,7 @@ rows.</p>
 </tbody>
 </table>
 <h2 id="scripts-that-arrive-with-packages">Scripts that arrive with packages<a class="headerlink" href="#scripts-that-arrive-with-packages" title="Permanent link">&para;</a></h2>
-<p>Three more first-boot scripts matter to this image even though they belong to other packages:</p>
+<p>Two more first-boot scripts matter to this image even though they belong to other packages:</p>
 <table>
 <thead>
 <tr>
@@ -2400,11 +2400,6 @@ rows.</p>
 <td><code>89-qmodem-sip-migrate</code>, <code>90-qmodem-sip-firewall</code>, <code>91-qmodem-sip-voip-off</code></td>
 <td>the QModem feed's SIP service, the last one added by this build's patch <code>patches/feeds/qmodem/0009-sip-voip-default-migration.patch</code></td>
 <td>migrate a configuration that still pointed at the vendor engine, add the service's firewall include, and set both directions' <code>voip_enabled</code> to <code>0</code> <strong>only when</strong> the media socket path is the phone daemon's — which is how an upgrade from an older image ends up with working audio</td>
-</tr>
-<tr>
-<td><code>30_luci-theme-argon</code></td>
-<td>Argon, with one line removed by <code>patches/packages/luci-theme-argon/0001-argon-registers-itself-and-leaves-the-default.patch</code></td>
-<td>registers the theme but no longer makes it the default design. An installed theme is offered, not selected</td>
 </tr>
 </tbody>
 </table>
