@@ -1,12 +1,12 @@
 # CleanWRT distfeeds override: official OpenWrt 25.12.5 repositories only.
 #
 # The build adds one entry per configured feed, including the community feeds
-# (qmodem, passwall_packages, passwall2, 3ginfo) which have no published package
+# (qmodem, 3ginfo, diskman, openclash, cwfeed) which have no published package
 # index. Those entries point at downloads.openwrt.org and make `apk update` fail
 # out of the box on every device. This overlay replaces the generated distfeeds.list
 # with the official entries only, so package management works from first boot.
 #
-# The community packages (Passwall2, QModem, 3ginfo-lite) are bundled in the image at
+# The community packages (QModem, 3ginfo-lite, ...) are bundled in the image at
 # the pinned commits. The CleanWRT package index is the separate, disabled
 # cw-opt.list.disabled in this directory.
 #

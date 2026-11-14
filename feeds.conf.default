@@ -12,17 +12,6 @@
 # stays out of the pins to keep the dependency surface minimal. If a future
 # package ever needs it, re-add its feeds.buildinfo pin here.
 
-# ── passwall_packages (Openwrt-Passwall org) - MUST stay the FIRST feed ──────
-# Passwall's own build of its cores: xray-core, sing-box, hysteria, naiveproxy,
-# v2ray-geodata, ... `feeds install -a` takes the FIRST feed that has a package,
-# so listing this feed first makes these win over the older copies in the
-# official `packages` feed below (upstream's documented method: "insert at the
-# TOP of feeds.conf.default"). luci-app-passwall needs Xray >= 26.7.11 while the
-# official 25.12.5 feed carries 26.3.27. Pin = the newest commit
-# whose xray-core builds with the Go 1.26 of the official feed (xray >= 26.9.9
-# needs Go 1.27): xray-core 26.7.28.
-src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git^c42adf7b056813d5b56bbd120ad03180e57448e6
-
 # ── Official OpenWrt 25.12 feeds ─────────────────────────────────────────────
 # Pinned to the exact commits the OpenWrt project built the 25.12.5 release
 # from - taken verbatim from the release's feeds.buildinfo:
@@ -41,19 +30,6 @@ src-git telephony https://git.openwrt.org/feed/telephony.git^2618106d5846a4a542f
 # patches/feeds/qmodem/ applies here with zero fuzz, the modem-side ones as well as the
 # three that fix the SIP dialog's answer, teardown and cancel.
 src-git qmodem https://github.com/FUjr/QModem.git^0988085b887346ae9477ef2e77abe2f797bd2c4a
-
-# ── Passwall2 (Openwrt-Passwall org) ─────────────────────────────────────────
-# passwall2 carries the LuCI app; its dependency set (passwall_packages) is the
-# FIRST feed of this file, see the top.
-src-git passwall2 https://github.com/Openwrt-Passwall/openwrt-passwall2.git^426571850958db2bded801c4f23090438026a9ec
-
-# ── Passwall 1 (same org) ────────────────────────────────────────────────────
-# The first-generation LuCI app: ships in the image
-# DISABLED, on top of the cores the image already carries via passwall2
-# (xray-core + sing-box). Dependency set
-# (chinadns-ng/dns2socks/microsocks/tcping/lyaml/luci-compat…) is covered by the
-# passwall_packages feed pinned above and the official luci feed.
-src-git passwall https://github.com/Openwrt-Passwall/openwrt-passwall.git^701d982a26ee0b960d248754b8f8868f6f18fb59
 
 # ── OpenClash (vernesong) - opt-artifact feed, NOT in the image ──────────────
 # Compiled as an opt artifact into the cw-opt binary feed: users

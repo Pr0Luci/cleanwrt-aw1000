@@ -1,6 +1,6 @@
 # cw-opt: CleanWRT binary feed for what the official OpenWrt repositories do not
-# carry (the qBittorrent stack and AdGuard Home, both also baked into the image, and
-# on-demand apps such as OpenClash). Hosted at
+# carry (the qBittorrent stack, also baked into the image, and on-demand apps such
+# as OpenClash). Hosted at
 # https://pr0luci.github.io/cleanwrt-aw1000/feed/
 #
 # This file is NOT active: apk only reads repositories.d/*.list. To enable the feed:

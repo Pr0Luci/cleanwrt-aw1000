@@ -14,12 +14,11 @@
 # release re-runs it against the new package database, so the pins always match the
 # running image and an old pin can never demand a downgrade.
 #
-# qbittorrent and adguardhome are part of the image but come from the cwfeed, not the
-# luci feed, so they are written as bare names and stay upgradable (apk upgrade from
+# qbittorrent is part of the image but comes from the cwfeed, not the
+# luci feed, so it is written as a bare name and stays upgradable (apk upgrade from
 # the cw-opt feed). Packages installed after first boot (e.g. openclash) are added to
 # world without a pin by `apk add` and stay upgradable by design: none carries
-# build-time patches, and luci-app-adguardhome's service patch is re-applied by its
-# package postinst (see 97-cw-adguard-enable-bridge).
+# build-time patches.
 
 [ -f /lib/apk/db/installed ] || exit 0
 [ -d /etc/apk ] || exit 0

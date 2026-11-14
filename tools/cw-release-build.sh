@@ -25,7 +25,7 @@
 #                              (tools/cw-check-release-keys.sh). Without it a tree with
 #                              no key gets a fresh one that no device trusts.
 #   CW_MAX_IMAGE_MB=<n>        image size gate in MiB (default 80). The image carries
-#                              qBittorrent and AdGuard Home and needs the expanded
+#                              qBittorrent and needs the expanded
 #                              rootfs layout (the UBI check below enforces CW_UBI_LAYOUT).
 #
 # Build on a Linux host or in docker/Dockerfile, not on macOS.
@@ -99,10 +99,8 @@ cp "$REPO/feeds.conf.default" feeds.conf
 # In-repo vendored feed (feeds-src/): wired in as a `src-link` entry, so
 # scripts/feeds symlinks feeds/cwfeed to the vendored directory (no clone, no
 # commit pin: the vendored content is the repo itself).
-# It is inserted BEFORE the luci feed, not appended: names resolve first-match-wins
-# and the upstream luci feed has its own luci-app-adguardhome whose +adguardhome
-# dependency pulls the ~9 MiB Go binary into the image. The vendored copy (with
-# that dependency dropped) must win the name, or the image grows from 94 to 103 MiB.
+# It is inserted BEFORE the luci feed, not appended: names resolve first-match-wins,
+# so a vendored package always wins over a same-named one in the official feeds.
 # The link target is a stable directory inside the tree, not the checkout. With a
 # fresh checkout every run has new file mtimes, and OpenWrt's ".prepared" stamp is
 # derived from the package's files, so every cwfeed package (qt6base host and
@@ -173,42 +171,7 @@ done
 # `feeds update` sees a clean checkout.
 sh "$REPO/tools/cw-apply-feed-patches.sh" --reset "$PWD" "$REPO"
 ./scripts/feeds update -a
-# passwall_packages is the first feed (feeds.conf.default), so a clean
-# `feeds install -a` already prefers its cores. A persistent tree still carries the
-# symlinks of an earlier install (package/feeds/packages/xray-core -> the official
-# 26.3.27), and `feeds install` never replaces an installed package, so drop every
-# symlink another feed holds for a name passwall_packages provides, and the stale
-# apks that copy built, before installing. Same reasoning as the orphan prune above.
-for pdir in feeds/passwall_packages/*/; do
-    [ -f "${pdir}Makefile" ] || continue
-    pname=$(basename "$pdir")
-    for link in package/feeds/*/"$pname"; do
-        [ -L "$link" ] || continue
-        case "$link" in package/feeds/passwall_packages/*) continue ;; esac
-        echo "== passwall_packages provides $pname: drop $link =="
-        rm -f "$link"
-        for old_apk in bin/packages/*/*/"$pname"-[0-9]*.apk; do
-            case "$old_apk" in */passwall_packages/*) continue ;; esac
-            [ -e "$old_apk" ] && { echo "== drop stale $old_apk =="; rm -f "$old_apk"; }
-        done
-    done
-done
 ./scripts/feeds install -a
-
-# Passwall's LuCI apps refuse to run an Xray older than the version they write into
-# every config (util_xray.lua: xray_min_version). Fail here, in the CI
-# config check as well as in the release build, instead of shipping an image whose
-# Passwall cannot start a node.
-xray_mk=$(readlink -f package/feeds/passwall_packages/xray-core 2>/dev/null)/Makefile
-[ -f "$xray_mk" ] || { echo "ERROR: xray-core is not installed from the passwall_packages feed" >&2; exit 1; }
-xray_ver=$(sed -n 's/^PKG_VERSION:=//p' "$xray_mk" | head -1)
-xray_need=$(sed -n 's/.*xray_min_version *= *"\([0-9.]*\)".*/\1/p' feeds/passwall*/luci-app-passwall*/luasrc/passwall*/util_xray.lua | sort -V | tail -1)
-[ -n "$xray_need" ] || xray_need=0
-[ "$(printf '%s\n%s\n' "$xray_need" "$xray_ver" | sort -V | head -1)" = "$xray_need" ] || {
-    echo "ERROR: xray-core $xray_ver is older than the $xray_need that Passwall requires" >&2
-    exit 1
-}
-echo "== xray-core $xray_ver (Passwall requires >= $xray_need) =="
 
 # 2a. The patches kept in this repository - patches/feeds/<feed>/*.patch to the pinned feeds and
 #     patches/tree/*.patch to files the tree carries itself - applied with
@@ -479,12 +442,6 @@ cfg_enable 'CONFIG_PACKAGE_kmod-qmi_wwan_s=y'
 disable_broken_toggles() {
 for s in \
     RUBY_ENABLE_YJIT \
-    PACKAGE_luci-app-passwall2_INCLUDE_Shadowsocks_Rust_Client \
-    PACKAGE_luci-app-passwall2_INCLUDE_ShadowsocksR_Libev_Client \
-    PACKAGE_luci-app-passwall2_INCLUDE_Simple_Obfs \
-    PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Rust_Client \
-    PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Libev_Client \
-    PACKAGE_luci-app-passwall_INCLUDE_Simple_Obfs \
     PACKAGE_shadowsocksr-libev-ssr-local \
     PACKAGE_shadowsocksr-libev-ssr-redir \
     PACKAGE_simple-obfs-client \
@@ -549,7 +506,7 @@ fi
 #    seed via CW_SEED may omit opt-in packages).
 for p in luci luci-mod-admin-full luci-theme-bootstrap luci-theme-footstrap \
          libiwinfo rpcd-mod-iwinfo \
-         luci-app-passwall2 luci-app-qmodem qmodem kmod-qmi_wwan_q qmodem-sipd \
+         luci-app-qmodem qmodem kmod-qmi_wwan_q qmodem-sipd \
          minidlna samba4-server syncthing \
          luci-app-qmodem-ttlfw4 luci-app-tailscale-community luci-app-cw-led \
          luci-app-3ginfo-lite bash ttyd ; do
@@ -624,22 +581,20 @@ fi
 #     before an image carrying cw-opt.list is flashed anywhere: a dead feed entry
 #     breaks apk update. The first build compiles qt6base: budget +1-2 h.
 if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
-    echo "== opt-in artifacts: compiling the qBittorrent stack + OpenClash + AdGuardHome (none in the image) =="
+    echo "== opt-in artifacts: compiling the qBittorrent stack + OpenClash (OpenClash is not in the image) =="
     cp .config .config.cw-image
     cfg_enable 'CONFIG_PACKAGE_qbittorrent=y'
     cfg_enable 'CONFIG_PACKAGE_luci-app-qbittorrent=y'
-    # On-demand set: OpenClash (own feed) and AdGuardHome (official
-    # packages feed). Neither is seeded; both stay out of the image and land in
-    # the published cw-opt apk repo for anyone who wants them later. Runtime
+    # On-demand set: OpenClash (own feed). Not seeded; it stays out of the image
+    # and lands in the published cw-opt apk repo for anyone who wants it later. Runtime
     # deps (ruby/ruby-yaml, libtorrent-rasterbar, krb5-libs…) are pulled into
     # the same published set by the closure loop below - the
     # official release repos do NOT carry them.
     cfg_enable 'CONFIG_PACKAGE_luci-app-openclash=y'
-    cfg_enable 'CONFIG_PACKAGE_adguardhome=y'
     make defconfig >/dev/null
     disable_broken_toggles
     if make package/qbittorrent/compile package/luci-app-qbittorrent/compile \
-            package/luci-app-openclash/compile package/adguardhome/compile; then
+            package/luci-app-openclash/compile; then
         # An apk directory compiled outside the world build gets no signed index. `make package/index` merges every bin/packages/ dir into
         # one flat signed repository (staging_dir/packages/qualcommax/),
         # packages.adb signed with the tree's openssl apk key (private-key.pem -
@@ -665,7 +620,7 @@ if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
             for iter in 1 2 3 4 5 6 7 8; do
                 unresolved=$("$APKBIN" --arch aarch64_cortex-a53 --no-cache \
                     --root "$solve_root"/root --allow-untrusted \
-                    add -s qbittorrent luci-app-qbittorrent luci-app-openclash adguardhome 2>&1 \
+                    add -s qbittorrent luci-app-qbittorrent luci-app-openclash 2>&1 \
                     | grep -oE '^  [a-zA-Z0-9._-]+ \(no such package\)' | sed 's/ (no such package)//' )
                 unresolved=$(echo "$unresolved" | tr '\n' ' ' | sed 's/ *$//')
                 [ -z "$unresolved" ] && break
@@ -686,12 +641,12 @@ if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
                 # surviving feeds' outputs.
                 resolved=$("$APKBIN" --arch aarch64_cortex-a53 --no-cache \
                     --root "$solve_root"/root --allow-untrusted \
-                    add -s qbittorrent luci-app-qbittorrent luci-app-openclash adguardhome 2>&1 \
+                    add -s qbittorrent luci-app-qbittorrent luci-app-openclash 2>&1 \
                     | grep -oE '^  [a-zA-Z0-9._~-]+-[0-9][^([ ]*' | sed 's/^  *//; s/\[.*$//' | sort -u)
                 stale=""
                 for tok in $resolved; do
                     case "$tok" in
-                        qbittorrent-*|luci-app-qbittorrent-*|luci-app-openclash-*|adguardhome-*) ;;
+                        qbittorrent-*|luci-app-qbittorrent-*|luci-app-openclash-*) ;;
                         *) continue ;;
                     esac
                     [ -n "$(find bin/packages/aarch64_cortex-a53 -name "$tok.apk" -print -quit)" ] || stale="$stale $tok"

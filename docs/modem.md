@@ -73,8 +73,8 @@ vendor engine's socket. What each one does is in
 ## IPv4 only
 
 To use IPv4 only, set the modem's PDP type to IPv4 in *Modem → QModem*. If you send traffic through
-Passwall 2, also enable **IPv6 TProxy** in its forwarding settings, otherwise devices can reach IPv6
-sites directly, outside the proxy.
+HomeProxy, also turn on its IPv6 support, otherwise devices can reach IPv6 sites directly, outside
+the proxy.
 
 ## AT ports
 

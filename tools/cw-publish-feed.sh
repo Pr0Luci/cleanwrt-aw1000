@@ -3,7 +3,7 @@
 #
 # The feed at https://pr0luci.github.io/cleanwrt-aw1000/feed/ carries what the official
 # OpenWrt 25.12.5 repositories do not: the apks built from the feeds pinned here (qmodem,
-# passwall*, 3ginfo, diskman, cwfeed, openclash) plus the community-feed outputs of
+# 3ginfo, diskman, cwfeed, openclash) plus the community-feed outputs of
 # the official `packages` feed that the opt-set closure needs.
 #
 #   feed set = every *.apk in bin/packages/<arch>/<feed>/ except base and luci
@@ -105,7 +105,7 @@ root=$(ls -d "$TREE"/build_dir/target-*/root-*/ 2>/dev/null | head -1)
 cp -a "$root" "$W/root"
 { sed 's/^#.*//;/^$/d' "$REPO"/files/etc/apk/repositories.d/distfeeds.list
   printf 'file://%s/packages.adb\n' "$W/feed"; } > "$W/root/etc/apk/repositories"
-out=$("$APK" --arch "$ARCH" --no-cache --root "$W/root" --allow-untrusted add -s qbittorrent luci-app-qbittorrent luci-app-openclash adguardhome 2>&1) || {
+out=$("$APK" --arch "$ARCH" --no-cache --root "$W/root" --allow-untrusted add -s qbittorrent luci-app-qbittorrent luci-app-openclash 2>&1) || {
     printf '%s\n' "$out" | tail -8 >&2; fail "the opt set does not resolve against the official repos + the new index"; }
 echo "solver: the opt set resolves ($(printf '%s\n' "$out" | tail -1))"
 

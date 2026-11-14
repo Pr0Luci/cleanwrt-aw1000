@@ -117,7 +117,7 @@ behave differently from the rest:
 
 ## The rest of the shipped files
 
-`adblock`, `fstab`, `irqbalance`, `minidlna`, `p910nd`, `qmodem_ttl`, `samba4`, `syncthing` and
+`fstab`, `irqbalance`, `minidlna`, `p910nd`, `qmodem_ttl`, `samba4`, `syncthing` and
 `watchcat` — every value and what it means in behaviour, in
 [first-boot defaults](uci-defaults.md#what-the-image-ships-as-configuration).
 

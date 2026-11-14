@@ -22,7 +22,7 @@ cleanwrt-aw1000  (feeds.conf.default, configs/local-packages.pin, patches/)
    ├── pins  luci-app-cw-led      → LED daemon and page
    ├── pins  luci-theme-footstrap → default theme
    ├── pins  AWvoice              → phone port
-   └── pins  OpenWrt, LuCI, QModem, Passwall, 3ginfo-lite, ... (upstream feeds)
+   └── pins  OpenWrt, LuCI, QModem, 3ginfo-lite, ... (upstream feeds)
 ```
 
 A change in one of the smaller repositories reaches the firmware only when the firmware repository

@@ -21,16 +21,12 @@ switch.
 | 3ginfo-lite | Modem → 3gInfo-lite | On | SIM, signal and neighbour cells ([the radio page](modem.md#the-radio-page)) |
 | sms-forwarder | part of QModem | On | forwards received SMS |
 | SIP service for the phone port | no page of its own — the switch is on AWvoice → SIP | Off until the AWvoice SIP switch turns it on | a soft phone on your own network rings and dials through the SIM's line; off means no port is open ([AWvoice](awvoice.md)) |
-| Passwall | Services → PassWall | Off (configure servers) | proxy / bypass suite |
-| Passwall 2 | Services → PassWall 2 | Off (configure servers) | proxy / bypass suite (v2) |
 | HomeProxy | Services → HomeProxy | Off | sing-box based proxy |
 | WireGuard | Network → Interfaces | needs a tunnel from you | VPN protocol support |
 | OpenVPN | VPN → OpenVPN | Off (needs your .ovpn file) | VPN client and server |
 | Tailscale | Services → Tailscale | needs your login | mesh VPN |
 | Cloudflare Zero Trust Tunnel | Services → Cloudflare Zero Trust Tunnel | Off | publish a service without a public IP |
-| Adblock | Services → Adblock | Off | DNS ad blocking |
 | Watchcat | Tools → Watchcat | **no rule at all**, deliberately | reboot or restart an interface when the connection is lost. The package default would reboot a router on its own; this image ships it empty |
-| AdGuard Home | Services → AdGuard Home | Off | DNS filtering with its own dashboard ([web apps](features/web-apps.md)) |
 | Disk Manager | Services → Disk Manager | On | partition and format USB drives |
 | HDD Idle | Tools → HDD Idle | Off | spin down a USB hard disk |
 | Network Shares (Samba) | Network → Filesystem Share | the daemon starts; the share allows no guest access | Windows / macOS / Linux file sharing, one share of `/mnt` |
@@ -81,5 +77,5 @@ The official OpenWrt package repositories are enabled, so `apk add <name>` works
 ## IPv6 and proxies
 
 The 5G connection is dual-stack when your carrier offers IPv6. If you send traffic through
-Passwall 2, enable **IPv6 TProxy** in its forwarding settings. To use IPv4 only, set the
+HomeProxy, make sure its IPv6 support is on, or IPv6 traffic goes out directly. To use IPv4 only, set the
 modem's PDP type to IPv4 in *Modem → QModem*.

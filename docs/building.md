@@ -21,7 +21,7 @@ The firmware repository pins several smaller repositories, listed with their doc
 | `configs/local-packages.pin` | out-of-feed packages, pinned to a commit |
 | `configs/license-overrides.tsv` | licences for packages that record none |
 | `feeds.conf.default` | every feed, pinned to a commit |
-| `feeds-src/cwfeed/` | the vendored feed (qBittorrent stack, AdGuard Home app, Syncthing app) |
+| `feeds-src/cwfeed/` | the vendored feed (qBittorrent stack, Syncthing app) |
 | `files/` | the rootfs overlay (first-boot scripts, defaults, banner) |
 | `patches/feeds/` | patches applied to the pinned feeds, with zero fuzz |
 | `patches/tree/` | patches applied to files the OpenWrt tree carries itself (packages, build system), with zero fuzz |
@@ -150,7 +150,6 @@ than shipping a half-applied change.
 | `3ginfo/0004-radio-telemetry-and-redesign` | the radio page and the collector behind it: one locked snapshot per request, serving cells per carrier, a neighbour table that scans itself, and five-second defaults |
 | `3ginfo/0005-radio-telemetry-executable` | `radiodata.sh` gains its executable bit, for the same reason `0002` exists: the page runs it through `fs.exec`, and `patch` alone does not carry the mode |
 | `diskman/0001-disk-manager-menu-rename-services-move` | Disk Manager moves from the System menu to Services, with its title and every internal link |
-| `passwall_packages/0001-dns2socks-naiveproxy-sources` | two upstream release assets that no longer exist: dns2socks carries its source in the package, naiveproxy points at a prebuilt version |
 | `tree/0001-apk-package-timestamps-zero` | `apk mkpkg` runs with a fixed epoch, so two builds of one commit produce identical images |
 
 ### Themes

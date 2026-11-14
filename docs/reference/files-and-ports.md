@@ -19,7 +19,7 @@ creates; nothing is a guess.
 | `/etc/config/qmodem_sip` | the SIP service's package, edited on the AWvoice page | the network phone's account and media socket |
 | `/etc/config/uhttpd` | OpenWrt, extended by this image | the admin server, and the plain listener that serves a provisioning file |
 | `/etc/config/{network,wireless,system,dropbear,firewall}` | OpenWrt | the usual four, with this image's defaults |
-| `/etc/config/{adblock,fstab,irqbalance,minidlna,p910nd,qmodem_ttl,samba4,syncthing,watchcat}` | this image | the opt-in apps, shipped off or inert. See [first-boot defaults](uci-defaults.md) |
+| `/etc/config/{fstab,irqbalance,minidlna,p910nd,qmodem_ttl,samba4,syncthing,watchcat}` | this image | the opt-in apps, shipped off or inert. See [first-boot defaults](uci-defaults.md) |
 | `/etc/apk/world` | `96-cw-apk-world-pin`, on every boot | which packages are pinned to an exact version and which may upgrade |
 
 ## The phone port's data

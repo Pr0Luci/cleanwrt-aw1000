@@ -21,6 +21,12 @@ upstream's, unchanged.
 |---|---|---|
 | 2026-11-14 | `.devcontainer/`, `.vscode/tasks.json` | added: dev container and `cw-dev` local build front end |
 | 2026-11-14 | `tools/cw-release-build.sh` | modified: `--clean` / `--dirclean` are skipped when the tree has no `.config` |
+| 2026-11-14 | `configs/arcadyan_aw1000.seed` | modified: `TOOLCHAINOPTS` on and `GDB` off, so the cross gdb is not built |
+| 2026-11-14 | `.github/workflows/build.yml` | modified: cache fallback to any cache of the same OpenWrt tag |
+| 2026-11-14 | `feeds.conf.default` | modified: the `passwall_packages`, `passwall2` and `passwall` feeds removed |
+| 2026-11-14 | `configs/arcadyan_aw1000.seed`, `configs/license-overrides.tsv`, `configs/local-packages.pin` | modified: Passwall, Passwall 2, their cores, AdGuard Home and Adblock deselected; the Passwall 2 licence override removed |
+| 2026-11-14 | `feeds-src/cwfeed/applications/luci-app-adguardhome/`, `files/etc/config/adblock`, `files/etc/uci-defaults/97-cw-adguard-enable-bridge`, `patches/feeds/passwall_packages/` | removed |
+| 2026-11-14 | `tools/cw-release-build.sh`, `tools/cw-publish-feed.sh`, `files/etc/apk/`, `files/etc/uci-defaults/96-cw-apk-world-pin`, `feeds-src/cwfeed/README.md`, `docs/` | modified: Passwall, AdGuard Home and Adblock references removed (xray version gate, feed override, opt-set entry) |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
 
 For an image built from this fork, the corresponding source in [Source availability](#source-availability)
@@ -33,7 +39,6 @@ upstream.
 |---|---|---|
 | OpenWrt base system | GPL-2.0-only (individual packages carry their own licences) | `COPYING` / `README.md` of openwrt v25.12.5 |
 | LuCI | Apache-2.0 | `LICENSE` of luci (openwrt-25.12) |
-| Passwall2 (`luci-app-passwall2`) | GPL-3.0 | `LICENSE` + package Makefile @ pinned commit |
 | 3ginfo-lite (`luci-app-3ginfo-lite`) | GPL-3.0 | package Makefile @ pinned commit |
 | QModem | MPL-2.0 **plus an added non-commercial clause** - see below | `LICENSE` of FUjr/QModem @ pinned commit |
 | Vendor `qmi_wwan_{q,f,s}` kernel modules (from QModem) | GPL (`MODULE_LICENSE("GPL")`) | driver sources @ pinned commit |
@@ -103,14 +108,6 @@ directory, so a theme update can neither overwrite it nor collide with the patch
 © Rafał Wabik / IceG; GPL-3.0) at build time, applied zero-fuzz to the pinned commit (the
 build fails rather than shipping a stale patch): it marks `3ginfo.sh` executable and shortens
 one menu title. The patches modify GPL-3.0 files and stay under **GPL-3.0**.
-
-### Passwall packages feed patch
-
-`patches/feeds/passwall_packages/0001-dns2socks-naiveproxy-sources.patch` brings two package
-definitions of the pinned Passwall packages feed (`dns2socks`, `naiveproxy`) to the state of
-Openwrt-Passwall/openwrt-passwall-packages main, because the files the pinned definitions
-download were deleted upstream. It is upstream's own change, unmodified, and stays under the
-licences of those files (see their headers).
 
 ## Source availability
 

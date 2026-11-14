@@ -5,6 +5,16 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
+## Unreleased (this fork)
+
+- **Passwall, Passwall 2, AdGuard Home and Adblock are gone.** Their feeds, packages, cores
+  (xray-core, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others) and first-boot
+  files are no longer in the image. HomeProxy is the proxy app, on the sing-box of the official
+  OpenWrt packages feed. A keep-settings upgrade leaves the old configuration files in `/etc/config`
+  with nothing reading them; a clean install (`sysupgrade -n`) removes them.
+- **Faster builds.** The cross gdb, a debugger for the build host that never reached the image, is
+  no longer built.
+
 ## 25.12.5-R2.2
 
 The radio page, *Modem → 3gInfo-lite*, is rebuilt, and one collector now answers every card on it.

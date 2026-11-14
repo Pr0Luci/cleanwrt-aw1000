@@ -77,8 +77,13 @@ jobs:
           # The tree tag is part of the key: a compiler cache built against another OpenWrt
           # release is not a cache for this one, and no cache is cheaper than a wrong one.
           key: cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
+          # The second key falls back to any cache of the same tree tag. A seed or feed-pin
+          # change used to start cold (no dl/, no ccache). ccache keys every entry on the
+          # compiler, flags and preprocessed source, so a stale entry is a miss, never a
+          # wrong object. dl/ files are checked against their PKG_HASH.
           restore-keys: |
             cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-
+            cw-${{ steps.ver.outputs.tag }}-
 
       - name: Signing keys (optional repository secrets)
         env:

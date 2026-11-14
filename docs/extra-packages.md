@@ -39,6 +39,5 @@ boot.
 
 ## What is already baked in
 
-qBittorrent and AdGuard Home are part of the image, with the Qt6 stack that qBittorrent needs.
-They come from the project's vendored feed (`feeds-src/cwfeed`) and stay disabled until you
-enable them.
+qBittorrent is part of the image, with the Qt6 stack it needs. It comes from the project's
+vendored feed (`feeds-src/cwfeed`) and stays disabled until you enable it.

@@ -98,10 +98,10 @@ router supported?" to a flashed, working router, and tell you how to get out if 
   sidebar, five palettes, an accent colour of your choice and a photo or pattern behind the pages.
 - **Real front-panel LEDs:** a small daemon that shows 5G type, signal quality and internet
   reachability, with a night mode. See [Front-panel LEDs](leds.md).
-- **Proxy and VPN tools:** Passwall, Passwall2, HomeProxy, WireGuard, OpenVPN, Tailscale and
+- **Proxy and VPN tools:** HomeProxy, WireGuard, OpenVPN, Tailscale and
   Cloudflare Tunnel, all installed and all off until you configure them.
-- **Opt-in apps:** file sharing, DLNA, printer server, Syncthing, AdGuard Home, qBittorrent,
-  Adblock and more. Nothing listens on your network until you tick **Enable**.
+- **Opt-in apps:** file sharing, DLNA, printer server, Syncthing, qBittorrent
+  and more. Nothing listens on your network until you tick **Enable**.
 - **Safe defaults:** LuCI over HTTPS, BBR congestion control, no open services, no hidden
   remote access.
 - **Verifiable releases:** every release has checksums and a provenance bundle (the full build

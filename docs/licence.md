@@ -22,7 +22,6 @@ licence and copyright; nothing here relicenses them.
 |---|---|
 | OpenWrt base system | GPL-2.0-only (individual packages carry their own licences) |
 | LuCI | Apache-2.0 |
-| Passwall, Passwall 2 | GPL-3.0 |
 | 3ginfo-lite | GPL-3.0 |
 | QModem | MPL-2.0 **plus an added non-commercial clause** |
 | Vendor QMI kernel modules (from QModem) | GPL |
