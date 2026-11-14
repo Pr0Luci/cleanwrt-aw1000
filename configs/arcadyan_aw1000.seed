@@ -42,9 +42,9 @@ CONFIG_VERSION_MANUFACTURER="CleanWRT"
 # Public identity URLs (resolved 2026-10-06 - the GitHub public mirror).
 # NOTE: like all VERSION_*, defconfig drops these; the enforcement is the
 # cfg_enable block in tools/cw-release-build.sh (kept in sync).
-CONFIG_VERSION_HOME_URL="https://github.com/Pr0Luci/cleanwrt-aw1000"
-CONFIG_VERSION_BUG_URL="https://github.com/Pr0Luci/cleanwrt-aw1000/issues"
-CONFIG_VERSION_SUPPORT_URL="https://github.com/Pr0Luci/cleanwrt-aw1000/issues"
+CONFIG_VERSION_HOME_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000"
+CONFIG_VERSION_BUG_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues"
+CONFIG_VERSION_SUPPORT_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues"
 
 # ── Target ──────────────────────────────────────────────────────────────────
 CONFIG_TARGET_qualcommax=y
@@ -149,12 +149,9 @@ CONFIG_PACKAGE_kmod-tun=y
 CONFIG_PACKAGE_kmod-wireguard=y
 CONFIG_PACKAGE_wireguard-tools=y
 CONFIG_PACKAGE_ip-full=y
-CONFIG_PACKAGE_ipset=y
-CONFIG_PACKAGE_kmod-ipt-tproxy=y
 CONFIG_PACKAGE_kmod-nf-tproxy=y
 CONFIG_PACKAGE_kmod-ipt-ipset=y
 CONFIG_PACKAGE_iptables-nft=y
-CONFIG_PACKAGE_ip6tables-nft=y
 CONFIG_PACKAGE_kmod-nf-socket=y
 
 # ── LuCI core ────────────────────────────────────────────────────────────────
@@ -344,7 +341,6 @@ CONFIG_PACKAGE_qmodem-sipd=y
 # ── System utilities ─────────────────────────────────────────────────────────
 CONFIG_PACKAGE_bash=y
 CONFIG_PACKAGE_curl=y
-CONFIG_PACKAGE_wget=y
 CONFIG_PACKAGE_htop=y
 CONFIG_PACKAGE_nano=y
 CONFIG_PACKAGE_jq=y
@@ -468,4 +464,3 @@ CONFIG_PACKAGE_iperf3=y
 # ── IPv6 ─────────────────────────────────────────────────────────────────────
 CONFIG_PACKAGE_odhcp6c=y
 CONFIG_PACKAGE_odhcpd-ipv6only=y
-CONFIG_PACKAGE_kmod-ip6tables=y

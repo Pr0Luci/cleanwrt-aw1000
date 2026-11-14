@@ -1,7 +1,7 @@
 #!/bin/sh
 # Remove the Attended Sysupgrade build-on-request UI (its menu nodes and their views).
 #
-# The CleanWRT release flow = the project site (https://pr0luci.github.io/cleanwrt-aw1000/):
+# The CleanWRT release flow = the project site (https://shanelkapramuditha.github.io/cleanwrt-aw1000/):
 # a build-on-request service cannot build CleanWRT images, so its LuCI pages
 # are a dead end for users. The upstream STATUS upgrade-check
 # (11_upgrades.js, also shipped by this package) is KEPT - patch

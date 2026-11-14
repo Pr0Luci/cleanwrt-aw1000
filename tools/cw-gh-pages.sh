@@ -23,9 +23,10 @@ dir="${2:?usage: cw-gh-pages.sh prepare|commit|done <dir> [<message>]}"
 case "$cmd" in
 prepare)
     [ -d "$dir" ] && { echo "ERROR: $dir already exists" >&2; exit 1; }
-    # The commits carry the maintainer identity; nothing else signs the site.
-    git config user.name "Pr0Luci"
-    git config user.email "347770899+Pr0Luci@users.noreply.github.com"
+    # The site commits carry the GitHub Actions bot identity: the site is generated, and a
+    # personal identity hardcoded here would put one person's name on every fork's commits.
+    git config user.name "github-actions[bot]"
+    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
     if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
         git fetch -q origin gh-pages
         git worktree add -q "$dir" FETCH_HEAD

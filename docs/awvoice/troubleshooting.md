@@ -107,5 +107,5 @@ rather than a conclusion.
    not masked.
 3. Say which release you are on (`cat /etc/openwrt_release`) and which of the three front ends you
    were using: handset, browser page, or network phone.
-4. Open an issue on [GitHub](https://github.com/Pr0Luci/cleanwrt-aw1000/issues). Never paste a
+4. Open an issue on [GitHub](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues). Never paste a
    password, a key or a full IMEI.

@@ -30,6 +30,8 @@ upstream's, unchanged.
 | 2026-11-14 | `feeds.conf.default`, `configs/arcadyan_aw1000.seed`, `tools/cw-release-build.sh` | modified: the Nikki feed pinned, Nikki + mihomo-meta + Zashboard selected and checked |
 | 2026-11-14 | `feeds-src/cwfeed/net/nikki-zashboard/`, `files/etc/uci-defaults/99_zz-cw-nikki-defaults` | added: the preinstalled Zashboard package (with its MIT licence) and Nikki first-boot defaults |
 | 2026-11-14 | `configs/arcadyan_aw1000.seed`, `configs/local-packages.pin` | modified: HomeProxy, `sing-box` and `ucode-mod-digest` deselected; the HomeProxy pin removed |
+| 2026-11-14 | `configs/arcadyan_aw1000.seed` | modified: `kmod-ipt-tproxy`, `ipset`, `ip6tables-nft`, `kmod-ip6tables` and `wget` deselected |
+| 2026-11-14 | `configs/arcadyan_aw1000.seed`, `tools/`, `files/etc/`, `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch`, `mkdocs.yml`, `.github/ISSUE_TEMPLATE/`, `docs/`, `feeds.conf.default`, `feeds-src/cwfeed/README.md` | modified: project URLs point at this fork (os-release, upgrade notice and version feed, site, releases, issues, cw-opt feed); `tools/cw-gh-pages.sh` commits as the GitHub Actions bot instead of upstream's maintainer |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
 
 For an image built from this fork, the corresponding source in [Source availability](#source-availability)

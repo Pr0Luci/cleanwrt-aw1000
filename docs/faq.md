@@ -134,5 +134,5 @@ updated: 2026-11-06
 1. Collect a diagnostic capture: `cw-diag full` (SIM identifiers, public IPs and Wi-Fi keys are
    redacted).
 2. Read the [Recovery](recovery.md) page.
-3. Open an issue on [GitHub](https://github.com/Pr0Luci/cleanwrt-aw1000/issues) with the version,
+3. Open an issue on [GitHub](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues) with the version,
    what you did, and the relevant log lines. Do not paste passwords or keys.

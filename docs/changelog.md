@@ -18,6 +18,11 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
   and first-boot files are no longer in the image; Nikki is the proxy app. A keep-settings upgrade
   leaves the old configuration files in `/etc/config` with nothing reading them; a clean install
   (`sysupgrade -n`) removes them.
+- **This fork's own links.** The router's newer-version notice now reads this fork's version list,
+  so it never offers an upstream image (which would bring back the removed apps and drop Nikki).
+  The os-release home and bug links, releases and issues point at this fork too.
+- **Smaller package set.** The iptables-era leftovers of the old proxies (`kmod-ipt-tproxy`,
+  `ipset`, `ip6tables-nft`) are gone; the firewall is nftables throughout.
 - **Faster builds.** The cross gdb, a debugger for the build host that never reached the image, is
   no longer built.
 

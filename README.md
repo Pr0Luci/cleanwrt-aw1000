@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <a href="https://pr0luci.github.io/cleanwrt-aw1000/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
-  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--R2.1-14b8a6?style=for-the-badge"></a>
-  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/Pr0Luci/cleanwrt-aw1000?style=for-the-badge&color=14b8a6"></a>
-  <a href="https://github.com/Pr0Luci/cleanwrt-aw1000/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/Pr0Luci/cleanwrt-aw1000/check.yml?style=for-the-badge&label=checks"></a>
+  <a href="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
+  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--R2.2-14b8a6?style=for-the-badge"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/ShanelkaPramuditha/cleanwrt-aw1000?style=for-the-badge&color=14b8a6"></a>
+  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/ShanelkaPramuditha/cleanwrt-aw1000/check.yml?style=for-the-badge&label=checks"></a>
 </p>
 
 # CleanWRT: OpenWrt for the Arcadyan AW1000
@@ -20,7 +20,7 @@
 > [Changes in this fork](#changes-in-this-fork). The fork is not affiliated with or endorsed by
 > the upstream project.
 >
-> The documentation, release and issue links below point to upstream and describe the upstream
+> The documentation, release and issue links below are this fork's own and describe this fork's
 > build. Report problems with an image built from this fork in
 > [this fork's issues](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues), not upstream.
 
@@ -77,19 +77,19 @@ checksums and a provenance bundle.
 > ```
 >
 > The `rootfs` partition must be **at least `0x08000000`** (128 MiB). If it shows up as `rootfs_bak`
-> instead, stop. Read the [MTD layout page](https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/).
+> instead, stop. Read the [MTD layout page](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/mtd-layout/).
 
 > [!IMPORTANT]
 > The very first install from the stock firmware needs a **serial console (UART)** and a TFTP
-> server. Read [Installation](https://pr0luci.github.io/cleanwrt-aw1000/docs/installation/) and
-> [Recovery](https://pr0luci.github.io/cleanwrt-aw1000/docs/recovery/) before you start.
+> server. Read [Installation](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/installation/) and
+> [Recovery](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/recovery/) before you start.
 
 ## Quick install
 
 If the router already runs OpenWrt, and `cat /proc/mtd` is fine:
 
 1. Download the `*-squashfs-sysupgrade.bin` from the
-   [Releases page](https://github.com/Pr0Luci/cleanwrt-aw1000/releases) and check it:
+   [Releases page](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases) and check it:
 
    ```sh
    sha256sum -c sha256sums.cw --ignore-missing
@@ -122,19 +122,19 @@ If the router already runs OpenWrt, and `cat /proc/mtd` is fine:
 
 ## Documentation
 
-Everything is on the documentation site: **https://pr0luci.github.io/cleanwrt-aw1000/docs/**
+Everything is on the documentation site: **https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/**
 
 | Page | What is in it |
 |---|---|
-| [Installation](https://pr0luci.github.io/cleanwrt-aw1000/docs/installation/) | UART + TFTP for the first install, `sysupgrade` afterwards |
-| [MTD layout](https://pr0luci.github.io/cleanwrt-aw1000/docs/mtd-layout/) | what must fit, and how to check your router |
-| [Recovery](https://pr0luci.github.io/cleanwrt-aw1000/docs/recovery/) | failsafe, bootloader recovery, the way back |
-| [AWvoice](https://pr0luci.github.io/cleanwrt-aw1000/docs/awvoice/) | the phone port, flash codes, safety |
-| [The 5G modem](https://pr0luci.github.io/cleanwrt-aw1000/docs/modem/) | QModem, signal, SMS, TTL, modem firmware |
-| [Front-panel LEDs](https://pr0luci.github.io/cleanwrt-aw1000/docs/leds/) | what every LED shows, night mode, settings |
-| [What is included](https://pr0luci.github.io/cleanwrt-aw1000/docs/included/) | every app, where to find it, its default state |
-| [Build from source](https://pr0luci.github.io/cleanwrt-aw1000/docs/building/) | GitHub Actions, Docker, pins, signing |
-| [FAQ](https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/) | known limits and common questions |
+| [Installation](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/installation/) | UART + TFTP for the first install, `sysupgrade` afterwards |
+| [MTD layout](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/mtd-layout/) | what must fit, and how to check your router |
+| [Recovery](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/recovery/) | failsafe, bootloader recovery, the way back |
+| [AWvoice](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/awvoice/) | the phone port, flash codes, safety |
+| [The 5G modem](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/modem/) | QModem, signal, SMS, TTL, modem firmware |
+| [Front-panel LEDs](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/leds/) | what every LED shows, night mode, settings |
+| [What is included](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/included/) | every app, where to find it, its default state |
+| [Build from source](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/building/) | GitHub Actions, Docker, pins, signing |
+| [FAQ](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/faq/) | known limits and common questions |
 
 ## How it is built
 
@@ -152,24 +152,24 @@ docker run --rm -v "$PWD/openwrt":/build -v "$PWD":/cleanwrt \
 ```
 
 `CW_CHECK_ONLY=1` runs every check and stops before compiling. See the
-[build page](https://pr0luci.github.io/cleanwrt-aw1000/docs/building/) for signing and the optional
+[build page](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/building/) for signing and the optional
 package feed.
 
 ## The parts
 
 | Repository | What it is |
 |---|---|
-| [cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000) | this repository: configuration, patches, overlay, workflows, documentation |
+| [cleanwrt-aw1000](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000) | this repository (fork of [upstream](https://github.com/Pr0Luci/cleanwrt-aw1000)): configuration, patches, overlay, workflows, documentation |
 | [AWvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice) | the phone port: kernel module, daemon and LuCI page |
 | [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | the front-panel LED daemon and its page |
 | [luci-theme-footstrap](https://github.com/VizzleTF/luci-theme-footstrap) | the web interface: the theme the image selects |
 
 ## Help and contributions
 
-- A bug or a question: open an [issue](https://github.com/Pr0Luci/cleanwrt-aw1000/issues) and fill in
+- A bug or a question: open an [issue](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues) and fill in
   the form. Please never paste passwords, keys or full IMEI/IMSI numbers.
 - A fix or an improvement: open a pull request. `main` is protected, the checks must pass, and
-  changes are squash-merged. See [Contributing](https://pr0luci.github.io/cleanwrt-aw1000/docs/contributing/).
+  changes are squash-merged. See [Contributing](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/contributing/).
 - A mistake in the docs: every page has an *Edit this page* button.
 
 ## Changes in this fork
@@ -182,6 +182,8 @@ package feed.
 | Passwall, Passwall 2, AdGuard Home and Adblock removed: their feeds, packages, vendored LuCI app, first-boot files, patch and docs | `feeds.conf.default`, `configs/`, `feeds-src/cwfeed/`, `files/`, `patches/feeds/`, `tools/`, `docs/` |
 | Nikki (mihomo) added, with the Zashboard dashboard preinstalled: use Clash YAML profiles or subscriptions, manage proxies from the dashboard. First boot moves its HTTP port off 8080 and sets random secrets | `feeds.conf.default`, `configs/arcadyan_aw1000.seed`, `feeds-src/cwfeed/net/nikki-zashboard/`, `files/etc/uci-defaults/99_zz-cw-nikki-defaults`, `tools/cw-release-build.sh`, `docs/` |
 | HomeProxy removed (its pin, sing-box and ucode-mod-digest): Nikki is the one proxy app | `configs/arcadyan_aw1000.seed`, `configs/local-packages.pin`, `tools/cw-release-build.sh`, `docs/` |
+| Leftover iptables-era packages removed (`kmod-ipt-tproxy`, `ipset`, `ip6tables-nft`, `kmod-ip6tables`) and the duplicate `wget` line (the build already uses `uclient-fetch`) | `configs/arcadyan_aw1000.seed` |
+| The fork's own links: os-release home and bug URLs, the newer-version notice and its version feed, the docs site, releases, issues, badges and the optional cw-opt feed point at this fork; site commits use the GitHub Actions bot identity | `configs/`, `tools/`, `files/`, `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch`, `mkdocs.yml`, `.github/ISSUE_TEMPLATE/`, `docs/`, `feeds*` |
 
 Everything else is upstream's work, unchanged. The fork offers these changes back upstream where
 they fit.
@@ -217,4 +219,4 @@ licences.
 > [!NOTE]
 > **QModem** carries an added non-commercial clause. CleanWRT is free of charge and is not sold,
 > but if you deploy it in a business, for an ISP or in a paid service, read QModem's licence first.
-> See [Licence and notices](https://pr0luci.github.io/cleanwrt-aw1000/docs/licence/).
+> See [Licence and notices](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/licence/).

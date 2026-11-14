@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # cw-publish-feed.sh - build and verify the CleanWRT apk feed (cw-opt).
 #
-# The feed at https://pr0luci.github.io/cleanwrt-aw1000/feed/ carries what the official
+# The feed at https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/ carries what the official
 # OpenWrt 25.12.5 repositories do not: the apks built from the feeds pinned here (qmodem,
 # 3ginfo, diskman, cwfeed, openclash) plus the community-feed outputs of
 # the official `packages` feed that the opt-set closure needs.
@@ -13,7 +13,7 @@
 #   tools/cw-publish-feed.sh <tree>                 # build + verify only (dry run)
 #   tools/cw-publish-feed.sh <tree> --out <dir>     # also write the verified feed to <dir>
 #
-# <dir> is then committed as feed/ on the gh-pages branch of Pr0Luci/cleanwrt-aw1000 (the
+# <dir> is then committed as feed/ on the gh-pages branch of ShanelkaPramuditha/cleanwrt-aw1000 (the
 # release workflow does this). The previous commit stays in git history, so a bad push
 # can be reverted.
 #
@@ -44,7 +44,7 @@ BIN="$TREE/bin/packages/$ARCH"
 APK="$TREE/staging_dir/host/bin/apk"
 KEY="$TREE/private-key.pem"
 PUBKEY="$REPO/files/etc/apk/keys/public-key.pem"
-PUBLIC_URL="https://pr0luci.github.io/cleanwrt-aw1000/feed/packages.adb"
+PUBLIC_URL="https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/packages.adb"
 fail() { echo "cw-publish-feed: ERROR: $*" >&2; exit 1; }
 
 for f in "$APK" "$KEY" "$PUBKEY"; do [ -e "$f" ] || fail "missing $f"; done

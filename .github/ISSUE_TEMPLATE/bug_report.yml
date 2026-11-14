@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time. Please check the [FAQ](https://pr0luci.github.io/cleanwrt-aw1000/docs/faq/) first.
+        Thanks for taking the time. Please check the [FAQ](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/faq/) first.
         **Never paste passwords, Wi-Fi keys, tokens or full IMEI/IMSI/ICCID numbers.**
   - type: input
     id: version

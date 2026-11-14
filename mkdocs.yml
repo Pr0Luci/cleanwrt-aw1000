@@ -1,8 +1,8 @@
 site_name: CleanWRT
 site_description: OpenWrt firmware for the Arcadyan AW1000 5G router with AWvoice, an RJ11 phone port with VoLTE calls, a 5G modem stack and the Footstrap interface.
-site_url: https://pr0luci.github.io/cleanwrt-aw1000/docs/
-repo_url: https://github.com/Pr0Luci/cleanwrt-aw1000
-repo_name: Pr0Luci/cleanwrt-aw1000
+site_url: https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/
+repo_url: https://github.com/ShanelkaPramuditha/cleanwrt-aw1000
+repo_name: ShanelkaPramuditha/cleanwrt-aw1000
 edit_uri: edit/main/docs/
 copyright: GPL-2.0-only. CleanWRT is not affiliated with or endorsed by the OpenWrt project.
 

@@ -137,7 +137,7 @@ than shipping a half-applied change.
 |---|---|
 | `0001-status-firmware-version-drop-luci-suffix` | the *Firmware Version* row shows the release description alone. A detached-HEAD feed was stamping "LuCI (HEAD detached at …)" into a user-facing page |
 | `0006-p910nd-menu-title-printer-server` | the menu title, from `p910nd - Printer server` to `Printer server` |
-| `0007-upgrade-check-cdn-no-asu` | the newer-version notice: the wording says CleanWRT, the links point at this project's releases rather than the OpenWrt CDN, and the version feed is `pr0luci.github.io/cleanwrt-aw1000/.versions.json` |
+| `0007-upgrade-check-cdn-no-asu` | the newer-version notice: the wording says CleanWRT, the links point at this project's releases rather than the OpenWrt CDN, and the version feed is `shanelkapramuditha.github.io/cleanwrt-aw1000/.versions.json` |
 | `0008-p910nd-mdns-type-label` | the option label reads `mDNS type` |
 | `0009-filemanager-default-width` | the file manager's default width, 400 to 800 |
 

@@ -57,8 +57,8 @@ touch "$SITE/.nojekyll"
 <h1>CleanWRT</h1>
 <p>OpenWrt based firmware for the Arcadyan AW1000.</p>
 <ul>
-  <li><a href="https://github.com/Pr0Luci/cleanwrt-aw1000/releases">Releases</a></li>
-  <li><a href="https://github.com/Pr0Luci/cleanwrt-aw1000">Source</a></li>
+  <li><a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases">Releases</a></li>
+  <li><a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000">Source</a></li>
 </ul>
 HTML
 echo "site updated for $VER"

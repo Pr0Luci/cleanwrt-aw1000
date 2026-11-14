@@ -5,12 +5,13 @@ description: "The CleanWRT firmware, AWvoice, the LED app and the web interface:
 
 # Repositories
 
-CleanWRT is built from a few small repositories, all on GitHub under
-[Pr0Luci](https://github.com/Pr0Luci). The firmware repository pins the others to an exact commit.
+CleanWRT is built from a few small repositories, written by
+[Pr0Luci](https://github.com/Pr0Luci). This build comes from a fork of the firmware repository
+([upstream](https://github.com/Pr0Luci/cleanwrt-aw1000)), which pins the others to an exact commit.
 
 | Repository | What it is | Documentation |
 |---|---|---|
-| [cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000) | the firmware: build configuration, patches, rootfs overlay, workflows and this documentation | [Build from source](building.md), [Contributing](contributing.md) |
+| [cleanwrt-aw1000](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000) | the firmware: build configuration, patches, rootfs overlay, workflows and this documentation | [Build from source](building.md), [Contributing](contributing.md) |
 | [openwrt-aw1000-voice-awvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice) | AWvoice: the kernel module, the phone daemon and the LuCI page for the RJ11 port | [AWvoice](awvoice.md) |
 | [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | the front-panel LED daemon and its LuCI page | [Front-panel LEDs](leds.md) |
 | [luci-theme-footstrap](https://github.com/VizzleTF/luci-theme-footstrap) | the LuCI theme the image selects (upstream, unpatched) | [The Footstrap theme](theme.md) |
@@ -32,7 +33,7 @@ commits you can read.
 ## Where to report things
 
 - A problem with the firmware, a package or these docs: an issue in
-  [cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000/issues).
+  [cleanwrt-aw1000](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues).
 - A problem that is clearly inside one of the other parts: an issue in that repository.
 - A mistake on a docs page: *Edit this page* (the pencil at the top of every page) opens it on
   GitHub, and a pull request fixes it.

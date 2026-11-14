@@ -72,7 +72,7 @@ src-git diskman https://github.com/lisaac/luci-app-diskman.git^c20df1d4f40d86e32
 # the room); the build also publishes it to the cw-opt binary feed for later
 # `apk upgrade`. libtorrent-rasterbar comes from the official packages feed.
 # qBittorrent is GPL-2.0-or-later.
-# The compiled output is served from https://pr0luci.github.io/cleanwrt-aw1000/feed/.
+# The compiled output is served from https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/.
 
 # luci-app-cw-led is NOT a feed: it is a single-package repo (Makefile at the repo
 # root), which OpenWrt cannot index as a feed. It is cloned into package/ at a

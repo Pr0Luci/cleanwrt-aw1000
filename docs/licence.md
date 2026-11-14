@@ -8,7 +8,7 @@ description: "CleanWRT is GPL-2.0-only. The principal components and their licen
 ## This project
 
 The build configuration, patches and rootfs overlay in the
-[repository](https://github.com/Pr0Luci/cleanwrt-aw1000) (all repositories: [Repositories](repositories.md)) are licensed **GPL-2.0-only**. The LED
+[repository](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000) (all repositories: [Repositories](repositories.md)) are licensed **GPL-2.0-only**. The LED
 app ([`luci-app-cw-led`](https://github.com/Pr0Luci/luci-app-cw-led)) is GPL-2.0-only too. The web
 interface is a third-party theme: [`luci-theme-footstrap`](https://github.com/VizzleTF/luci-theme-footstrap),
 Apache-2.0, pinned to one commit. LuCI's own Bootstrap theme ships beside it as the fallback.

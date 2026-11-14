@@ -420,9 +420,9 @@ cfg_enable 'CONFIG_VERSION_PRODUCT="CleanWRT AW1000 5G Router"'
 cfg_enable 'CONFIG_VERSION_HWREV="v1"'
 cfg_enable 'CONFIG_VERSION_MANUFACTURER="CleanWRT"'
 # (d) public identity: os-release points at the project page.
-cfg_enable 'CONFIG_VERSION_HOME_URL="https://github.com/Pr0Luci/cleanwrt-aw1000"'
-cfg_enable 'CONFIG_VERSION_BUG_URL="https://github.com/Pr0Luci/cleanwrt-aw1000/issues"'
-cfg_enable 'CONFIG_VERSION_SUPPORT_URL="https://github.com/Pr0Luci/cleanwrt-aw1000/issues"'
+cfg_enable 'CONFIG_VERSION_HOME_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000"'
+cfg_enable 'CONFIG_VERSION_BUG_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues"'
+cfg_enable 'CONFIG_VERSION_SUPPORT_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues"'
 # Optional compiler cache for CI runs (CW_CCACHE=1). Off by default; it does not change
 # what is built, only how fast a repeated build is. CONFIG_CCACHE needs CONFIG_DEVEL.
 if [ "${CW_CCACHE:-0}" = "1" ]; then

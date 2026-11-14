@@ -7,7 +7,7 @@ updated: 2026-11-06
 # Releases
 
 Images are published on the project's
-[GitHub Releases page](https://github.com/Pr0Luci/cleanwrt-aw1000/releases). Every release is
+[GitHub Releases page](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases). Every release is
 built by the `build` workflow in the repository, from the sources pinned in the release tag.
 
 A tag `v<version>` builds the images into a **draft** release, where they can be checked first.
