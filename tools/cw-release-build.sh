@@ -78,6 +78,14 @@ if ! git -C "$TREE" describe --tags --exact-match 2>/dev/null | grep -qx "$OPENW
 fi
 
 # 1. Clean for a from-scratch build (optional).
+#    OpenWrt's `clean`/`dirclean` targets depend on .config, and with no .config
+#    make falls back to an interactive menuconfig, which dies in CI with "Error
+#    opening terminal". A tree without .config is fresh (no cache hit) and has
+#    nothing to clean, so the clean is skipped there.
+if [ -n "$CLEAN" ] && [ ! -e .config ]; then
+    echo "== $CLEAN skipped: no .config, the tree is fresh and has nothing to clean =="
+    CLEAN=""
+fi
 case "$CLEAN" in
     --dirclean) echo "== make dirclean (full, incl. toolchain) =="; make dirclean ;;
     --clean)    echo "== make clean (rebuild all packages) ==";     make clean ;;

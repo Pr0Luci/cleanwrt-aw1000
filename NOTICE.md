@@ -10,6 +10,23 @@ GPL-2.0-only, see `LICENSE`). A CleanWRT firmware image, however, is an aggregat
 independently licensed programs. Each keeps its own licence and copyright; nothing here
 relicenses them.
 
+## This fork
+
+This repository is a fork of <https://github.com/Pr0Luci/cleanwrt-aw1000> by Pr0Luci. All
+upstream copyright and licence notices are kept. As GPL-2.0 section 2(a) requires, the files
+this fork changed or added are listed below, with the date of each change. Every other file is
+upstream's, unchanged.
+
+| Date | File | Change |
+|---|---|---|
+| 2026-11-14 | `.devcontainer/`, `.vscode/tasks.json` | added: dev container and `cw-dev` local build front end |
+| 2026-11-14 | `tools/cw-release-build.sh` | modified: `--clean` / `--dirclean` are skipped when the tree has no `.config` |
+| 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
+
+For an image built from this fork, the corresponding source in [Source availability](#source-availability)
+is this fork at the matching tag, <https://github.com/ShanelkaPramuditha/cleanwrt-aw1000>, not
+upstream.
+
 ## Principal components
 
 | Component | Licence | Where that was verified |

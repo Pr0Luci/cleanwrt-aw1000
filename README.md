@@ -11,6 +11,19 @@
 
 # CleanWRT: OpenWrt for the Arcadyan AW1000
 
+> [!NOTE]
+> **This is a fork.** CleanWRT was created and is maintained by
+> [Pr0Luci](https://github.com/Pr0Luci) at
+> [Pr0Luci/cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000). This fork,
+> [ShanelkaPramuditha/cleanwrt-aw1000](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000),
+> follows upstream and adds a few changes of its own, listed under
+> [Changes in this fork](#changes-in-this-fork). The fork is not affiliated with or endorsed by
+> the upstream project.
+>
+> The documentation, release and issue links below point to upstream and describe the upstream
+> build. Report problems with an image built from this fork in
+> [this fork's issues](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues), not upstream.
+
 CleanWRT is an independent build of **OpenWrt 25.12.5** for the **Arcadyan AW1000** 5G router
 (Qualcomm IPQ8072, Quectel RG500Q-EA modem). It is made for people who want the router to simply
 work: a phone on the RJ11 socket, a 5G modem that dials and recovers by itself, a modern interface,
@@ -159,7 +172,27 @@ package feed.
   changes are squash-merged. See [Contributing](https://pr0luci.github.io/cleanwrt-aw1000/docs/contributing/).
 - A mistake in the docs: every page has an *Edit this page* button.
 
+## Changes in this fork
+
+| Change | Files |
+|---|---|
+| A VS Code dev container and the `cw-dev` front end for local builds | `.devcontainer/`, `.vscode/tasks.json` |
+| `--clean` / `--dirclean` are skipped on a fresh tree with no `.config`, where OpenWrt would otherwise open an interactive menuconfig and fail in CI | `tools/cw-release-build.sh` |
+
+Everything else is upstream's work, unchanged. The fork offers these changes back upstream where
+they fit.
+
 ## Thanks
+
+This fork is built on [CleanWRT](https://github.com/Pr0Luci/cleanwrt-aw1000) by
+[Pr0Luci](https://github.com/Pr0Luci), who wrote the build, the overlay, the patches, the
+documentation and the companion repositories listed above. Thanks for publishing it as free
+software.
+
+Thanks also to [XT-Martinez](https://github.com/XT-Martinez) for
+[aw1000-feed](https://github.com/XT-Martinez/aw1000-feed), an AW1000 package feed for the
+`ppe-nss` OpenWrt tree. This fork's dev container has it alongside as a reference for
+comparison. None of its code is in this repository or in the image.
 
 CleanWRT stands on the work of others: the [OpenWrt](https://openwrt.org) project and its
 contributors, [QModem](https://github.com/FUjr/QModem),
@@ -172,7 +205,8 @@ carry qBittorrent and AdGuard Home to LuCI. Each keeps its own licence, see
 ## Licence
 
 GPL-2.0-only, see [LICENSE](LICENSE). It covers the build configuration, patches and rootfs overlay
-scripts of this repository. The OpenWrt base and each bundled package keep their own upstream
+scripts of this repository. Upstream's code stays © Pr0Luci and its contributors. This fork's
+changes are released under the same licence. The OpenWrt base and each bundled package keep their own upstream
 licences.
 
 > [!NOTE]
