@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  // Run inside the dev container (Terminal > Run Task). They call .devcontainer/cw-dev.sh.
+  "tasks": [
+    { "label": "CleanWRT: tests (check.yml scripts job)", "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/cw-dev.sh tests", "group": "test", "problemMatcher": [] },
+    { "label": "CleanWRT: get OpenWrt tree", "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/cw-dev.sh tree", "problemMatcher": [] },
+    { "label": "CleanWRT: check only (no compile)", "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/cw-dev.sh check", "problemMatcher": [] },
+    { "label": "CleanWRT: build (incremental)", "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/cw-dev.sh build && ${workspaceFolder}/.devcontainer/cw-dev.sh collect",
+      "group": { "kind": "build", "isDefault": true }, "problemMatcher": [] },
+    { "label": "CleanWRT: build (clean packages)", "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/cw-dev.sh build --clean && ${workspaceFolder}/.devcontainer/cw-dev.sh collect",
+      "group": "build", "problemMatcher": [] },
+    { "label": "CleanWRT: collect images", "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/cw-dev.sh collect", "problemMatcher": [] },
+    { "label": "CleanWRT: status", "type": "shell",
+      "command": "${workspaceFolder}/.devcontainer/cw-dev.sh status", "problemMatcher": [] }
+  ]
+}

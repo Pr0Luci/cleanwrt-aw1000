@@ -1,0 +1,53 @@
+// CleanWRT dev container: the pinned builder image of docker/Dockerfile, with a
+// non-root user that matches the host's so the bind-mounted tree stays yours.
+//
+// Layout it expects (the parent folder is mounted, not just this repo):
+//   <parent>/cleanwrt-aw1000   this repo, the one you work on
+//   <parent>/aw1000-feed       reference project (read-only in the editor)
+//   <parent>/openwrt           OpenWrt tree, created by `cw-dev tree`
+//   <parent>/out               images collected by `cw-dev collect`
+//   <parent>/cleanwrt.code-workspace
+{
+  "name": "CleanWRT builder",
+  "build": {
+    "dockerfile": "../docker/Dockerfile",
+    "context": "../docker"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "builder",
+      "userUid": "automatic",
+      "userGid": "automatic",
+      "installZsh": false,
+      "installOhMyZsh": false,
+      "upgradePackages": false
+    }
+  },
+  "remoteUser": "builder",
+  "updateRemoteUserUID": true,
+
+  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspaces/cleanwrt,type=bind",
+  "workspaceFolder": "/workspaces/cleanwrt",
+
+  "containerEnv": {
+    "CW_REPO": "/workspaces/cleanwrt/cleanwrt-aw1000",
+    "CW_TREE": "/workspaces/cleanwrt/openwrt",
+    "CW_OUT": "/workspaces/cleanwrt/out",
+    // the release workflow's size gate; the script's own default (80) is too small
+    "CW_MAX_IMAGE_MB": "130",
+    // compiler cache inside the tree (<tree>/.ccache), kept between builds
+    "CW_CCACHE": "1"
+  },
+
+  "postCreateCommand": "sudo ln -sf /workspaces/cleanwrt/cleanwrt-aw1000/.devcontainer/cw-dev.sh /usr/local/bin/cw-dev",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "timonwong.shellcheck",
+        "github.vscode-github-actions",
+        "yzhang.markdown-all-in-one"
+      ]
+    }
+  }
+}
