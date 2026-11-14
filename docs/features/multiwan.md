@@ -63,7 +63,7 @@ for one interface has to be told about the other.
 |---|---|
 | The backup link never takes over | mwan3's probes decide, not link state. Check the policy's test set |
 | DNS still resolves through the dead link | the resolver is not following the policy. `dnsmasq` here is `dnsmasq-full`, which is what a source-routed setup needs |
-| The proxy disagrees about the interface | HomeProxy binds an interface of its own. See [VPN and proxies](vpn-proxy.md) |
+| The proxy disagrees about the interface | Nikki binds an interface of its own. See [VPN and proxies](vpn-proxy.md) |
 | `apk add` replaced something it should not have | the pinned packages are protected by the world-file pin that runs on every boot. See [updating and pinning](../updating.md) |
 
 ## Questions people ask

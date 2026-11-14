@@ -303,7 +303,7 @@ while read -r name url sha extra; do
     rm -rf "$src"
     [ -f "package/$name/Makefile" ] || { echo "ERROR: package/$name/Makefile missing after install" >&2; exit 1; }
     # Deterministic version for a luci.mk recipe that carries no PKG_VERSION of its own
-    # (homeproxy, and the Footstrap theme): the version comes from git, and the clone's .git
+    # (e.g. the Footstrap theme): the version comes from git, and the clone's .git
     # is gone by now, so luci.mk's findrev falls back to file mtimes - the apk version would
     # drift every build, or come out as zero. Give it the date of the pinned commit (digits
     # only): apk accepts only digit segments in the numeric part of a version, and a short sha

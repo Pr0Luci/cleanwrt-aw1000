@@ -73,7 +73,7 @@ vendor engine's socket. What each one does is in
 ## IPv4 only
 
 To use IPv4 only, set the modem's PDP type to IPv4 in *Modem → QModem*. If you send traffic through
-HomeProxy, also turn on its IPv6 support, otherwise devices can reach IPv6 sites directly, outside
+Nikki, also keep its IPv6 option on (*Mixin Config*), otherwise devices can reach IPv6 sites directly, outside
 the proxy.
 
 ## AT ports

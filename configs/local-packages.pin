@@ -27,10 +27,6 @@ luci-app-cw-led https://github.com/Pr0Luci/luci-app-cw-led.git a65586cf81aff771d
 # from one recipe only, so the feed's link is removed for the pin to win
 # (tools/cw-reset-pinned-package.sh says so on every build).
 luci-theme-footstrap https://github.com/VizzleTF/luci-theme-footstrap.git a1711eda02fefe87a12590bae9eaa80c373a4bd9
-# luci-app-homeproxy: HomeProxy LuCI app (ImmortalWrt), the image's proxy app, on the
-# sing-box core from the official packages feed. Single-package repo with the Makefile at
-# the root, so a local pin and not a feed. Ships DISABLED.
-luci-app-homeproxy https://github.com/immortalwrt/homeproxy.git 98a6ad9e71484528008ff435694fd107591f3a1d
 
 # AWvoice: the RJ11 phone port (feed-layout repo; the three packages live at the
 # repository root). GPL-2.0-only, the board configuration data file included.

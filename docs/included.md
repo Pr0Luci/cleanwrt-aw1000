@@ -22,7 +22,6 @@ switch.
 | sms-forwarder | part of QModem | On | forwards received SMS |
 | SIP service for the phone port | no page of its own — the switch is on AWvoice → SIP | Off until the AWvoice SIP switch turns it on | a soft phone on your own network rings and dials through the SIM's line; off means no port is open ([AWvoice](awvoice.md)) |
 | Nikki | Services → Nikki | Off (add a Clash profile) | mihomo transparent proxy with the Zashboard dashboard ([VPN and proxies](features/vpn-proxy.md#nikki)) |
-| HomeProxy | Services → HomeProxy | Off | sing-box based proxy |
 | WireGuard | Network → Interfaces | needs a tunnel from you | VPN protocol support |
 | OpenVPN | VPN → OpenVPN | Off (needs your .ovpn file) | VPN client and server |
 | Tailscale | Services → Tailscale | needs your login | mesh VPN |
@@ -78,5 +77,5 @@ The official OpenWrt package repositories are enabled, so `apk add <name>` works
 ## IPv6 and proxies
 
 The 5G connection is dual-stack when your carrier offers IPv6. If you send traffic through
-HomeProxy, make sure its IPv6 support is on, or IPv6 traffic goes out directly. To use IPv4 only, set the
+Nikki, keep its IPv6 option on (*Mixin Config*, on by default), or IPv6 traffic goes out directly. To use IPv4 only, set the
 modem's PDP type to IPv4 in *Modem → QModem*.

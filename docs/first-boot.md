@@ -65,7 +65,7 @@ The login page, in dark and light mode:
 |---|---|
 | Status | overview widgets (system, modem, memory, storage), logs, traffic |
 | System | administration, mount points, **LED Management**, theme |
-| Services | Nikki, HomeProxy, Tailscale, Cloudflare Tunnel, Syncthing, qBittorrent, miniDLNA, Disk Manager |
+| Services | Nikki, Tailscale, Cloudflare Tunnel, Syncthing, qBittorrent, miniDLNA, Disk Manager |
 | Network | interfaces, wireless, firewall, SQM, file sharing |
 | Modem | QModem, 3gInfo-lite, SMS, TTL |
 | Services → AWvoice(RJ11) | [AWvoice](awvoice.md): the phone port |

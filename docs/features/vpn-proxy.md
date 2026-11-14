@@ -1,6 +1,6 @@
 ---
-title: "WireGuard, OpenVPN, Nikki and HomeProxy on OpenWrt"
-description: "The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the two proxy apps in the image: Nikki (mihomo, Clash profiles) and HomeProxy (sing-box)."
+title: "WireGuard, OpenVPN and Nikki on OpenWrt"
+description: "The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the proxy app in the image: Nikki (mihomo, Clash profiles)."
 updated: 2026-11-14
 ---
 
@@ -35,10 +35,6 @@ per configuration.
 | App | Where | Core | Configured with |
 |---|---|---|---|
 | Nikki | *Services → Nikki* | mihomo (Clash Meta) | a Clash YAML profile: a file or a subscription URL |
-| HomeProxy | *Services → HomeProxy* | sing-box | nodes added in LuCI |
-
-!!! tip "Use one at a time"
-    Both install transparent-proxy firewall rules and take over DNS. Enable one.
 
 ## Nikki: Clash profiles and a dashboard { #nikki }
 
@@ -62,11 +58,6 @@ the first boot sets to 32 random characters (`nikki.mixin.api_secret`). LuCI pas
 **Update Dashboard** downloads the newest Zashboard release over the installed one. A clean
 install brings back the version the image ships.
 
-## HomeProxy
-
-Add a node (server), set the routing mode and enable. `dnsmasq-full` is already in the image, so
-HomeProxy can hand its DNS rules to dnsmasq.
-
 ## Common questions
 
 ??? question "Does CleanWRT include WireGuard and OpenVPN?"
@@ -76,7 +67,7 @@ HomeProxy can hand its DNS rules to dnsmasq.
     Yes, with Nikki. Upload the YAML file or add its subscription URL on *Services → Nikki → Profile*. mihomo reads Clash and Clash Meta profiles.
 
 ??? question "Where did Passwall go?"
-    Passwall and Passwall 2 are not in this build. Nikki (mihomo) and HomeProxy (sing-box) cover the same use.
+    Passwall and Passwall 2 are not in this build. Nikki (mihomo) covers the same use, with Clash profiles.
 
 ## Out of the box
 
@@ -85,9 +76,8 @@ HomeProxy can hand its DNS rules to dnsmasq.
 | WireGuard | kernel module and `wireguard-tools`, **no tunnel configured** |
 | OpenVPN | installed, off, needs your `.ovpn` |
 | Nikki | installed, **off**. Its core is `mihomo-meta` (stable); the Zashboard dashboard is preinstalled. First boot moves its HTTP proxy port from 8080 (taken) to **7893** and sets a random dashboard secret and proxy password |
-| HomeProxy | installed, **off**. Its core, `sing-box`, is in the image (from the official OpenWrt packages feed) |
+| HomeProxy, Passwall, Passwall 2 | **not in the image** |
 | Tailscale, Cloudflare Tunnel | installed, off. They belong on [remote access](remote-access.md) |
-| Passwall, Passwall 2 | **not in the image** |
 | OpenClash | **never seeded.** It lives in the optional `cw-opt` feed, which is not published yet |
 
 ## What is listening
@@ -103,10 +93,9 @@ the router and the LAN, and none of them is forwarded from the cellular side by 
 |---|---|
 | Nikki will not start | the profile failed its test. *Services → Nikki → Log* shows mihomo's reason; a common one is a port in the profile that another service already uses |
 | The dashboard says it cannot connect | the API address or secret. Open it from LuCI's **Open Dashboard**, which fills both in |
-| Nikki and HomeProxy both enabled, traffic goes the wrong way | run one. Both install transparent-proxy rules |
-| HomeProxy and a VPN fight over the traffic | run one transparent proxy or full-tunnel VPN at a time. Each installs its own routing rules |
-| `apk upgrade` pulled a different version of sing-box | the feed pins decide what the image is built with; see [updating and pinning](../updating.md) |
-| A server you added is refused | check that sing-box supports its protocol. sing-box is the only proxy core in the image |
+| Nikki and a VPN fight over the traffic | run Nikki or a full-tunnel VPN, not both. Each installs its own routing rules |
+| A proxy in your profile is refused | check that mihomo supports its protocol. mihomo is the only proxy core in the image |
+| `apk upgrade` pulled a different mihomo | the feed pins decide what the image is built with; see [updating and pinning](../updating.md) |
 
 ## Questions people ask
 
@@ -116,7 +105,7 @@ the router and the LAN, and none of them is forwarded from the cellular side by 
 
 ??? question "Can I install Passwall myself?"
     It is not built for this image, and its cores (xray-core and others) are not in the image either.
-    Nikki and HomeProxy are the supported proxy apps.
+    Nikki is the supported proxy app.
 
 ??? question "Which dashboard is it, and why that one?"
     Zashboard, the dashboard Nikki itself defaults to. The image carries its build without bundled
