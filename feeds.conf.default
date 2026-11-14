@@ -31,6 +31,13 @@ src-git telephony https://git.openwrt.org/feed/telephony.git^2618106d5846a4a542f
 # three that fix the SIP dialog's answer, teardown and cancel.
 src-git qmodem https://github.com/FUjr/QModem.git^0988085b887346ae9477ef2e77abe2f797bd2c4a
 
+# ── Nikki (nikkinikki-org) ───────────────────────────────────────────────────
+# Transparent proxy on mihomo (Clash Meta) with a LuCI app: nikki, luci-app-nikki and
+# the two core variants, mihomo-meta (stable, the one the seed selects) and
+# mihomo-alpha. Pin = the commit that moves mihomo-meta to v1.19.34 (go.mod asks
+# Go 1.20; the official feed's Go 1.26 builds it). Licence GPL-3.0.
+src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git^0c56ba5f3fa4703b527fc5eaf4bf38f87e8c2f4b
+
 # ── OpenClash (vernesong) - opt-artifact feed, NOT in the image ──────────────
 # Compiled as an opt artifact into the cw-opt binary feed: users
 # install it later on demand (`apk add luci-app-openclash`); its runtime deps

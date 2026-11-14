@@ -47,7 +47,7 @@ checksums and a provenance bundle.
 | **5G that just works** | QModem, auto-dial and auto-recovery, dual-stack IPv4/IPv6, SMS, TTL control, per-interface data usage, and a registration fix for data-only SIMs. |
 | **A modern interface** | Footstrap: dark or light mode, a top bar or a sidebar, five palettes, an accent colour you choose, frosted surfaces, and a photo or pattern behind the pages. |
 | **LEDs that mean something** | The 5G LED shows SA or NSA, the signal LED shows quality, the internet LED runs a real connectivity check, and night mode switches them off at bedtime. |
-| **Tools, but off by default** | HomeProxy, WireGuard, OpenVPN, Tailscale, Cloudflare Tunnel, Syncthing, qBittorrent, DLNA, file sharing and a printer server. Nothing listens until you tick **Enable**. |
+| **Tools, but off by default** | Nikki (mihomo with your Clash profiles and a dashboard), HomeProxy, WireGuard, OpenVPN, Tailscale, Cloudflare Tunnel, Syncthing, qBittorrent, DLNA, file sharing and a printer server. Nothing listens until you tick **Enable**. |
 | **Careful defaults** | HTTPS for the admin UI, no hidden remote access, BBR congestion control, pinned LuCI so an `apk upgrade` cannot undo the build. |
 | **Verifiable builds** | Built on GitHub Actions in a pinned Docker environment from commits you can read, with checksums and a provenance bundle for each release. |
 
@@ -179,7 +179,8 @@ package feed.
 | A VS Code dev container and the `cw-dev` front end for local builds | `.devcontainer/`, `.vscode/tasks.json` |
 | `--clean` / `--dirclean` are skipped on a fresh tree with no `.config`, where OpenWrt would otherwise open an interactive menuconfig and fail in CI | `tools/cw-release-build.sh` |
 | Faster builds: the cross gdb (never in the image) is no longer built, and CI falls back to the last download and compiler cache of the same OpenWrt tag when the seed or feed pins change | `configs/arcadyan_aw1000.seed`, `.github/workflows/build.yml` |
-| Passwall, Passwall 2, AdGuard Home and Adblock removed: their feeds, packages, vendored LuCI app, first-boot files, patch and docs. HomeProxy on sing-box (official packages feed) is the one proxy app | `feeds.conf.default`, `configs/`, `feeds-src/cwfeed/`, `files/`, `patches/feeds/`, `tools/`, `docs/` |
+| Passwall, Passwall 2, AdGuard Home and Adblock removed: their feeds, packages, vendored LuCI app, first-boot files, patch and docs. HomeProxy on sing-box (official packages feed) stays | `feeds.conf.default`, `configs/`, `feeds-src/cwfeed/`, `files/`, `patches/feeds/`, `tools/`, `docs/` |
+| Nikki (mihomo) added, with the Zashboard dashboard preinstalled: use Clash YAML profiles or subscriptions, manage proxies from the dashboard. First boot moves its HTTP port off 8080 and sets random secrets | `feeds.conf.default`, `configs/arcadyan_aw1000.seed`, `feeds-src/cwfeed/net/nikki-zashboard/`, `files/etc/uci-defaults/99_zz-cw-nikki-defaults`, `tools/cw-release-build.sh`, `docs/` |
 
 Everything else is upstream's work, unchanged. The fork offers these changes back upstream where
 they fit.
@@ -198,6 +199,8 @@ comparison. None of its code is in this repository or in the image.
 
 CleanWRT stands on the work of others: the [OpenWrt](https://openwrt.org) project and its
 contributors, [QModem](https://github.com/FUjr/QModem),
+[Nikki](https://github.com/nikkinikki-org/OpenWrt-nikki) and
+[mihomo](https://github.com/MetaCubeX/mihomo), [Zashboard](https://github.com/Zephyruso/zashboard),
 [HomeProxy](https://github.com/immortalwrt/homeproxy),
 [3ginfo-lite](https://github.com/4IceG/luci-app-3ginfo-lite),
 [luci-app-diskman](https://github.com/lisaac/luci-app-diskman), and the ImmortalWrt packages that

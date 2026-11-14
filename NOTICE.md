@@ -27,6 +27,8 @@ upstream's, unchanged.
 | 2026-11-14 | `configs/arcadyan_aw1000.seed`, `configs/license-overrides.tsv`, `configs/local-packages.pin` | modified: Passwall, Passwall 2, their cores, AdGuard Home and Adblock deselected; the Passwall 2 licence override removed |
 | 2026-11-14 | `feeds-src/cwfeed/applications/luci-app-adguardhome/`, `files/etc/config/adblock`, `files/etc/uci-defaults/97-cw-adguard-enable-bridge`, `patches/feeds/passwall_packages/` | removed |
 | 2026-11-14 | `tools/cw-release-build.sh`, `tools/cw-publish-feed.sh`, `files/etc/apk/`, `files/etc/uci-defaults/96-cw-apk-world-pin`, `feeds-src/cwfeed/README.md`, `docs/` | modified: Passwall, AdGuard Home and Adblock references removed (xray version gate, feed override, opt-set entry) |
+| 2026-11-14 | `feeds.conf.default`, `configs/arcadyan_aw1000.seed`, `tools/cw-release-build.sh` | modified: the Nikki feed pinned, Nikki + mihomo-meta + Zashboard selected and checked |
+| 2026-11-14 | `feeds-src/cwfeed/net/nikki-zashboard/`, `files/etc/uci-defaults/99_zz-cw-nikki-defaults` | added: the preinstalled Zashboard package (with its MIT licence) and Nikki first-boot defaults |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
 
 For an image built from this fork, the corresponding source in [Source availability](#source-availability)
@@ -39,6 +41,8 @@ upstream.
 |---|---|---|
 | OpenWrt base system | GPL-2.0-only (individual packages carry their own licences) | `COPYING` / `README.md` of openwrt v25.12.5 |
 | LuCI | Apache-2.0 | `LICENSE` of luci (openwrt-25.12) |
+| Nikki (`nikki`, `luci-app-nikki`) and the mihomo core (`mihomo-meta`) | GPL-3.0 | `LICENSE` + package Makefiles of nikkinikki-org/OpenWrt-nikki @ pinned commit |
+| Zashboard (`nikki-zashboard`, the Nikki dashboard, unmodified release build) | MIT, © 2024 Zephyruso; the licence text is installed at `/usr/share/licenses/zashboard/LICENSE` | `LICENSE` of Zephyruso/zashboard @ v3.30.0 |
 | 3ginfo-lite (`luci-app-3ginfo-lite`) | GPL-3.0 | package Makefile @ pinned commit |
 | QModem | MPL-2.0 **plus an added non-commercial clause** - see below | `LICENSE` of FUjr/QModem @ pinned commit |
 | Vendor `qmi_wwan_{q,f,s}` kernel modules (from QModem) | GPL (`MODULE_LICENSE("GPL")`) | driver sources @ pinned commit |

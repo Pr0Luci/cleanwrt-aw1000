@@ -7,6 +7,12 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 ## Unreleased (this fork)
 
+- **Nikki, with a dashboard.** Nikki runs the mihomo (Clash Meta) core from your own Clash YAML
+  profile or subscription, under *Services → Nikki*. The Zashboard dashboard is preinstalled
+  (about 1.5 MiB), so **Open Dashboard** works offline: switch proxies, test latency, watch
+  connections, rules and logs. It ships off. First boot moves its HTTP proxy port from 8080, which
+  the image already uses, to 7893, and replaces Nikki's six-digit dashboard secret and proxy
+  password with random 32-character ones.
 - **Passwall, Passwall 2, AdGuard Home and Adblock are gone.** Their feeds, packages, cores
   (xray-core, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others) and first-boot
   files are no longer in the image. HomeProxy is the proxy app, on the sing-box of the official

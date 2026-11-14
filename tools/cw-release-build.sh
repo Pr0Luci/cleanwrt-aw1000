@@ -509,7 +509,7 @@ for p in luci luci-mod-admin-full luci-theme-bootstrap luci-theme-footstrap \
          luci-app-qmodem qmodem kmod-qmi_wwan_q qmodem-sipd \
          minidlna samba4-server syncthing \
          luci-app-qmodem-ttlfw4 luci-app-tailscale-community luci-app-cw-led \
-         luci-app-3ginfo-lite bash ttyd ; do
+         luci-app-3ginfo-lite nikki luci-app-nikki nikki-zashboard bash ttyd ; do
     grep -qx "CONFIG_PACKAGE_${p}=y" "$SEED" || continue   # not selected by this seed
     grep -qx "CONFIG_PACKAGE_${p}=y" .config || { echo "ERROR: ${p} dropped from .config" >&2; exit 1; }
 done

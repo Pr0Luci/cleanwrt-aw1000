@@ -23,6 +23,8 @@ licence and copyright; nothing here relicenses them.
 | OpenWrt base system | GPL-2.0-only (individual packages carry their own licences) |
 | LuCI | Apache-2.0 |
 | 3ginfo-lite | GPL-3.0 |
+| Nikki, luci-app-nikki, mihomo | GPL-3.0 |
+| Zashboard (the Nikki dashboard) | MIT |
 | QModem | MPL-2.0 **plus an added non-commercial clause** |
 | Vendor QMI kernel modules (from QModem) | GPL |
 | ath11k firmware | Qualcomm Atheros firmware licence |

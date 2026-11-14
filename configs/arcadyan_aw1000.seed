@@ -225,6 +225,20 @@ CONFIG_PACKAGE_ucode-mod-digest=y
 CONFIG_PACKAGE_kmod-nft-tproxy=y
 CONFIG_PACKAGE_sing-box=y
 
+# 1b. Nikki (nikkinikki-org/OpenWrt-nikki, GPL-3.0): transparent proxy on the mihomo
+#     (Clash Meta) core, driven by ordinary Clash YAML profiles - upload a file or add a
+#     subscription URL on its LuCI page (Services -> Nikki). mihomo-meta is the stable
+#     core (mihomo-alpha is the other variant of the same name; named here so defconfig
+#     cannot pick it). nikki-zashboard (cwfeed) preinstalls the Zashboard web dashboard
+#     so "Open Dashboard" works without a download. Ships DISABLED, like HomeProxy:
+#     run one transparent proxy at a time. First-boot ports and secrets:
+#     files/etc/uci-defaults/99_zz-cw-nikki-defaults.
+CONFIG_PACKAGE_nikki=y
+CONFIG_PACKAGE_luci-app-nikki=y
+CONFIG_PACKAGE_mihomo-meta=y
+# CONFIG_PACKAGE_mihomo-alpha is not set
+CONFIG_PACKAGE_nikki-zashboard=y
+
 # 2. 3ginfo-lite (4IceG). The Dialog-style CEREG fix ships as the
 #    patches/feeds/3ginfo/ patch applied at build time (data-only SIM registration).
 CONFIG_PACKAGE_luci-app-3ginfo-lite=y

@@ -86,6 +86,8 @@ Nothing below is open unless the row says it is on by default.
 | 5060 | UDP and TCP | **no** — only after the AWvoice SIP switch is turned on | the network phone's inbound SIP listener, on the LAN interface |
 | 40000–40031 | UDP | with the SIP side on | the RTP range the SIP service uses for media |
 | 53, 67 | UDP | yes | DNS and DHCP on the LAN, as in stock OpenWrt |
+| 9090 | TCP | no (Nikki ships disabled) | the mihomo API and the Zashboard dashboard at `/ui/`, secret required |
+| 7890–7893, 1080, 1053 | TCP/UDP | no (Nikki ships disabled) | Nikki's proxy listeners (mixed, redirect, TProxy, HTTP, SOCKS) and its DNS |
 | 8384 | TCP | no (Syncthing ships disabled) | Syncthing's own web interface, bound to all addresses when enabled — set a password before you turn it on |
 | 8200 | TCP/UDP | no (miniDLNA ships disabled) | the media server, on the LAN bridge when enabled |
 | 139, 445 | TCP | the Samba daemon starts | one share, `guest_ok='no'`, so nothing is reachable until you add users |

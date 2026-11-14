@@ -1,0 +1,49 @@
+#!/bin/sh
+# Nikki (mihomo) defaults for this image. Runs once.
+#
+# Named 99_zz-... and not 99-cw-... on purpose: uci-defaults run in byte order, and
+# Nikki's own 99_init_nikki (which writes the API secret and the proxy password) and
+# 99_migrate_nikki must run first. '-' sorts before '_', so a 99-cw-* name would run
+# before them and its changes would be overwritten.
+#
+# 1. The HTTP proxy port. Nikki's default is 8080, which this image already uses: the
+#    AWvoice provisioning listener (49-cw-awvoice-provision-port) and qBittorrent's web
+#    UI. mihomo cannot bind a port that is taken, so the HTTP listener moves to 7893,
+#    next to Nikki's other listeners (mixed 7890, redir 7891, tproxy 7892).
+# 2. The dashboard secret and the proxy password. Nikki generates a six-digit number
+#    for both. The dashboard API controls the whole proxy, so the image replaces a
+#    six-digit value with 32 random hex characters. LuCI's "Open Dashboard" passes the
+#    secret along, so nobody has to type it.
+# A value someone has already changed is left alone.
+
+[ -f /etc/config/nikki ] || exit 0
+[ "$(uci -q get nikki.config.cw_defaults)" = "1" ] && exit 0
+
+if [ "$(uci -q get nikki.mixin.http_port)" = "8080" ]; then
+	uci set nikki.mixin.http_port='7893'
+fi
+
+rand_hex() {
+	hexdump -n 16 -e '16/1 "%02x"' /dev/urandom 2>/dev/null
+}
+
+secret=$(uci -q get nikki.mixin.api_secret)
+case "$secret" in
+	[0-9][0-9][0-9][0-9][0-9][0-9]|'')
+		new=$(rand_hex)
+		[ ${#new} -eq 32 ] && uci set nikki.mixin.api_secret="$new"
+		;;
+esac
+
+pass=$(uci -q get 'nikki.@authentication[0].password')
+case "$pass" in
+	[0-9][0-9][0-9][0-9][0-9][0-9]|'')
+		new=$(rand_hex)
+		[ ${#new} -eq 32 ] && uci set 'nikki.@authentication[0].password'="$new"
+		;;
+esac
+
+uci set nikki.config.cw_defaults='1'
+uci commit nikki
+logger -t cw-firstboot "nikki: HTTP proxy on 7893, random dashboard secret and proxy password"
+exit 0

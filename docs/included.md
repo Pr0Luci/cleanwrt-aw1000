@@ -21,6 +21,7 @@ switch.
 | 3ginfo-lite | Modem → 3gInfo-lite | On | SIM, signal and neighbour cells ([the radio page](modem.md#the-radio-page)) |
 | sms-forwarder | part of QModem | On | forwards received SMS |
 | SIP service for the phone port | no page of its own — the switch is on AWvoice → SIP | Off until the AWvoice SIP switch turns it on | a soft phone on your own network rings and dials through the SIM's line; off means no port is open ([AWvoice](awvoice.md)) |
+| Nikki | Services → Nikki | Off (add a Clash profile) | mihomo transparent proxy with the Zashboard dashboard ([VPN and proxies](features/vpn-proxy.md#nikki)) |
 | HomeProxy | Services → HomeProxy | Off | sing-box based proxy |
 | WireGuard | Network → Interfaces | needs a tunnel from you | VPN protocol support |
 | OpenVPN | VPN → OpenVPN | Off (needs your .ovpn file) | VPN client and server |
